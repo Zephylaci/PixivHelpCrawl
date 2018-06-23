@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Home</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<!-- bootstrap-css -->
+<link rel="stylesheet" href="css/bootstrap.css">
+<!-- //bootstrap-css -->
+<!-- Custom CSS -->
+<link href="css/style.css" rel='stylesheet' type='text/css' />
+<link rel="stylesheet" href="css/font.css" type="text/css"/>
+<link href="css/font-awesome.css" rel="stylesheet"> 
+
+<style>
+	#getType .btn-primary.active{
+		background-color:#1E252F;
+	}
+	.mb5{
+		margin-bottom: 5px;
+	}
+    .btn-group-lg > .btn, .btn-lg{
+        width:auto;
+        min-width:105px;
+      
+    }
+    .agile-gallery.active{
+        border-color: #0480ff;
+    }
+    #backIndexModel{
+        width:80px;
+    }
+/*   loading   */
+#loaderContent{
+    width:100%;
+}
+#loaderEnd{
+    width:100%;
+    text-align:center;
+    margin-top:5px;
+    padding:10px 0;
+    background:#fff;
+}
+.pswp__preloader__icn {
+  margin:0 auto;
+  opacity:0.75;
+  width: 24px;
+  height: 24px;
+  -webkit-animation: clockwise 500ms linear infinite;
+  animation: clockwise 500ms linear infinite;
+}
+ 
+/* The idea of animating inner circle is based on Polymer loading indicator by Keanu Lee https://blog.keanulee.com/2014/10/20/the-tale-of-three-spinners.html */
+.pswp__preloader__cut {
+  position: relative;
+  width: 12px;
+  height: 24px;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+ 
+.pswp__preloader__donut {
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #000;
+   border-radius: 50%;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: none;
+  margin:0;
+   -webkit-animation: donut-rotate 1000ms cubic-bezier(.4,0,.22,1) infinite;
+  animation: donut-rotate 1000ms cubic-bezier(.4,0,.22,1) infinite;
+}
+ 
+@-webkit-keyframes clockwise {
+  0% { -webkit-transform: rotate(0deg) }
+  100% { -webkit-transform: rotate(360deg) }
+}
+@keyframes clockwise {
+  0% { transform: rotate(0deg) }
+  100% { transform: rotate(360deg) }
+}
+@-webkit-keyframes donut-rotate {
+  0% { -webkit-transform: rotate(0) }
+  50% { -webkit-transform: rotate(-140deg) }
+  100% { -webkit-transform: rotate(0) }
+}
+@keyframes donut-rotate {
+  0% { transform: rotate(0) }
+  50% { transform: rotate(-140deg) }
+  100% { transform: rotate(0) }
+}
+</style>
+</head>
+<body class="dashboard-page">
+	<nav class="main-menu">
+		<ul class="logout">
+			<li>
+			<a href="login.html">
+			<i class="icon-off nav-icon"></i>
+			<span class="nav-text">
+			Logout
+			</span>
+			</a>
+			</li>
+		</ul>
+	</nav>
+	<section class="wrapper scrollable">
+		<nav class="user-menu">
+			<a href="javascript:;" class="main-menu-access">
+			<i class="icon-proton-logo"></i>
+			<i class="icon-reorder"></i>
+			</a>
+		</nav>
+		<section class="title-bar">
+			<div class="logo">
+				<h1><a href="index.html"><!-- <img src="images/logo.png" alt="" /> -->Crawl</a></h1>
+			</div>
+			<div class="full-screen">
+				<section class="full-top">
+					<button id="toggle"><i class="fa fa-arrows-alt" aria-hidden="true"></i></button>	
+				</section>
+			</div>
+			<div id="mainSearch"class="w3l_search">
+                <input type="text" name="search" value="Search" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '搜索关键字或标签';}" required="">
+                <button id="searchAndShow" class="btn btn-default" ><i class="fa fa-search" aria-hidden="true"></i></button>
+                <span id="backIndexModel"  class=" btn btn-lg btn-primary btn-block typeBtn" >返回</span>
+			</div>
+			<div class="clearfix"> </div>
+		</section>
+		<div class="main-grid">
+			<div class="panel variations-panel">
+					<div class="panel-body mtn">
+							
+                            <div id="configPanel">
+
+                            </div>
+							<div class="row">
+                                <div class="col-md-1">
+                                    <span id="subAndShow"  class=" btn btn-lg btn-primary btn-block typeBtn" >预览</span>
+                                </div>    
+                                <div class="col-md-2">
+                                    <span id="downloadAll"  class=" btn btn-lg btn-primary btn-block typeBtn" >云端下载读取到全部项</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span id="downloadChecked"  class=" btn btn-lg btn-primary btn-block typeBtn" >云端下载选中项</span>
+                                </div>
+							</div>
+					</div>
+			</div>
+			<div id ="resultContent"  class="gallery-grids">
+				
+
+
+			</div>
+
+		</div>
+		<!-- footer -->
+<!-- 		<div class="footer">
+			
+		</div> -->
+		<!-- //footer -->
+	</section>
+	<script src='https://cdn.bootcss.com/jquery/2.2.1/jquery.min.js'></script>
+	<script src="js/screenfull.js"></script>
+	<script src="https://cdn.bootcss.com/masonry/4.2.1/masonry.pkgd.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery.imagesloaded/4.1.4/imagesloaded.min.js"></script>
+    <script src="js/main.js"></script>
+
+	<script>
+        $(function () {
+			// 全屏
+			$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+			if (!screenfull.enabled) {
+				return false;
+			}
+			$('#toggle').click(function () {
+				screenfull.toggle($('#container')[0]);
+			});	
+		});
+
+
+	</script>	
+</body>
+</html>

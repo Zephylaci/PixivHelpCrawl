@@ -1,0 +1,31 @@
+{
+  "name": "pixivcrawl",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "crawl": "node server/pixivLogin.js",
+    "server": "node server/www"
+  },
+  "keywords": [
+    "pixiv",
+    "Crawl"
+  ],
+  "author": "zephyru@163.com",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.1",
+    "cheerio": "^1.0.0-rc.2",
+    "koa": "^2.5.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^3.2.0",
+    "koa-onerror": "^4.0.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^4.0.3",
+    "koa-views": "^6.1.4",
+    "redis": "^2.8.0",
+    "request": "^2.87.0"
+  }
+}

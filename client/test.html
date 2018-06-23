@@ -1,0 +1,186 @@
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+        <!-- Bootstrap CSS -->       
+        <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap-reboot.css" rel="stylesheet">
+        <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap-grid.min.css" rel="stylesheet">
+        <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+        <title>Hello World</title>
+    </head>
+    <style>
+
+    </style>
+	<body>
+        <ifream src='http://www.pixiv.net/'>
+        <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+            <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">测试Url输入：</a>
+            <input id="in" class="form-control form-control-dark w-100" type="text" placeholder="url" aria-label="Search">
+            <ul class="navbar-nav px-3">
+                <li class="nav-item text-nowrap">
+                 <span id="button" class="btn btn-lg btn-primary">get</span>
+                </li>
+            </ul>
+        </nav>
+        <main role="main" class="container">
+            <h3 class="mt-5">可用Url：</h3>
+            <h4>返回JSON类</h4>
+            日榜：http://www.pixiv.net/ranking.php?format=json&mode=daily&p=1<br/>
+            日榜r18:http://www.pixiv.net/ranking.php?format=json&mode=daily_r18&p=1<br/>      
+            周榜:http://www.pixiv.net/ranking.php?format=json&mode=weekly&p=1<br/> 
+            周榜r18:http://www.pixiv.net/ranking.php?format=json&mode=weekly_r18&p=1<br/> 
+            男性榜:http://www.pixiv.net/ranking.php?format=json&mode=male&p=1<br/> 
+            女性榜: http://www.pixiv.net/ranking.php?format=json&mode=female&p=1<br/> 
+            <p>r18类的需要cookies</p>
+            <h3>通用url</h3>>
+            首页:https://www.pixiv.net <br/>
+            返回 #wrapper 中的内容 去掉所有js<br/>
+            搜索页:https://www.pixiv.net/search.php?s_mode=s_tag&word='关键字'&p='页码'[&mode=safe]<br/>
+            返回 类似上面JSON页返回生成HTML<br/>
+            详情页：https://www.pixiv.net/member_illust.php?mode=medium&illust_id=69139520 <br/>
+            返回 从实际页面顶部取到的数据生成Html
+        </main>
+
+        <div class="jumbotron">
+            <h4>结果返回:</h4>
+            <br/>
+            <div class="mx-auto" id="resultContent">
+
+                
+            </div>
+        </div>
+	</body>
+   <script src='https://cdn.bootcss.com/jquery/2.2.1/jquery.min.js'></script>
+   <script>
+       //需要排除的Tags：'腐向','漫画'
+        $('#button').click(()=>{
+            var urlStr = $('#in').val();
+            if(urlStr==""){
+                $('#resultContent').html('无有效Url输入');
+                return;
+            }
+            var upUrl = strToHexCharCode(urlStr);            
+            var upData ={Url:upUrl};
+
+            $.ajax({
+                type:'POST',
+                url:'/api/autoSerach',
+                data:upData,
+                dataType:'json',
+                success:function(data){
+                var result = data.content;
+                var showData =  result;
+                    if(urlStr.indexOf('format=json')!=-1){
+                        try{
+                            result = JSON.parse(result);
+                            console.log(result);
+                        }catch(err){
+                            console.error('不标准的返回值！')
+                            result = result;
+                        }
+                        if(Object.prototype.toString.call(result.contents)==="[object Array]"){
+                            var opt={
+                                showList:result.contents,
+                                showItem:['url','title','illust_id','view_count','width']
+                            }
+
+                           showData=createShowHtml(opt);
+                        }
+                    }
+                    else if(urlStr.indexOf('search.php')!=-1){
+                        var opt={
+                            showList:result.items,
+                            showItem:['url','illustTitle','illustId','width','bookmarkCount']
+                        }
+                        showData=createShowHtml(opt);
+                    }
+                    else if(urlStr.indexOf('illust_id')!=-1){
+                       var handleData = {};
+                       for (key in result.illust){
+                          handleData=result.illust[key];
+                       }
+                        var opt={
+                            showList:handleData,
+                            showItem:['urls.original','illustTitle','illustId','viewCount','bookmarkCount']
+                        }
+                        showData=createShowHtml(opt);
+                    }
+
+                   $('#resultContent').html(showData);
+                }
+            });        
+        });
+        
+        
+
+        function createShowHtml(opt){
+            var showData = opt.showList;
+            var showItem = opt.showItem;
+            var itemListHtml = "";
+            if(Object.prototype.toString.call(showData)==="[object Array]"){
+               for(var i=0;i<showData.length;i++){  
+                    var strItems = [];
+                    for(var j =0;j<showItem.length;j++){
+                        var str  = showData[i][showItem[j]];
+                        if(str){
+                            strItems.push(str)
+                        }else{
+                            strItems.push('无数据');
+                        }
+                    }
+                    
+                    var itemHtml = 
+                        `<div class="col-md-3">
+                            <img class="card-img-right flex-auto d-none d-md-block" src="${strItems[0]}"  >
+                            <span>${strItems[1]}</span><br/>
+                            <span>图片Id：${strItems[2]}</span>
+                            <p><span>浏览:${strItems[3]}</span><span>收藏:${strItems[4]}</span></p>
+                        </div>`;
+                     itemListHtml=itemListHtml+itemHtml;
+                }
+            }else if(Object.prototype.toString.call(showData)==="[object Object]"){
+                    var strItems = [];
+                    for(var j =0;j<showItem.length;j++){
+                        var str = '';
+                        
+                        if(showItem[j].indexOf('.')!=-1){
+                            var path = showItem[j].split('.');
+                            str = showData[path[0]][path[1]];
+                        }else{
+                            str  = showData[showItem[j]];
+                        }
+                        
+                        if(str){
+                            strItems.push(str)
+                        }else{
+                            strItems.push('无数据');
+                        }
+                    }
+                   itemListHtml =  
+                       `<div class="col-md-12">
+                            <img class="card-img-right flex-auto d-none d-md-block" src="${strItems[0]}"  >
+                            <span>${strItems[1]}</span><br/>
+                            <span>图片Id：${strItems[2]}</span>
+                            <p><span>浏览:${strItems[3]}</span><span>收藏:${strItems[4]}</span></p>
+                        </div>`;
+            }
+
+            var content = `<div class="row">${itemListHtml}</div>`;
+            return content;
+        }
+        
+        //字符串转16进制
+        function strToHexCharCode(str) {
+            if(str === "")
+              return "";
+            var hexCharCode = [];
+            hexCharCode.push("0x"); 
+            for(var i = 0; i < str.length; i++) {
+              hexCharCode.push((str.charCodeAt(i)).toString(16));
+            }
+            return hexCharCode.join("");
+        }
+    </script>
+</html>
