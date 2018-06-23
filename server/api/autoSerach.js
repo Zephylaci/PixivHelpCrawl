@@ -25,7 +25,7 @@ var mainObj = {
       var strKey = mainObj.common.strKey;
       var mainKey = encodeURI(strKey);
       var page = common.page;
-      var url = `https://www.pixiv.net/search.php?s_mode=s_tag&word=${mainKey}&p=${page}`;
+      var url = `https://www.pixiv.net/search.php?s_mode=s_tag&mode=safe&word=${mainKey}&p=${page}`;
       var fakeCtx={
           request:{
               body:{
