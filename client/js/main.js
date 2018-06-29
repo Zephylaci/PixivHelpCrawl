@@ -300,87 +300,89 @@ function createShowHtml(opt){
     var content = `<div class="show-reel">${itemListHtml}</div>`;
     return content;
 }
-    function strToHexCharCode(str) {
-        if(str === "")
-            return "";
-        var hexCharCode = [];
-        hexCharCode.push("0x"); 
-        for(var i = 0; i < str.length; i++) {
-            hexCharCode.push((str.charCodeAt(i)).toString(16));
-        }
-        return hexCharCode.join("");
-    }
-    
-    //选择图片
-    $('#resultContent').on('click','.agile-gallery',function(){
-        $(this).toggleClass('active');
-        console.log($(this).data('tags'));
-            
-    });
 
-            var mainConfig=`
-                        <h4 class="mb15">预览：</h4>
-                         <div class="row mb15" id="getType">
-                                    <div class="col-md-1">
-                                        <span data-type="mode=daily"  class="btn btn-lg btn-primary btn-block typeBtn active">日榜</span>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <span data-type="mode=rookie" class="btn btn-lg btn-primary btn-block typeBtn">新人榜</span>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <span  data-type="mode=weekly" class="btn btn-lg btn-primary btn-block typeBtn">周榜</span>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <span  data-type="mode=male" class="btn btn-lg btn-primary btn-block typeBtn">男性日榜</span>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <span data-type="mode=female" class="btn btn-lg btn-primary btn-block typeBtn">女性日榜</span>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <span  data-type="mode=daily_r18" class="btn btn-lg btn-primary btn-block typeBtn">R18日榜</span>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <span  data-type="mode=weekly_r18" class="btn btn-lg btn-primary btn-block typeBtn">R18周榜</span>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <span   data-type="mode=male_r18" class="btn btn-lg btn-primary btn-block typeBtn">R18男性</span>
-                                    </div>
-                                </div>
-                                <div class="form-group  mb15">
-                                    <div class="radio-inline"><label><input type="checkbox" name="page" value="1" checked> 第一页（前50个）</label></div>
-                                    <div class="radio-inline"><label><input type="checkbox" name="page" value="2"> 第二页（后50个）</label></div>
-                                    <div class="radio-inline"><label><input type="checkbox" name="filter" value="filter" checked> 是否启用过滤</label></div>
-                                </div>
-        `;
-        var subConfig=`
-                <h4 class="mb15">模式:</h4>
-                <div class="form-group  mb15">
-                   <!-- <div class="radio-inline"><label><input type="radio" name="searchType" data-type="preview" value="1" > 预览</label></div> -->
-                    <div class="radio-inline"><label><input type="radio" name="searchType" data-type="Analysis" value="2" checked> 排序</label></div>
-                </div>
-                <h5 class="mb15">参数:</h5>
-                <div class="form-group  mb15">  
-                    <div class="radio-inline"><label>大于（收藏数）</label><input type="input" name="showLimit" value="200" style="width:50px" > </div>
-                    <div class="radio-inline"><label>共爬取页数（排序多少页得）</label><input type="input" value="1" name="handleLimit"  style="width:50px"> </div>
-                    <!-- <div class="radio-inline"><label><input type="checkbox" name="filter" value="filter" > Safe MOde</label></div> -->
-                </div>
-        `;
-        $('#configPanel').html(mainConfig);
-         $('#backIndexModel').hide();
-        //顶部切换
-        $('#mainSearch input').focus(function(){
-            if($('input[name=searchType]:checked').length===0){
-                $('#backIndexModel').show();
-                $('#subAndShow').hide();
-                $('#configPanel').html(subConfig);
-            }
-        });
-         $('#backIndexModel').click(function(){
-            $('#subAndShow').show();
-            $('#configPanel').html(mainConfig);
-            $('#backIndexModel').hide();
-        });
-        $('#getType .typeBtn').click(function(){
-            $('#getType .typeBtn').removeClass('active');
-            $(this).addClass('active');
-        });
+    
+//选择图片
+$('#resultContent').on('click','.agile-gallery',function(){
+    $(this).toggleClass('active');
+    console.log($(this).data('tags'));
+        
+});
+
+var mainConfig=`
+                <h4 class="mb15">预览：</h4>
+                    <div class="row mb15" id="getType">
+                            <div class="col-md-1">
+                                <span data-type="mode=daily"  class="btn btn-lg btn-primary btn-block typeBtn active">日榜</span>
+                            </div>
+                            <div class="col-md-1">
+                                <span data-type="mode=rookie" class="btn btn-lg btn-primary btn-block typeBtn">新人榜</span>
+                            </div>
+                            <div class="col-md-1">
+                                <span  data-type="mode=weekly" class="btn btn-lg btn-primary btn-block typeBtn">周榜</span>
+                            </div>
+                            <div class="col-md-1">
+                                <span  data-type="mode=male" class="btn btn-lg btn-primary btn-block typeBtn">男性日榜</span>
+                            </div>
+                            <div class="col-md-1">
+                                <span data-type="mode=female" class="btn btn-lg btn-primary btn-block typeBtn">女性日榜</span>
+                            </div>
+                            <div class="col-md-1">
+                                <span  data-type="mode=daily_r18" class="btn btn-lg btn-primary btn-block typeBtn">R18日榜</span>
+                            </div>
+                            <div class="col-md-1">
+                                <span  data-type="mode=weekly_r18" class="btn btn-lg btn-primary btn-block typeBtn">R18周榜</span>
+                            </div>
+                            <div class="col-md-1">
+                                <span   data-type="mode=male_r18" class="btn btn-lg btn-primary btn-block typeBtn">R18男性</span>
+                            </div>
+                        </div>
+                        <div class="form-group  mb15">
+                            <div class="radio-inline"><label><input type="checkbox" name="page" value="1" checked> 第一页（前50个）</label></div>
+                            <div class="radio-inline"><label><input type="checkbox" name="page" value="2"> 第二页（后50个）</label></div>
+                            <div class="radio-inline"><label><input type="checkbox" name="filter" value="filter" checked> 是否启用过滤</label></div>
+                        </div>
+`;
+var subConfig=`
+        <h4 class="mb15">模式:</h4>
+        <div class="form-group  mb15">
+            <!-- <div class="radio-inline"><label><input type="radio" name="searchType" data-type="preview" value="1" > 预览</label></div> -->
+            <div class="radio-inline"><label><input type="radio" name="searchType" data-type="Analysis" value="2" checked> 排序</label></div>
+        </div>
+        <h5 class="mb15">参数:</h5>
+        <div class="form-group  mb15">  
+            <div class="radio-inline"><label>大于（收藏数）</label><input type="input" name="showLimit" value="200" style="width:50px" > </div>
+            <div class="radio-inline"><label>共爬取页数（排序多少页得）</label><input type="input" value="1" name="handleLimit"  style="width:50px"> </div>
+            <!-- <div class="radio-inline"><label><input type="checkbox" name="filter" value="filter" > Safe MOde</label></div> -->
+        </div>
+`;
+$('#configPanel').html(mainConfig);
+    $('#backIndexModel').hide();
+//顶部切换
+$('#mainSearch input').focus(function(){
+    if($('input[name=searchType]:checked').length===0){
+        $('#backIndexModel').show();
+        $('#subAndShow').hide();
+        $('#configPanel').html(subConfig);
+    }
+});
+ $('#backIndexModel').click(function(){
+    $('#subAndShow').show();
+    $('#configPanel').html(mainConfig);
+    $('#backIndexModel').hide();
+});
+$('#configPanel').on('click','#getType .typeBtn',function(){
+    $('#configPanel').find('#getType .typeBtn').removeClass('active');
+    $(this).addClass('active');
+});
+
+function strToHexCharCode(str) {
+    if(str === "")
+        return "";
+    var hexCharCode = [];
+    hexCharCode.push("0x"); 
+    for(var i = 0; i < str.length; i++) {
+        hexCharCode.push((str.charCodeAt(i)).toString(16));
+    }
+    return hexCharCode.join("");
+}

@@ -16,7 +16,10 @@ var mainObj = {
       limit:10,
       run:false,
       end:()=>{},
-      resultItem:[],
+      resultData:{
+          resultItem:[],
+          relatedTags:[]
+      },
       strKey:"",
       bookmarkCountLimit:200
   },
@@ -49,53 +52,72 @@ var mainObj = {
     common.bookmarkCountLimit =Number(parame.showLimit);
     common.runlimit = 1;
     common.page = 1;
-    common.resultItem = [];
+    common.resultData.resultItem = [];
+    var resultData = common.resultData;
     var state = new Promise((resolve,reject)=>{
       mainObj.common.end=resolve;
     });
     controlStep();
     await state
-    //为了保持与首页数据的一致性..
     //排序
-    common.resultItem = common.resultItem.sort((first,Second)=>{
+    var resultItem = resultData.resultItem;
+    resultItem = resultItem.sort((first,Second)=>{
         return Second.bookmarkCount - first.bookmarkCount 
     });
-    ctx.body.content = JSON.stringify({contents:common.resultItem});
-    return common.resultItem;
+    if(resultItem.length===0){
+        var onDataItem = {
+            illustId:'没有读取到数据',
+            illustTitle:'请换个关键字',
+            bookmarkCount:'或者降低收藏数限制'
+        }
+        resultItem.push(onDataItem);
+    }
+     //为了保持与首页数据的一致性..
+    ctx.body.content = JSON.stringify({relatedTags:resultData.relatedTags,contents:resultItem});
+    return resultItem;
   }
 }
 emitter.on('oneOver',controlStep);
 function controlStep(){
     var common = mainObj.common;
-    console.log(common.page,common.limit)
     if(common.page<=common.limit){  
-        console.log(common.page,common.limit,common.runNum,common.runlimit)
         if(common.runlimit>common.limit){
             common.runlimit = common.limit;
         }
-         console.log(common.page,common.limit,common.runNum,common.runlimit)
         while(common.runNum< common.runlimit){
             common.runNum++;
             oneStep();
         }
     }else{
-        console.log(common.runNum);
         if(common.runNum<=0){
           mainObj.common.end();
         }
     }
 
 }
+function controlStep(){
+    mainObj.common.end();
+    mainObj.common.end=function(){
+        console.log('autoSerach:重复结束')
+    }
+}
 function oneStep(){
     var promise = mainObj.getData();
     var common = mainObj.common;
     promise.then((data)=>{
-        console.log('in');
+        console.log(data);
+        if(data.items.length === 0){
+             emitter.emit('AllOver');
+            return;
+        }
+        if(common.resultData.relatedTags===[]){
+            common.resultData.relatedTags = data.relatedTags;
+        }
         var originItem = data.items;
         for(var i = 0;i<originItem.length;i++){
             var item = originItem[i];
             if(item.bookmarkCount>common.bookmarkCountLimit){
-                common.resultItem.push(item);
+                common.resultData.resultItem.push(item);
             }
         }
          common.runNum--;
