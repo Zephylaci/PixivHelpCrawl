@@ -181,9 +181,16 @@ $('#searchAndShow').click(function(){
     var searchType = $('input[name=searchType]:checked');
     if(searchType.length!=0){
         var upData={};
+        var safeMode =  $('input[name=safeMode]:checked').val();
+        if(safeMode){
+            safeMode='safe';
+        }else{
+            safeMode='unSafe';
+        }
         upData.searchStr = $('#mainSearch').find('input').val(); 
         upData.handleLimit = $('input[name=handleLimit]').val();
         upData.showLimit =  $('input[name=showLimit]').val();
+        upData.safeMode =safeMode; 
         $('#resultContent').html('');
         showLoading($('#resultContent'));
         postData(upData,'/api/autoSerach').success((data)=>{
@@ -204,7 +211,7 @@ function showDataMethod(showData){
     imagesLoaded($container,function() {
         $container.masonry({  
             isAnimated: true,  
-            // columnWidth: 450,       
+            //columnWidth: 450,       
             isFitWidth: true     // 自适应宽度  
         }); 
         $('#loaderContent').hide();
@@ -353,7 +360,7 @@ var subConfig=`
         <div class="form-group  mb15">  
             <div class="radio-inline"><label>大于（收藏数）</label><input type="input" name="showLimit" value="200" style="width:50px" > </div>
             <div class="radio-inline"><label>共爬取页数（排序多少页得）</label><input type="input" value="1" name="handleLimit"  style="width:50px"> </div>
-            <!-- <div class="radio-inline"><label><input type="checkbox" name="filter" value="filter" > Safe MOde</label></div> -->
+            <div class="radio-inline"><label><input type="checkbox" name="safeMode" value="safe" checked> Safe Mode</label></div> 
         </div>
 `;
 $('#configPanel').html(mainConfig);
