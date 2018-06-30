@@ -32,9 +32,8 @@ var mainObj = {
       if(common.safeMode==='unSafe'){
           mode = '';
       }
-      
+
       var page = common.page;
-     
       var url = `https://www.pixiv.net/search.php?s_mode=s_tag${mode}&word=${mainKey}&p=${page}`;
       var fakeCtx={
           request:{

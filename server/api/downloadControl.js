@@ -78,10 +78,21 @@ function controlStep(){
             if(common.runNum===0){
                  common.over = true;
                  console.log('downloadControl:整体下载完成，云端空闲');
+                 if(processList.length!==0){
+                     var length = processList.length;
+                     for(var i = 0;i<length;i++){
+                         var childProcess = processList.shift(); 
+                         childProcess.disconnect();
+                         console.log('downloadControl:释放 childe_process');
+                     }
+                 }
+                 console.log('downloadControl:process释放执行完成')
+
             }
         }
    
 }
+//线程池
 var processList = [];
 function oneStep(){
     var common = mainObj.common;
@@ -89,10 +100,34 @@ function oneStep(){
     var imgId = item.illust_id;
     var url = `https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${imgId}`;
     console.log('downloadControl:',imgId,'下载开始');
-    // 这里可以弄线程池
-
+   
     var downChild = makeprocess(imgId);
-    downChild.send(url);
+
+    function childFun(url){
+        var StringTool = require('./../../tool/s16.js');
+        var getPixivData = require('./getPixivData.js');
+        var upUrl = StringTool.strToHexCharCode(url);
+        var fakeCtx={
+            request:{
+                body:{
+                    Url:upUrl
+                }
+            }
+        }
+
+        getPixivData.contrl(fakeCtx)
+            .then(()=>{
+            process.send(url);
+       })
+    }
+    var callBackStr = childFun.toString();
+    var opt = {
+        parames:url,
+        callBackStr:callBackStr
+    }
+    downChild.send(opt);
+    //去子进程中执行的函数
+
 }
 
 function makeprocess(imgId){
@@ -100,7 +135,7 @@ function makeprocess(imgId){
 
     if(processList.length===0){
         var downChild = cp.fork('./server/api/downChild.js',{
-            silent:true
+           silent:true
         });
         downChild.on('message',(m)=>{
             console.log('downloadControl:',imgId,'下载结束');
@@ -115,15 +150,14 @@ function makeprocess(imgId){
                     processList.push(downChild); 
                 }     
             }
-            console.log('单项下载完成后闲置process:',processList.length);
             controlStep();
         });
         downChild.on('close',(code)=>{
-            console.log('downChild子进程退出');
+           console.log('downloadControl:','downChild子进程close，剩余空闲process:',processList.length);
         });
 
         downChild.on('disconnect',()=>{
-            console.log('downChild子进程链接断开')
+              console.log('downloadControl:','downChild子进程disconnect，剩余空闲process:',processList.length);
         });
         return downChild;
     }else{

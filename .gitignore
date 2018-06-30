@@ -1,4 +1,7 @@
 .DS_Store
+quickPush.sh
+quickDev.sh
+*.swp
 node_modules/
 .cookie
 client/download/
