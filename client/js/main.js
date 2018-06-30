@@ -90,8 +90,17 @@ function showLoading(showContain){
 $('#downloadAll').click(function(){
     var list = [];
     var length = common.result.contents.length;
+    if(length===0){
+        alert('请先预览')
+        return;
+    }
+    //数据兼容
+    var keyWorld = 'illust_id';
+    if(!common.result.contents[0][keyWorld]){
+        keyWorld = 'illustId'
+    }
     for(var i=0;i<length;i++){
-        var item = {illust_id:common.result.contents[i].illust_id};
+        var item = {illust_id:common.result.contents[i][keyWorld]};
         list.push(item);
     }
     var downList = JSON.stringify(list);
