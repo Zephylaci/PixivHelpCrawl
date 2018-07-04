@@ -23,7 +23,7 @@ function Astraea(opt){
 
     opt.judgeTag = defJudgeTag ||opt.judgeTag;
       
-    opt.needDataKey = 'All' || opt.needDataKey;
+
     opt.resultData = {};
     if(filterType==='Ordinary'){
         return opt.sourceData;
@@ -32,6 +32,9 @@ function Astraea(opt){
    return result;
 }
 Astraea.Scales={
+    Publice:{
+    
+    },
     Convenient:(opt)=>{
         var needContainsData = [];
         var sourceData = opt.sourceData;
@@ -39,52 +42,25 @@ Astraea.Scales={
         
         var needDataKey = opt.needDataKey;
         var judgeTag = opt.judgeTag;
+        
         if(Object.prototype.toString.call(sourceArry) === "[object Array]"){
-            if(Object.prototype.toString.call(needDataKey)=== "[object Array]"){
-                for(var i = 0;i<sourceArry.length;i++){
-                    var item = sourceArry[i];
-                    var need = true;
-                    for(var j = 0;j<judgeTag.length;j++){
-                        var tagStr = item.tags.toString();
-                        if(tagStr.indexOf(judgeTag[i])!=-1){
-                            need = false;
-                        }
-                    }
-                    if(need===false){
-                       continue;
-                    }
-                    var needItem = {};
-                    
-                    for(var k=0;k<needDataKey.length;k++){
-                        needItem[needDataKey[i]] = item[needDataKey[i]]
-                    }
-                    needContainsData.push(needItem);
-                }
-            }else{
-              for(var i = 0;i<sourceArry.length;i++){
-                    var item = sourceArry[i];
-                    var need = true;
-                    var tagsStr = item.tags.toString();
-                    for(var j = 0;j<judgeTag.length;j++){
-                        if(tagsStr.indexOf(judgeTag[j])!=-1){
-                            need = false;
-                            break;
-                        }
-                    }
-                    if(need===false){
-                       continue;
-                    }
-                    needContainsData.push(item);
-                }
-               
-            }
-
-            opt.resultData = needContainsData;
+              Astraea.Scales.Publice.judgeTag = judgeTag;
+            opt.resultData = sourceArry.filter(Astraea.Scales.Judge);
             return opt;
         }else{
             console.log('Astraea:Convenient传入数据类型不正确！')
             return opt.sourceData;
         }
+    },
+    Judge:function(item){
+        var Publice =  Astraea.Scales.Publice;
+        var tageStr = item.tags.toString();
+        for(var i = 0;i<Publice.judgeTag.length;i++){
+            if(tageStr.indexOf(Publice.judgeTag[i])!==-1){
+                return false;
+            }
+        }
+        return true;
     }
 }
 module.exports=Astraea;
