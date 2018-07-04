@@ -94,18 +94,21 @@ function controlStep(){
 }
 //线程池
 var processList = [];
+var imgIdNum = 0;
 function oneStep(){
     var common = mainObj.common;
     var item = common.dataList.shift();
     var imgId = item.illust_id;
-    var url = `https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${imgId}`;
-    console.log('downloadControl:',imgId,'下载开始');
+    console.log('downloadControl:内部Id：',imgIdNum,'ImgId:',imgId,'下载开始');
    
     var downChild = makeprocess(imgId);
 
-    function childFun(url){
+    function childFun(parames){
+        var imgId = parames.imgId;
+        var imgIdNum = parames.imgIdNum;
         var StringTool = require('./../../tool/s16.js');
         var getPixivData = require('./getPixivData.js');
+        var url = `https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${imgId}`;
         var upUrl = StringTool.strToHexCharCode(url);
         var fakeCtx={
             request:{
@@ -117,28 +120,32 @@ function oneStep(){
 
         getPixivData.contrl(fakeCtx)
             .then(()=>{
-            process.send(url);
+            process.send(parames);
        })
     }
     var callBackStr = childFun.toString();
     var opt = {
-        parames:url,
+        parames:{
+            imgId:imgId,
+            imgIdNum:imgIdNum
+        },
         callBackStr:callBackStr
     }
     downChild.send(opt);
+    imgIdNum++
     //去子进程中执行的函数
 
 }
 
 function makeprocess(imgId){
-    var imgId = imgId;
+   
 
     if(processList.length===0){
         var downChild = cp.fork('./server/api/downChild.js',{
            silent:true
         });
-        downChild.on('message',(m)=>{
-            console.log('downloadControl:',imgId,'下载结束');
+        downChild.on('message',(parames)=>{
+            console.log('downloadControl:内部Id：',parames.imgIdNum,'ImgId:',parames.imgId,'下载结束');
             var common = mainObj.common
             common.runNum --;
             if(common.dataList.length===0&&common.runNum===0){
@@ -157,7 +164,7 @@ function makeprocess(imgId){
         });
 
         downChild.on('disconnect',()=>{
-              console.log('downloadControl:','downChild子进程disconnect，剩余空闲process:',processList.length);
+           console.log('downloadControl:','downChild子进程disconnect，剩余空闲process:',processList.length);
         });
         return downChild;
     }else{
