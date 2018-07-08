@@ -4,7 +4,7 @@ var pixivAbout = require('../config/')['pixivConfig']
 var fs = require('fs');
 var events = require('events');
 var emitter = new events.EventEmitter();
-var request = require('request');
+var request = require('../tool/customRequest.js');
 var cheerio = require('cheerio');
 
 var main={
@@ -43,35 +43,32 @@ function login(form){
           }
         });
       }
-  
       //模拟登陆并写入cookie文件
       else{
-        console.log("Login：获取Cookie文件开始");
-        //获取post_key
-        request('https://accounts.pixiv.net/login?lang=zh&source=pc&view_type=page&ref=wwwtop_accounts_index', function (error, response, body) {
-          if(error){
-             console.log("Login：获取postKey失败");
-             console.log("Login error：",error);
-          }
-          if (!error && response.statusCode == 200) {
-            console.log('Login：postKey读取成功')
-            var matches = body.match(/postKey":"([^"]*)"/);
-            if(matches){
-              var postKey = matches[1];
-              console.log('Login:postKey:',postKey);
-              form.post_key = postKey;
-              //执行登录操作
-              console.log('Login：模拟登陆开始')
-              doLogin(form, response.headers["set-cookie"].join());
-            }else{
-                console.log('Login：postKey格式错误')
-            }
-          } else{
-            console.log('Login：postKey读取失败')
-          }
-        });
-      }
-    });
+            console.log("Login：获取Cookie文件开始");
+            //获取post_key
+            request({
+                url:'https://accounts.pixiv.net/login?lang=zh&source=pc&view_type=page&ref=wwwtop_accounts_index'
+            }).then((opt)=>{
+                let data = opt.content;
+                let response = opt.response;
+                console.log('Login：postKey读取成功')
+                var matches = data.match(/postKey":"([^"]*)"/);
+                if(matches){
+                  var postKey = matches[1];
+                  console.log('Login:postKey:',postKey);
+                  form.post_key = postKey;
+                  //执行登录操作
+                  console.log('Login：模拟登陆开始');
+                  doLogin(form, response.headers["set-cookie"].join());
+                }else{
+                    console.log('Login：postKey格式错误')
+                }
+    
+            });
+
+        };
+      });   
 };
 /**
  * 登录操作
@@ -79,55 +76,104 @@ function login(form){
  * cookie 进入登录页面时的默认cookie
  */
 function doLogin(form, cookie) {
-  var https = require("https");
-  var querystring = require("querystring");
+  const https = require("https");
+  const querystring = require("querystring");
+  
+  
 
   var postData = querystring.stringify(form);
 
-  var options = {
-    host: "accounts.pixiv.net",
-    path: "/api/login?lang=zh",
-    method: "post",
-    headers: {
+  var headers = {
       "Content-Type": "application/x-www-form-urlencoded",
-      "Content-Length": postData.length,
-      "Accept": "text/html, application/xhtml+xml, */*",
+     "Content-Length": postData.length,
+      "Accept": "text/html, application/xhtml+xml, *",
       "Accept-Language": "zh-CN",
-      "Cache-Control": "no-cache",
+     "Cache-Control": "no-cache",
       "Connection": "Keep-Alive",
       "Host": "accounts.pixiv.net",
-      "Referer": "https://accounts.pixiv.net/login?lang=zh&source=pc&view_type=page&ref=wwwtop_accounts_index",
+     "Referer": "https://accounts.pixiv.net/login?lang=zh&source=pc&view_type=page&ref=wwwtop_accounts_index",
       "User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0; BOIE9;ZHCN)",
       "Cookie": cookie 
     }
-  };
-  var req = https.request(options,
-    function (res) {
-      res.setEncoding("utf8");
-      var headers = res.headers;
-      var cookies = headers["set-cookie"] || [];
-      fs.writeFile(pixivAbout.cookieAbout.path, cookies.join(), function (err) {
-        if (err) {
-          console.log("Login：获取cookie失败");
-          throw err;
+  
+  request({
+        url:"https://accounts.pixiv.net/api/login?lang=zh",
+        type:'POST',
+        data:postData,
+        headers:headers,
+        success:function(res,data){
+            if(typeof data === 'string'){
+                 var data = JSON.parse(data);
+            } 
+           
+        
+            if(data.error===false){
+                var headers = res.headers;
+                var cookies = headers["set-cookie"] || [];
+                fs.writeFile(pixivAbout.cookieAbout.path, cookies.join(), function (err) {
+                if (err) {
+                  throw err;
+                }
+                else {          
+                  console.log('Login:获取并写入cookie成功')
+                }
+              });
+                
+               
+            }else{
+               console.log('Login:模拟登陆失败',decodeURI(data.message) );
+            }
         }
-        else {          
-          pixivAbout.cookieAbout.cookies = cookies.join();
-          emitter.emit("getCookieOver");
-        }
-      });
-      res.on("data",
-        function (data) {
-          console.log('Login:',data);
-        });
-      res.on("err",
-        function (err) {
-          console.log('Login:登陆错误',err);
-          throw -1;
-        });
-    });
-  req.write(postData);
-  req.end();
+    
+    }).catch((opt)=>{
+        console.log(opt);
+    })
+
+//  var options = {
+//    host: "accounts.pixiv.net",
+//    path: "/api/login?lang=zh",
+//    method: "post",
+//    headers: {
+//      "Content-Type": "application/x-www-form-urlencoded",
+//      "Content-Length": postData.length,
+//      "Accept": "text/html, application/xhtml+xml, */*",
+//      "Accept-Language": "zh-CN",
+//      "Cache-Control": "no-cache",
+//      "Connection": "Keep-Alive",
+//      "Host": "accounts.pixiv.net",
+//      "Referer": "https://accounts.pixiv.net/login?lang=zh&source=pc&view_type=page&ref=wwwtop_accounts_index",
+//      "User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0; BOIE9;ZHCN)",
+//      "Cookie": cookie 
+//    }
+//  };
+//  var req = https.request(options,
+//    function (res) {
+//      res.setEncoding("utf8");
+//
+//      var headers = res.headers;
+//      var cookies = headers["set-cookie"] || [];
+//      fs.writeFile(pixivAbout.cookieAbout.path, cookies.join(), function (err) {
+//        if (err) {
+//          throw err;
+//        }
+//        else {          
+//          pixivAbout.cookieAbout.cookies = cookies.join();
+//          emitter.emit("getCookieOver");
+//        }
+//      });
+//      res.on("data",
+//        function (data) {
+//          console.log('Login:',data);
+//        });
+//      res.on("err",
+//        function (err) {
+//          console.log('Login:登陆错误',err);
+//          throw -1;
+//        });
+//    });
+//  req.write(postData);
+//  req.end();
+
 
 }
 
@@ -138,7 +184,7 @@ emitter.on("getCookieOver",function(){
     main.state = true;
     console.log('Login:模拟登陆获取Cookie流程结束');
     return;
-    var url = 'http://www.pixiv.net/ranking.php?format=json&mode=daily&p=1';
+    var url = 'https://www.pixiv.net/ranking.php?format=json&mode=daily&p=1';
     var j = request.jar(); 
     var rcookie = request.cookie(cookies); 
     j.setCookie(rcookie, url); //设置cookie

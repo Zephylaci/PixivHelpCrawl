@@ -150,11 +150,11 @@ $('#subAndShow').click(function(){
     }
     if(pageInput.length>1){
          //有且只会有两页
-        var urlStr_1 = `http://www.pixiv.net/ranking.php?format=json&${type}&p=1`;
+        var urlStr_1 = `https://www.pixiv.net/ranking.php?format=json&${type}&p=1`;
         var upUrl_1 = strToHexCharCode(urlStr_1);
         var upData_1 ={Url:upUrl_1,Filter:filter};
 
-        var urlStr_2 = `http://www.pixiv.net/ranking.php?format=json&${type}&p=2`;
+        var urlStr_2 = `https://www.pixiv.net/ranking.php?format=json&${type}&p=2`;
         var upUrl_2 = strToHexCharCode(urlStr_2);
         var upData_2 ={Url:upUrl_2,Filter:filter};
         //回调金子塔
@@ -170,7 +170,7 @@ $('#subAndShow').click(function(){
         });  
     }else{
         var page=pageInput.val();
-        var urlStr = `http://www.pixiv.net/ranking.php?format=json&${type}&p=${page}`;
+        var urlStr = `https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}`;
         var upUrl = strToHexCharCode(urlStr);
         var upData ={Url:upUrl,Filter:filter};
 
@@ -231,13 +231,10 @@ function dataHandle(data,showItem){
     var result = data.content;
     var showData =  result;
     var showItem =showItem ||['url','title','illust_id','bookmarkCount','tags'] ;
-    try{
+    if(typeof result === 'string'){
         result = JSON.parse(result);
-        console.log(result);
-    }catch(err){
-        console.error('不标准的返回值！')
-        result = result;
     }
+
     if(Object.prototype.toString.call(result.contents)==="[object Array]"){
         var opt={
             showList:result.contents,
@@ -250,7 +247,7 @@ function dataHandle(data,showItem){
         showData:showData,
         result:result
     };       
-    }
+}
 function postData(upData,url){
     var promise = $.ajax({
         type:'POST',

@@ -5,7 +5,8 @@ quickDev.sh
 node_modules/
 .cookie
 client/download/
-Cash/
+client/cash/
+config/config.js
 # Editor directories and files
 .idea
 .vscode

@@ -1,16 +1,27 @@
-/*配置文件                                                                                                                                                                                                             
-* //服务端口号                                                                                                                                                                                                          
-* //mysql 地址                                                                                                                                                                                                       
-* //mysql 端口                                                                                                                                                                                                       
-* //redis地址                                                                                                                                                                                                        
-* //redis端口号                                                                                                                                                                                                       
-*/                                                                                                                                                                                                                 
+const fs = require('fs');
 var development_env ={                                                                                                                                                                                             
     port: 8082,                                                                                                                                                                                                    
-    mysql_host:'127.0.0.1',                                                                                                                                                                                        
-    mysql_port:'3386',                                                                                                                                                                                             
-    redis_host:'127.0.0.1',                                                                                                                                                                                        
-    redis_port: '4001',                                                                                                                                                                                            
+    mysqlConfig: {
+		host: '',
+		user: '',
+		password: '',
+		port: '3386',
+        database: '',
+        charset:'utf8mb4',
+		connectTimeout: 180000
+	},
+	redisConfig:{                                                                                                                                                                                                
+        useCash:false,                                                                                                                                                                                            
+        autoCash:{                                                                                                                                                                                               
+            enable:false,                                                                                                                                                                                         
+            runDate:'11:30:00',
+            plan:['mode=daily','mode=rookie','mode=daily_r18','mode=weekly_r18','mode=male_r18','mode=weekly','mode=male'],
+           deep:2                                                                                                                                                                                                
+        },                                                                                                                                                                                                       
+        host:'127.0.0.1',
+        port:'4001',
+        passwd:''
+    },                                                                                                                                                                                                                                                                                                                                                                                      
     pixivConfig:{                                                                                                                                                                                                  
         form :{                                                                                                                                                                                                    
             pixiv_id:'',                                                                                                                                                                           
@@ -27,14 +38,35 @@ var development_env ={
         cookieAbout:{                                                                                                                                                                                              
             path:'.cookie',                                                                                                                                                                                        
             cookies:null                                                                                                                                                                                           
-        }                                                                                                                                                                                                          
-    },                                                                                                                                                                                                             
+        }                                                                                                                                                                                                    
+    }, 
+    proxyConfig:{
+        useProxy:false,
+        accuratProxy:false,
+        host:'',
+        accuratConfig:{
+            getPixivData:'',
+            proxyImg:'',
+            autoSerach:''
+        }
+        
+    },
+    linkProxy:{
+        useLinkProxy:false,
+        linkProxyAddr: ''
+       
+    },
     pathConfig:{                                                                                                                                                                                                   
         webPath:'./client',                                                                                                                                                                                        
         downloadPath:'./client/download/'                                                                                                                                                                          
     }                                                                                                                                                                                                              
 
-}                                                                                                                                                                                                                  
-                                                                                                                                                                                                                   
-                                                                                                                                                                                                                   
+}    
+
+if(fs.existsSync('./config/config.js')){
+    development_env = require('./config.js')
+}
+
+
+                                                                                                                                                                                              
 module.exports = development_env                                                                                                                                                                                   

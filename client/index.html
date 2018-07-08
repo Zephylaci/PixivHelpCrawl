@@ -4,32 +4,13 @@
 <title>Home</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="" />
-<!-- bootstrap-css -->
-<link rel="stylesheet" href="css/bootstrap.css">
-<!-- //bootstrap-css -->
-<!-- Custom CSS -->
-<link href="css/style.css" rel='stylesheet' type='text/css' />
-<link rel="stylesheet" href="css/font.css" type="text/css"/>
-<link href="css/font-awesome.css" rel="stylesheet"> 
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css" rel="stylesheet">
+<!-- 时间选择器-->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.css" rel="stylesheet">
+
 
 <style>
-	#getType .btn-primary.active{
-		background-color:#1E252F;
-	}
-	.mb5{
-		margin-bottom: 5px;
-	}
-    .btn-group-lg > .btn, .btn-lg{
-        width:auto;
-        min-width:105px;
-      
-    }
-    .agile-gallery.active{
-        border-color: #0480ff;
-    }
-    #backIndexModel{
-        width:80px;
-    }
 /*   loading   */
 #loaderContent{
     width:100%;
@@ -41,151 +22,471 @@
     padding:10px 0;
     background:#fff;
 }
-.pswp__preloader__icn {
-  margin:0 auto;
-  opacity:0.75;
-  width: 24px;
-  height: 24px;
-  -webkit-animation: clockwise 500ms linear infinite;
-  animation: clockwise 500ms linear infinite;
+.main-drawer{
+    width:200px;
+    padding-top:65px;
 }
- 
-/* The idea of animating inner circle is based on Polymer loading indicator by Keanu Lee https://blog.keanulee.com/2014/10/20/the-tale-of-three-spinners.html */
-.pswp__preloader__cut {
-  position: relative;
-  width: 12px;
-  height: 24px;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
+.main-drawer ul li i{
+    margin-right:15px;
 }
- 
-.pswp__preloader__donut {
-  box-sizing: border-box;
-  width: 24px;
-  height: 24px;
-  border: 2px solid #000;
-   border-radius: 50%;
-  border-left-color: transparent;
-  border-bottom-color: transparent;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: none;
-  margin:0;
-   -webkit-animation: donut-rotate 1000ms cubic-bezier(.4,0,.22,1) infinite;
-  animation: donut-rotate 1000ms cubic-bezier(.4,0,.22,1) infinite;
+.dailyControl{
+    margin-top:20px;
 }
- 
-@-webkit-keyframes clockwise {
-  0% { -webkit-transform: rotate(0deg) }
-  100% { -webkit-transform: rotate(360deg) }
+.daily-type{
+    text-align:center;
+    
 }
-@keyframes clockwise {
-  0% { transform: rotate(0deg) }
-  100% { transform: rotate(360deg) }
+.daily-type>.mdui-btn{
+    margin-right:20px;
+    color:#fff;
 }
-@-webkit-keyframes donut-rotate {
-  0% { -webkit-transform: rotate(0) }
-  50% { -webkit-transform: rotate(-140deg) }
-  100% { -webkit-transform: rotate(0) }
+.daily-config{
+    padding:10px 50px;
+    overflow: auto;
 }
-@keyframes donut-rotate {
-  0% { transform: rotate(0) }
-  50% { transform: rotate(-140deg) }
-  100% { transform: rotate(0) }
+.normal-input{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+.normal-input>input{
+    flex:1;
+    width:auto;
+}
+.w100{
+    width:100px!important;
+}
+.config-ml{
+    margin-left:35px;
+}
+.ml15{
+    margin-left:15px;
+}
+.daily-control{
+   overflow: auto;
+}
+.mdui-card-actions.normal-infoItem{
+    display:flex;
+    padding:12px;
+    align-items: center;
+    justify-content: space-between;
+}
+.normal-infoItem>span{
+    flex:1;
+
+}
+.normal-infoItem .text-id{
+    text-align:right;
+}
+.img-item{
+    width:24%;
+    padding:0.5%;
+}
+.showContent{
+    margin-top:30px;
+}
+.daily-type .active{
+    background-color: #F44336!important;
+}
+.loadingContent{
+    width:100%;
+    text-align:center;
+}
+.loadingContent .mdui-spinner{
+    margin-top:20px;
+}
+.mdui-card.active{
+    border: 3px solid #448aff;
 }
 </style>
 </head>
-<body class="dashboard-page">
-	<nav class="main-menu">
-		<ul class="logout">
-			<li>
-			<a href="login.html">
-			<i class="icon-off nav-icon"></i>
-			<span class="nav-text">
-			Logout
-			</span>
-			</a>
-			</li>
-		</ul>
-	</nav>
-	<section class="wrapper scrollable">
-		<nav class="user-menu">
-			<a href="javascript:;" class="main-menu-access">
-			<i class="icon-proton-logo"></i>
-			<i class="icon-reorder"></i>
-			</a>
-		</nav>
-		<section class="title-bar">
-			<div class="logo">
-				<h1><a href="index.html"><!-- <img src="images/logo.png" alt="" /> -->Crawl</a></h1>
-			</div>
-			<div class="full-screen">
-				<section class="full-top">
-					<button id="toggle"><i class="fa fa-arrows-alt" aria-hidden="true"></i></button>	
-				</section>
-			</div>
-			<div id="mainSearch"class="w3l_search">
-                <input type="text" name="search" value="Search" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '搜索关键字或标签';}" required="">
-                <button id="searchAndShow" class="btn btn-default" ><i class="fa fa-search" aria-hidden="true"></i></button>
-                <span id="backIndexModel"  class=" btn btn-lg btn-primary btn-block typeBtn" >返回</span>
-			</div>
-			<div class="clearfix"> </div>
-		</section>
-		<div class="main-grid">
-			<div class="panel variations-panel">
-					<div class="panel-body mtn">
-							
-                            <div id="configPanel">
+<!--mdui-theme-primary-blue-grey mdui-theme-accent-blue mdui-drawer-body-left mdui-loaded-->
+<body class="mdui-appbar-with-toolbar mdui-theme-primary-blue-grey mdui-theme-accent-blue mdui-loaded mdui-drawer-body-left">
+    <header class="mdui-appbar mdui-color-theme mdui-appbar-fixed">
+      <div class="mdui-toolbar mdui-container">
+        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white" mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
+      </div>
+    </header>
+    <!--侧边栏-->
+    <div class="mdui-drawer main-drawer mdui-shadow-2" id="main-drawer">
+      <ul class="mdui-list">
+        <li class="mdui-list-item mdui-ripple" id="dailyList">
+            <i class="mdui-icon material-icons">event</i>
+            <div class="mdui-list-item-content">每日榜单</div>
+        </li>
+        <li class="mdui-list-item mdui-ripple" id="doSearch">
+           <i class="mdui-icon material-icons">search</i>
+            <div class="mdui-list-item-content">搜索</div>
+        </li>
+        </ul>
+    </div>
+	<div class="mdui-container">
+	    <!--控制栏-->
+		<div class="mdui-card dailyControl" id="dailyControl" style="overflow:inherit">
+			<div class="mdui-card-actions">
+				<div id="getType" class="control-list daily-type" >
+					<span data-type="mode=daily"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">日榜</span>
+					<span data-type="mode=rookie" class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">新人榜</span>
+					<span data-type="mode=weekly"   class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">周榜</span>
+					<span data-type="mode=male"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">男性日榜</span>
+					<span data-type="mode=daily_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">日榜R18</span>
+					<span data-type="mode=weekly_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">周榜R18</span>
+					<span data-type="mode=male_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">男性日榜R18</span>
+				</div>
+ 				<div class="control-list daily-config" >
+     				<div  class="input-content  mdui-float-left normal-input">
+                      <span>榜单时间：</span>
+                      <input id="queryDate" class="mdui-textfield-input w100"/>
+    				</div>
+    				<div  class="input-content  mdui-float-left normal-input config-ml">
+                      <span>开始页数：</span>
+    		 		  <select class="mdui-select" id="startPage">
+                          <option value="1" selected>1</option>
+                          <option value="2"> 2</option>
+                          <option value="3"> 3</option>
+                          <option value="4"> 4</option>
+                          <option value="5"> 5</option>
+                          <option value="6"> 6</option>
+                          <option value="7"> 7</option>
+                          <option value="8"> 8</option>
+                          <option value="9"> 9</option>
+                          <option value="10">10</option>
+                        </select>
+                        <span class="ml15">结束页数：</span>
+        		 		 <select class="mdui-select" id="endPage">
+        		 		       <option value="1">1</option>
+                              <option value="2" selected> 2</option>
+                              <option value="2"> 2</option>
+                              <option value="3"> 3</option>
+                              <option value="4"> 4</option>
+                              <option value="5"> 5</option>
+                              <option value="6"> 6</option>
+                              <option value="7"> 7</option>
+                              <option value="8"> 8</option>
+                              <option value="9"> 9</option>
+                              <option value="10">10</option>
+                         </select>
+        			 </div>
+                    <label class="mdui-checkbox  config-ml">
+                      <input type="checkbox" name="filter" value="true" checked/>
+                      <i class="mdui-checkbox-icon"></i>
+                      启用过滤
+                    </label>
+                    <label class="mdui-checkbox  config-ml">
+                      <input type="checkbox" name="useCash" value="true" checked/>
+                      <i class="mdui-checkbox-icon"></i>
+                      启用redis缓存(如果有)
+                    </label>
+				</div>
 
-                            </div>
-							<div class="row">
-                                <div class="col-md-1">
-                                    <span id="subAndShow"  class=" btn btn-lg btn-primary btn-block typeBtn" >预览</span>
-                                </div>    
-                                <div class="col-md-2">
-                                    <span id="downloadAll"  class=" btn btn-lg btn-primary btn-block typeBtn" >云端下载读取到全部项</span>
-                                </div>
-                                <div class="col-md-2">
-                                    <span id="downloadChecked"  class=" btn btn-lg btn-primary btn-block typeBtn" >云端下载选中项</span>
-                                </div>
-							</div>
-					</div>
+				<div class="control-list daily-control" >
+                    <span id="cloudDownloadAll" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">云端下载加载项</span>
+                    <span id="cloudDownloadSelect" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">云端下载选中项</span>
+                    <span id="searchImg" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">查询</span>
+				</div>
 			</div>
-			<div id ="resultContent"  class="gallery-grids">
-				
-
-
-			</div>
-
 		</div>
-		<!-- footer -->
-<!-- 		<div class="footer">
-			
-		</div> -->
-		<!-- //footer -->
-	</section>
-	<script src='https://cdn.bootcss.com/jquery/2.2.1/jquery.min.js'></script>
-	<script src="js/screenfull.js"></script>
-	<script src="https://cdn.bootcss.com/masonry/4.2.1/masonry.pkgd.min.js"></script>
-	<script src="https://cdn.bootcss.com/jquery.imagesloaded/4.1.4/imagesloaded.min.js"></script>
-    <script src="js/main.js"></script>
 
+    </div>
+    <!--展示栏-->
+    <div class="showContent" id="showContent">
+            <!-- <div class="loadingContent" >
+                <div class="mdui-spinner mdui-spinner-colorful"></div>
+            </div>
+             -->
+        <!-- <div class="item-list">
+                    <div class="img-item">
+                        <div class="mdui-card">
+                            <div class="mdui-card-media">
+                                <img src="https://upload-images.jianshu.io/upload_images/3923332-82d752d172258fd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+                            </div>
+                            <div class="mdui-card-actions normal-infoItem">
+                                <span class="mdui-ripple text-title">${strItems[1]}</span>
+                                <span class="mdui-ripple text-id">id:${strItems[2]}</span>
+                            </div>
+                        </div>
+                    </div>
+            </div> -->
+    </div>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css" rel="stylesheet">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js'></script>
+    
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.1/masonry.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/l10n/zh.js"></script>
+    <script src="./js/index.js"></script>
 	<script>
-        $(function () {
-			// 全屏
-			$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
-			if (!screenfull.enabled) {
-				return false;
-			}
-			$('#toggle').click(function () {
-				screenfull.toggle($('#container')[0]);
-			});	
-		});
+        var common = {
+            result:{
+                contents:[] //前端分页用得数组
+            } //返回值
+        };
+        var loadingConturl={
+            loadingHtml:`<div class="loadingContent" >
+                    <div class="mdui-spinner mdui-spinner-colorful"></div>
+             </div>
+            `,
+            showLoading:function(content='#showContent'){
+                var me = loadingConturl;
+                var contentDom = $(content)
+                var loadingDom = contentDom.find('.loadingContent')[0];
+
+                var isExist = true;
+                if(!loadingDom){
+                    isExist = false;
+                    contentDom.append(me.loadingHtml);
+                }
+                $(content+'>div').fadeOut(300);
+                setTimeout(()=>{
+                    $(content).find('.loadingContent').show();
+                    if(isExist===false){
+                        mdui.mutation();
+                    }
+                },301)
+
+            },
+            hideLoading:function(content='#showContent'){
+                $(content+'>div').fadeIn(300)
+                setTimeout(()=>{
+                   $(content+'>.loadingContent').remove();
+                },301)
+                
+            },
+            appendLoading:function(content='#showContent'){
+                var me = loadingConturl;
+                $(content).append(me.loadingHtml);
+                mdui.mutation();
+            },
+            removeLoading:function(content='#showContent'){
+                $(content+'>.loadingContent').remove();
+            }
+        }
+       $(function () {
+           $('#showContent').on('click','.img-item',function(){
+               console.log(this);
+               $(this).find('.mdui-card').toggleClass('active');
+           })
+           $('body').on('click','#cloudDownloadSelect',function(){
+               var list = [];
+               var checkList = $('#showContent .active');
+               for (var i = 0; i < checkList.length; i++) {
+                   var dom = $(checkList[i]);
+                   var item = { illust_id: dom.data('id') };
+                   list.push(item);
+                   dom.removeClass('active');
+               }
+               var downList = JSON.stringify(list);
+               var upData = { downList: downList };
+
+               postData(upData, '/api/download').success((data) => {
+                   alert(data.content);
+               });
+           });
+           $("#queryDate").val(new Date(new Date()-86400000).toLocaleDateString())
+           $("#queryDate").flatpickr();
+             
+            $('#dailyControl').on('click','#getType>span',function(){
+                $('#dailyControl').find('#getType>span').removeClass('active');
+                $(this).addClass('active');
+            });
+            $('#dailyControl').on('click','#searchImg',function(){
+                loadingConturl.showLoading();
+               
+                var type = $('#getType span.active').data('type');
+                if(!type){
+                      mdui.snackbar({
+                        message: '请选择榜单类型',
+                        position: 'top'
+                      });
+                      return
+                }
+                var date = $('#queryDate').val();
+
+                var filter =  $('input[name=filter]:checked').val();
+                var useCash =  $('input[name=useCash]:checked').val();
+                var startPage = $('#startPage').val();
+                var endPage = $('#endPage').val();
+                
+                
+                var upData = {
+                     filter:filter,
+                     useCash:useCash,
+                     type:type,
+                     date:date,
+                     startPage:startPage,
+                     endPage:endPage
+                 };
+                 for(key in upData){
+                     if(typeof upData[key]==='undefinde'){
+                         upData[key] = false;
+                     }
+                 }
+
+                postData(upData,'/api/getPixivHotList').success(function(res){
+                    var creatHtml = createShowHtml({
+                        showData:res.contents
+                    });
+                    addToShowContent(creatHtml);
+                    common.result.contents = res.contents;
+                    activeLoad();
+
+                });
+            
+            });
+        });
+        
+        function postData(upData,url){
+            var promise = $.ajax({
+                type:'POST',
+                url:url,
+                data:upData,
+                dataType:'json'
+            }); 
+            return  promise; 
+        }
+
+        function createShowHtml({
+                showData,
+                showItem = ['url', 'title', 'illust_id'],
+                startNum = 0,
+                endNum = 12
+            }) {
+
+                var itemListHtml = "";
+                console.log(showData);
+                //保证一次读取12个
+                var endNum = endNum > showData.length ? showData.length : endNum;
+                if (Object.prototype.toString.call(showData) === "[object Array]") {
+
+                    for (var i = startNum; i < endNum; i++) {
+                        var strItems = [];
+                        for (var j = 0; j < showItem.length; j++) {
+                            var str = showData[i][showItem[j]];
+                            if (str) {
+                                strItems.push(str)
+                            } else {
+                                strItems.push('无数据');
+                            }
+                        }
+
+                        var itemHtml = `<div class="img-item">
+                                        <div class="mdui-card" data-id="${strItems[2]}">
+                                            <div class="mdui-card-media">
+                                                <img src="${strItems[0]}">
+                                            </div>
+                                            <div class="mdui-card-actions normal-infoItem">
+                                                <span class="mdui-ripple text-title">${strItems[1]}</span>
+                                                <span class="mdui-ripple text-id">id:${strItems[2]}</span>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                        itemListHtml = itemListHtml + itemHtml;
+                    }
+                }
+                var content = `<div class="item-list">${itemListHtml}</div>`;
+                return content;
+            }
+    
+        function addToShowContent(htmlString,content='.item-list'){
+            var listContentDom = $(content);
+            var listDom = $(htmlString);
+             if (listContentDom[0]) {
+                listContentDom.remove();
+
+            }
+
+            listDom.css('display', 'none');
+            $('#showContent').prepend(listDom);
+            var $container = $(content);
 
 
-	</script>	
+            imagesLoaded($container, function () {
+                listDom.css('display', 'block');
+                $container.masonry({
+                    isAnimated: true,
+                    //columnWidth: 450,
+                    isFitWidth: true     // 自适应宽度
+                });
+                
+                loadingConturl.hideLoading();
+            });
+
+        }
+        function appendToShowContent(htmlString,content='.item-list'){
+            var listContentDom = $(content);
+            var listDom = $(htmlString)
+            loadingConturl.appendLoading();
+            listDom.find('.img-item').css('display', 'none');
+            listHtml = $(listDom.html());
+            listContentDom.append(listHtml);
+            
+
+            imagesLoaded(listContentDom, function () {
+                listHtml.css('display','block');
+                loadingConturl.hideLoading();
+                listContentDom.masonry('appended', listHtml);
+                
+                timerOver();
+   
+            });
+        }
+        //简单的节流操作
+        var timer = null;
+        var wait = 3000;
+        function timerOver(){
+            clearTimeout(timer);
+            timer=null;
+        }
+        function timerSet(){
+            timer=setTimeout(()=>{
+                timerOver();
+            },wait)
+        }
+         //节流操作结束
+        function activeLoad(showItem) {
+                var showItem = showItem ||['url', 'title', 'illust_id'];
+                if($('#loaderEnd')[0]){
+                    $('#loaderEnd').remove();
+                }
+
+                $(window).scroll(function () {
+                    var scrollTop = $(this).scrollTop(); var scrollHeight = $(document).height(); var windowHeight = $(this).height();
+                    if (scrollTop + windowHeight == scrollHeight) {
+                        if(timer!=null){
+                            return
+                        }
+                        timerSet();
+                        
+                        var $container = $('.item-list');
+                        var have = Number($container.find('.img-item').length);
+                        var opt = {
+                            showData: common.result.contents,
+                            showItem: showItem,
+                            startNum: have,
+                            endNum: have + 12 > common.result.contents.length ? common.result.contents.length : have + 12
+                        }
+
+                        if (opt.startNum === opt.endNum) {
+                            var loaderEnd = $('#loaderEnd').html();
+                            if (loaderEnd) {
+                                $(window).scroll(function () { });
+                            } else {
+                                $container.parent().append('<div id="loaderEnd">加载完成</div>');
+                                $(window).scroll(function () { });
+                            }
+
+                            return;
+                        }
+                        
+                        var htmlString = createShowHtml(opt);
+                        appendToShowContent(htmlString);
+                    }
+                })
+        }
+    </script>	
 </body>
 </html>

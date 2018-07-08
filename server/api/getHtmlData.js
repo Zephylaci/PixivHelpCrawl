@@ -1,12 +1,25 @@
-var cheerio = require('cheerio');
-var http = require('https');
-var request = require('request');
-var fs = require('fs');
+
+const request = require('../../tool/customRequest.js');
+const fs = require('fs');
 
 var pixivAbout = require('../../config/')['pixivConfig'];
 var events = require('events');
 var emitter = new events.EventEmitter();
-
+emitter.on("getHtmlOver",()=>{
+    mainObj.end({
+        code:200,
+        data:mainObj.common.html
+    });
+});
+emitter.on("getHtmlFaile",()=>{
+    mainObj.end({
+        code:-1,
+        data:'获取HTML失败，请检查网络连接或登陆状态'
+    });
+});
+emitter.on("getHtmlReject",(err)=>{
+    mainObj.end(err);
+});
 var mainObj={
   common:{
     state:null,
@@ -20,96 +33,76 @@ var mainObj={
     }
     var state = new Promise((resolve,reject)=>{
       mainObj.end=resolve;
+      mainObj.err=reject;
     });
+    state.catch((err)=>{
+        console.log(err);
+    })
       console.log('getHtmlData Msg:Link '+url);
-      //后面这里调整成可以配置的
-      if(url.indexOf('pixiv')!=-1){
-          mainObj.method['request'](url);
-      }else{
-          mainObj.method['get'](url);
-      }
+      requestHtml(url)
       //先写死
       return state;
   },
-  end:()=>{}
-}
-mainObj.method={
-    get:httpGet,
-    request:requestHtml
+  end:()=>{},
+  err:()=>{}
 }
 
-emitter.on("getHtmlOver",()=>{
-    mainObj.end(mainObj.common.html);
-});
-function httpGet(url){
-    http.get(url, function(res) {
-        var html = '';
-        res.on('data', function(data) {
-            html += data;
-        });
-        //将解析结果传
-        res.on('end', function() {
-            console.log('getHtmlData Msg: httpGet'+url+' 读取结束');
-            mainObj.common.html = html;
-            emitter.emit("getHtmlOver");
-        });
-    }).on('error',(e)=>{
-        console.error('error:'+e.message);
-    });
-   return html;
-}
+
+
+
 function requestHtml(url){
+    if(!pixivAbout.cookieAbout.cookies){
+        fs.exists(pixivAbout.cookieAbout.path,function(exists){
+          if(exists){
+            fs.readFile(pixivAbout.cookieAbout.path,"utf-8",function(err,data){
+              if(err){
+                emitter.emit("getHtmlFaile");
+                console.log('getHtmlData Error: Cokie文件读取失败 ');
+              }
+              else{
+                pixivAbout.cookieAbout.cookies = data
+                emitter.emit("getCookieOver",url);
+              }
+            });
+         }});
+    }else{
+         emitter.emit("getCookieOver",url);
+    }
 
-    //这里可以做一个单例
-    fs.exists(pixivAbout.cookieAbout.path,function(exists){
-      if(exists){
-        fs.readFile(pixivAbout.cookieAbout.path,"utf-8",function(err,data){
-          if(err){
-            throw err;
-          }
-          else{
-            pixivAbout.cookieAbout.cookies = data
-            emitter.emit("getCookieOver",url);
-          }
-        });
-     }});
    
 }
      
 emitter.on('getCookieOver',(url)=>{
     var cookies = pixivAbout.cookieAbout.cookies;
     var headers = pixivAbout.headers;
-    //先写死
+   //设置cookie
     var j = request.jar(); 
     var rcookie = request.cookie(cookies); 
+    j.setCookie(rcookie, url); 
 
-    j.setCookie(rcookie, url); //设置cookie
-
-    request(
-        {
+    var mainQuery=request(
+        {   
             url: url,
             headers: headers,
-            jar:j
-        },
-        function(err,res,body){
-            if(err){
-                console.log("getHtmlData Msg：requestHtml "+url+"失败");
-                console.log("getHtmlData error: "+err);
-                return;
-            }
-            if(res && res.statusCode == 200){
-                console.log("getHtmlData Msg：requestHtml "+url+"读取结束");
-                var html = body;
-                mainObj.common.html= html; 
-                emitter.emit("getHtmlOver");
-            }else{
-                console.log("getHtmlData Msg：requestHtml "+url+"错误的返回信息");
-                console.log("getHtmlData Msg：res "+res);
-                
-            }
+            jar:j,
+            success:function(res,body){
+                if(res.statusCode == 200){
+                    console.log("getHtmlData Msg：requestHtml "+url+"读取结束");
+                    var html = body;
+                    mainObj.common.html= html; 
+                    emitter.emit("getHtmlOver");
+                }else{
+                    console.log("getHtmlData Msg：requestHtml "+url+"错误的返回信息");
+                    console.log("getHtmlData Error：res :",res);
+                    emitter.emit("getHtmlFaile");
+                }
 
+             }
         }
-    );
+    )
+    mainQuery.catch((err)=>{
+        emitter.emit("getHtmlReject",err);
+    })
 });
 
 

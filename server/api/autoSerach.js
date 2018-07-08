@@ -5,7 +5,7 @@
 **/
 
 var getPixivData = require('./getPixivData.js');
-var StringTool = require('./../../tool/s16.js');
+var StringTool = require('./../../tool/main.js')['StringTool'];
 var events = require('events');
 var emitter = new events.EventEmitter();
 var mainObj = {

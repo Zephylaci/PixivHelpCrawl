@@ -1,5 +1,7 @@
 
-var cp = require('child_process');
+const cp = require('child_process');
+const judgePath = require('path');
+const mySqlCtl = require('../dataBaseControl/mysqlControl.js');
 
 function resetCommon(){
     mainObj.common.runStat=false;
@@ -15,6 +17,7 @@ var mainObj = {
         runStat:false,
         over:false,
         dataList:[],
+        waitList:[],
         runNum:0,
         limitRunNum:5
     },
@@ -51,45 +54,129 @@ var mainObj = {
           }else{
                 if(data.length!=0){
                     var data = JSON.parse(ctx.request.body.downList);
-                    common.dataList=common.dataList.concat(data);
+                    common.waitList.push(data);
                     ctx.body.content = '云端下载中，且已将本次提交添加至队列';
-                    controlStep();
+                   // controlStep();
                 }else{
                     ctx.body.content = '云端下载中'
                 }              
           }
       } 
-  }
+  },
+  downImgInsertSql:downImgInsertSql
+}
+function downImgInsertSql(downData){
+        var cashInfo = downData;
+         
+         var fileName =cashInfo.fileName;
+         //保存图片信息和tags到数据库
+         //filName 与imgPath由 下载的参数提供
+         let imgId = Date.now();
+         let imgTitle = cashInfo.illustTitle;
+         let imgName = fileName;
+         let imgOrigin = 'PiGetPixiv';
+         let imgTruePath = judgePath.join(__dirname+'../../.'+cashInfo.imgPath);
+         let imgPath ='/download'+fileName;
+         let authorName = cashInfo.userName;
+         
+        var imgInsertSql={
+        		type:'insert',
+        		tableName:'imgStorage',
+        		insertOpt:{
+        			imgId:imgId,
+        			imgTitle:imgTitle,
+        			imgName:imgName,
+        			imgOrigin:imgOrigin,
+        			imgTruePath:imgTruePath,
+        			imgPath:imgPath
+        		}
+    	   }
+    	   var sqlOpt = [];
+
+            sqlOpt.push(imgInsertSql);
+
+    	  sqlOpt = makeTagSqlOpt(cashInfo.tags.tags,sqlOpt)
+    	   function makeTagSqlOpt(tagsArr,sqlOpt){
+               var length = tagsArr.length<=4?tagsArr.length:4;
+            
+    	       for(var i = 0;i<length;i++){
+    	           let targItem = tagsArr[i];
+    	           var tagInsertSql = {
+                   		type:'insert',
+                		tableName:'pixivTages',
+                		insertOpt:{
+                			tagName:targItem.tag,
+                			romaji:targItem.romaji,
+                			imgTitle:imgTitle,
+                            authorName: authorName,
+                            authorId: cashInfo.userId,
+                			imgName:imgName
+    
+                		}
+    	           }
+      	           if(typeof targItem.translation!="undefined"){
+    	             tagInsertSql.insertOpt.tagTrans=JSON.stringify(targItem.translation)
+    	           }
+    	           sqlOpt.push(tagInsertSql)
+    	       }
+    	       return sqlOpt
+    	   }
+          var judgeSqlOpt = {
+        		type:'search',
+        		getValue:['imgId'],
+        		tableName:'imgStorage',
+        		key:{imgName:imgName}
+        	}
+        	var sqlResult = '';
+        	 mySqlCtl.contrl(judgeSqlOpt)
+        	 .then((res)=>{
+        		if(res.length===0){
+               		//不存在才写入
+            		 mySqlCtl.contrl(sqlOpt)
+            		 .then((res)=>{
+                        console.log(fileName,'相关信息数据库写入完成');
+                	}); 
+        	   }else{
+        	       console.log(`getPixivData : ${fileName} 数据库中已存在信息,不重复写入`);
+        	   }
+        	});
+    
 }
 function controlStep(){
     var common = mainObj.common;
-    var  downList = mainObj.common.dataList;
+
     if(common.dataList.length<common.limitRunNum){
         common.limitRunNum=common.dataList.length;
     }
     //  console.log(common.dataList.length,common.runNum,common.limitRunNum);
     if(common.dataList.length!=0&&common.limitRunNum!=0){
-
         while(common.runNum<common.limitRunNum){
                 common.runNum++;
                 oneStep();
             }
         }else{
             if(common.runNum===0){
-                 common.over = true;
-                 console.log('downloadControl:整体下载完成，云端空闲');
-                 if(processList.length!==0){
-                     var length = processList.length;
-                     for(var i = 0;i<length;i++){
-                         var childProcess = processList.shift(); 
-                         childProcess.disconnect();
-                         console.log('downloadControl:释放 childe_process');
-                     }
-                 }
-                 console.log('downloadControl:process释放执行完成')
-
+                if(common.waitList.length===0){
+                    common.over = true;
+                    console.log('downloadControl:整体下载完成，云端空闲');
+                    if(processList.length!==0){
+                        var length = processList.length;
+                        for(var i = 0;i<length;i++){
+                            var childProcess = processList.shift(); 
+                            childProcess.disconnect();
+                            console.log('downloadControl:释放 childe_process');
+                        }
+                    }
+                    console.log('downloadControl:process释放执行完成')
+                }else{
+                    console.log('downloadControl:单次提交完成，开始下载等待队列中的数据');
+                    common.dataList = common.waitList.shift();
+                    common.runNum++;
+                    common.limitRunNum=5;
+                    oneStep();
+                }
             }
-        }
+    }
    
 }
 //线程池
@@ -103,33 +190,10 @@ function oneStep(){
    
     var downChild = makeprocess(imgId);
 
-    function childFun(parames){
-        var imgId = parames.imgId;
-        var imgIdNum = parames.imgIdNum;
-        var StringTool = require('./../../tool/s16.js');
-        var getPixivData = require('./getPixivData.js');
-        var url = `https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${imgId}`;
-        var upUrl = StringTool.strToHexCharCode(url);
-        var fakeCtx={
-            request:{
-                body:{
-                    Url:upUrl
-                }
-            }
-        }
 
-        getPixivData.contrl(fakeCtx)
-            .then(()=>{
-            process.send(parames);
-       })
-    }
-    var callBackStr = childFun.toString();
     var opt = {
-        parames:{
-            imgId:imgId,
-            imgIdNum:imgIdNum
-        },
-        callBackStr:callBackStr
+        imgId:imgId,
+        imgIdNum:imgIdNum
     }
     downChild.send(opt);
     imgIdNum++
@@ -142,10 +206,16 @@ function makeprocess(imgId){
 
     if(processList.length===0){
         var downChild = cp.fork('./server/api/downChild.js',{
-           silent:true
+           //silent:true
         });
         downChild.on('message',(parames)=>{
             console.log('downloadControl:内部Id：',parames.imgIdNum,'ImgId:',parames.imgId,'下载结束');
+            //写入数据库
+            //以后可以写错误处理
+            if(parames.downState!='faill'){
+                downImgInsertSql(parames.resultData);
+            }
+
             var common = mainObj.common
             common.runNum --;
             if(common.dataList.length===0&&common.runNum===0){

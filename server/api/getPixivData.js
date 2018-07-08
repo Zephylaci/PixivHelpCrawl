@@ -1,11 +1,11 @@
-var StringTool = require('./../../tool/s16.js');
+const StringTool = require('./../../tool/main.js')['StringTool'];
+const getHtmlData = require('./getHtmlData.js');
+const imgFilter = require('./imgFilter.js')
+const cheerio = require('cheerio');
+const request = require('../../tool/customRequest.js');
 
 
-var getHtmlData = require('./getHtmlData.js');
-var testDown = require('./downloadImg.js')
-var imgFilter = require('./imgFilter.js')
 
-var cheerio = require('cheerio');
 
 
 var mainObj = {
@@ -13,33 +13,60 @@ var mainObj = {
     ctx.body = {
       code: 200
     }
-
-    // getHtmlData.common.html=""
-    // getHtmlData.end();
+    //代理逻辑
+    var mainConfig = require('../../config/');
+    if(mainConfig.proxyApi){
+        var trueUrl = mainConfig.proxyApi+'/api/getPixivData';
+        console.log(trueUrl);
+        var requestData=ctx.request.body;
+        var promise = require({
+            type: 'POST',
+            url: trueUrl,
+            data: requestData
+        });
+        var result = null
+        await promise.then(function (response) {
+            ctx.status = 200;
+            ctx.body =  response.data;
+            result = response.data;
+        }).catch(function (error) {
+            console.log(error);
+            ctx.status = 404;
+            ctx.body = 'error';
+        });
+        return result
+    }
+    //代理逻辑结束
 
     var upUrl =StringTool.hexCharCodeToStr(ctx.request.body.Url);
-    var filter = ctx.request.body.Filter||'filter';
-
-    var result = "result";
+    var filter = ctx.request.body.Filter|| true;
+    
     var opt = {
         url:upUrl
     }
+    var getHtmlPromise =  getHtmlData.start(opt);
 
-     await getHtmlData.start(opt).then((info)=>{
-         var handleOpt={
-             upUrl:upUrl,
-             info:info,
-             filter:filter
-         }
-         result=Trial(handleOpt);
- 
-     });
-    //单个的存在下载，可以等它下完再返回
-    if(result.awaitObj){
-        await result.awaitObj;
-        delete result.awaitObj;
-    }
-    
+    getHtmlPromise.then((getResult)=>{
+
+        if(getResult.code===200){
+           var handleOpt={
+               upUrl:upUrl,
+               info:getResult.data,
+               filter:filter
+           }
+
+           result=Trial(handleOpt);
+        }else{
+           ctx.body.code = -1;
+           result = getResult.data
+        }
+    })
+    getHtmlPromise.catch((err)=>{
+        result = err;
+     })
+    await getHtmlPromise
+
+
     ctx.body.content = result;
     return result;
     
@@ -53,13 +80,16 @@ var Trial = Norn();
 * 
 **/
 function Norn(){
-    var Alignment = ['Convenient','Monomers','Insight','Ordinary'] //执行顺序
+    var Alignment = ['Convenient','Monomers','Insight','Ordinary'] //执行优先顺序
     return function(handleOpt){
             var Public = Norn.Scales.Public;
             var result = ""
+
             Public.upUrl = handleOpt.upUrl;
             Public.info = handleOpt.info;
             Public.filter = handleOpt.filter;
+
+            
             var Method = Norn.Scales;
             var i = 0;
             runMethod(i);
@@ -110,10 +140,20 @@ Norn.Scales={
                 filterType:'Convenient',
                 sourceData:info
             }
-            if(Public.filter==='filter'){
+            if(Public.filter==true){
                 var result = imgFilter(opt);
                 info.contents = result.resultData;
             }
+                //2018/7/28 p站缩略图403对策
+                var resArr = info.contents;
+                for(var i = 0;i<resArr.length;i++){
+                    var url = resArr[i].url;
+                    var proxyUrl = '/api/proxyImg?url='+StringTool.strToHexCharCode(url);
+                    resArr[i].originUrl = url;
+                    resArr[i].url= proxyUrl;
+                    
+                }
+
             return JSON.stringify(info);
         }else{
             var info = Public.info;
@@ -133,25 +173,16 @@ Norn.Scales={
             var objReg = new RegExp( '.*,preload:|,user.*');
             var strobj ='var illustInfo = '+result.split(objReg)[1] +'}';
             eval(strobj);        
-            illustInfo.authorName = result.split(authorReg)[1];
-            
-
-           var cash = illustInfo.illust;
+            //illustInfo.authorName = result.split(authorReg)[1];
+ 
+            var cashInfo = illustInfo.illust;
             var mainKey = '';
-            for(key in cash){
+            for(key in cashInfo){
                 mainKey = key;
-                cash=cash[key];      
+                cashInfo=cashInfo[key];      
             }
 
-            var downUrl = cash.urls.original;
-
-             illustInfo.awaitObj=testDown(downUrl).then((fileName)=>{
-                 if(fileName!=='fail'){
-                     illustInfo.illust[mainKey].urls.original = '/download'+fileName;
-                 }  
-            });
-           
-            return illustInfo;
+            return cashInfo;
 
         }else{
             
