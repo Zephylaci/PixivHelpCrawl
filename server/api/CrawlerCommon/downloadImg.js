@@ -3,13 +3,13 @@
 *  功能：根据url下载文件到指定文件夹 
 *        
 **/
-const request = require('../../tool/customRequest.js');
+const request = require('../../../tool/customRequest.js');
 const fs = require('fs');
 const handleUrl = require('url');
 
-var pixivAbout = require('../../config/')['pixivConfig'];
-var pathConfig = require('../../config/')['pathConfig'];
-var checkImg = require('./checkImg.js');
+var pixivAbout = require('../../../config')['pixivConfig'];
+var pathConfig = require('../../../config')['pathConfig'];
+var checkImg = require('../ImgControler/checkImg.js');
 
 var events = require('events');
 var emitter = new events.EventEmitter();

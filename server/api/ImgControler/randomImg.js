@@ -1,5 +1,5 @@
 var fs = require('fs');
-var pathConfig = require('../../config/')['pathConfig'];
+var pathConfig = require('../../../config')['pathConfig'];
 
 var mainObj={
     contrl: async (ctx, next) => {

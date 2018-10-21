@@ -79,12 +79,15 @@
 .normal-infoItem .text-id{
     text-align:right;
 }
+.item-list{
+    margin:0 auto;
+}
 .img-item{
-    width:24%;
-    padding:0.5%;
+    width:24.5%;
 }
 .showContent{
     margin-top:30px;
+    margin-left:0.8%;
 }
 .daily-type .active{
     background-color: #F44336!important;
@@ -104,8 +107,8 @@
 <!--mdui-theme-primary-blue-grey mdui-theme-accent-blue mdui-drawer-body-left mdui-loaded-->
 <body class="mdui-appbar-with-toolbar mdui-theme-primary-blue-grey mdui-theme-accent-blue mdui-loaded mdui-drawer-body-left">
     <header class="mdui-appbar mdui-color-theme mdui-appbar-fixed">
-      <div class="mdui-toolbar mdui-container">
-        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white" mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
+      <div class="mdui-toolbar mdui-container"> <!--mdui-drawer="{target: '#main-drawer', swipe: true}"-->
+        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white" id="mainDrawerControl"><i class="mdui-icon material-icons">menu</i></span>
       </div>
     </header>
     <!--侧边栏-->
@@ -230,33 +233,8 @@
                     <div class="mdui-spinner mdui-spinner-colorful"></div>
              </div>
             `,
-            showLoading:function(content='#showContent'){
-                var me = loadingConturl;
-                var contentDom = $(content)
-                var loadingDom = contentDom.find('.loadingContent')[0];
-
-                var isExist = true;
-                if(!loadingDom){
-                    isExist = false;
-                    contentDom.append(me.loadingHtml);
-                }
-                $(content+'>div').fadeOut(300);
-                setTimeout(()=>{
-                    $(content).find('.loadingContent').show();
-                    if(isExist===false){
-                        mdui.mutation();
-                    }
-                },301)
-
-            },
-            hideLoading:function(content='#showContent'){
-                $(content+'>div').fadeIn(300)
-                setTimeout(()=>{
-                   $(content+'>.loadingContent').remove();
-                },301)
-                
-            },
             appendLoading:function(content='#showContent'){
+                loadingConturl.removeLoading();
                 var me = loadingConturl;
                 $(content).append(me.loadingHtml);
                 mdui.mutation();
@@ -266,8 +244,26 @@
             }
         }
        $(function () {
+           var inst = new mdui.Drawer('#main-drawer');
+           $('#mainDrawerControl').click(function(){
+                inst.toggle();
+                var list = $('.img-item');
+                var length = list.length
+               if (length != 0) {
+                var content = $('.item-list');
+                    content.masonry('destroy');
+                    content.html('');
+                    loadingConturl.appendLoading('.item-list');
+                   setTimeout(function(){
+                    loadingConturl.removeLoading('.item-list');
+                       showList(0, length - 1)
+                   },800)
+               }
+
+                
+
+           })
            $('#showContent').on('click','.img-item',function(){
-               console.log(this);
                $(this).find('.mdui-card').toggleClass('active');
            })
            $('body').on('click','#cloudDownloadSelect',function(){
@@ -294,7 +290,7 @@
                 $(this).addClass('active');
             });
             $('#dailyControl').on('click','#searchImg',function(){
-                loadingConturl.showLoading();
+                
                
                 var type = $('#getType span.active').data('type');
                 if(!type){
@@ -304,6 +300,9 @@
                       });
                       return
                 }
+                $('#showContent').html('');
+                loadingConturl.appendLoading();
+                
                 var date = $('#queryDate').val();
 
                 var filter =  $('input[name=filter]:checked').val();
@@ -357,7 +356,7 @@
             }) {
 
                 var itemListHtml = "";
-                console.log(showData);
+
                 //保证一次读取12个
                 var endNum = endNum > showData.length ? showData.length : endNum;
                 if (Object.prototype.toString.call(showData) === "[object Array]") {
@@ -412,7 +411,7 @@
                     isFitWidth: true     // 自适应宽度
                 });
                 
-                loadingConturl.hideLoading();
+                loadingConturl.removeLoading();
             });
 
         }
@@ -427,15 +426,25 @@
 
             imagesLoaded(listContentDom, function () {
                 listHtml.css('display','block');
-                loadingConturl.hideLoading();
-                listContentDom.masonry('appended', listHtml);
-                
+                loadingConturl.removeLoading();
+                if(listContentDom.data('masonry')){
+                    listContentDom.masonry('appended', listHtml);
+                }else{
+                    listContentDom.masonry({
+                        isAnimated: true,
+                        //columnWidth: 450,
+                        isFitWidth: true     // 自适应宽度
+                    });
+                }
+               
+                over= true
                 timerOver();
    
             });
         }
         //简单的节流操作
         var timer = null;
+        var over = true //保证完成
         var wait = 3000;
         function timerOver(){
             clearTimeout(timer);
@@ -448,7 +457,7 @@
         }
          //节流操作结束
         function activeLoad(showItem) {
-                var showItem = showItem ||['url', 'title', 'illust_id'];
+
                 if($('#loaderEnd')[0]){
                     $('#loaderEnd').remove();
                 }
@@ -456,19 +465,32 @@
                 $(window).scroll(function () {
                     var scrollTop = $(this).scrollTop(); var scrollHeight = $(document).height(); var windowHeight = $(this).height();
                     if (scrollTop + windowHeight == scrollHeight) {
-                        if(timer!=null){
+                        if(timer!=null||over===false){
                             return
                         }
+                        over= false
                         timerSet();
-                        
-                        var $container = $('.item-list');
+                        showList();
+
+                    }
+                })
+        }
+        function showList(start,end,showItem=['url', 'title', 'illust_id']){
+
+            var $container = $('.item-list');
                         var have = Number($container.find('.img-item').length);
+         
                         var opt = {
                             showData: common.result.contents,
                             showItem: showItem,
-                            startNum: have,
-                            endNum: have + 12 > common.result.contents.length ? common.result.contents.length : have + 12
+                            startNum: start||have,
+                            endNum: end||have + 12 > common.result.contents.length ? common.result.contents.length : have + 12
                         }
+
+                        if(end){
+                            opt.endNum = end
+                        }
+
 
                         if (opt.startNum === opt.endNum) {
                             var loaderEnd = $('#loaderEnd').html();
@@ -484,9 +506,8 @@
                         
                         var htmlString = createShowHtml(opt);
                         appendToShowContent(htmlString);
-                    }
-                })
         }
+            
     </script>	
 </body>
 </html>

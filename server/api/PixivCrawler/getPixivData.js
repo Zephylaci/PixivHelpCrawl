@@ -1,8 +1,8 @@
-const StringTool = require('./../../tool/main.js')['StringTool'];
-const getHtmlData = require('./getHtmlData.js');
-const imgFilter = require('./imgFilter.js')
+const StringTool = require('../../../tool/main.js')['StringTool'];
+const getHtmlData = require('../CrawlerCommon/getHtmlData.js');
+const imgFilter = require('../ImgControler/imgFilter.js')
 const cheerio = require('cheerio');
-const request = require('../../tool/customRequest.js');
+const request = require('../../../tool/customRequest.js');
 
 
 
@@ -14,7 +14,7 @@ var mainObj = {
       code: 200
     }
     //代理逻辑
-    var mainConfig = require('../../config/');
+    var mainConfig = require('../../../config');
     if(mainConfig.proxyApi){
         var trueUrl = mainConfig.proxyApi+'/api/getPixivData';
         console.log(trueUrl);
@@ -169,18 +169,23 @@ Norn.Scales={
         var $ = Public.$;
         if(upUrl.indexOf('illust_id')!=-1){
             var result = $('head').html();
-            var authorReg = new RegExp( '.*,"name":"|","image":.*');
-            var objReg = new RegExp( '.*,preload:|,user.*');
-            var strobj ='var illustInfo = '+result.split(objReg)[1] +'}';
-            eval(strobj);        
-            //illustInfo.authorName = result.split(authorReg)[1];
- 
-            var cashInfo = illustInfo.illust;
-            var mainKey = '';
-            for(key in cashInfo){
-                mainKey = key;
-                cashInfo=cashInfo[key];      
+            var cashInfo = null
+            if(result){
+                var authorReg = new RegExp( '.*,"name":"|","image":.*');
+                var objReg = new RegExp( '.*,preload:|,user.*');
+                var strobj ='var illustInfo = '+result.split(objReg)[1] +'}';
+                eval(strobj);        
+                //illustInfo.authorName = result.split(authorReg)[1];
+     
+                 cashInfo = illustInfo.illust;
+                var mainKey = '';
+                for(key in cashInfo){
+                    mainKey = key;
+                    cashInfo=cashInfo[key];      
+                }
+    
             }
+
 
             return cashInfo;
 

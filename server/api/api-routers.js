@@ -1,10 +1,10 @@
 // 路由设置
-var getPixivData = require('./getPixivData.js');
-var getPixivHotList = require('./getPixivHotList.js');
-var autoSerach = require('./autoSerach.js');
-var downloadControl = require('./downloadControl.js');
-var randomImg = require('./randomImg.js');
-var proxyImg = require('./proxyImg.js');
+var getPixivData = require('./PixivCrawler/getPixivData.js');
+var getPixivHotList = require('./PixivCrawler/getPixivHotList.js');
+var autoSerach = require('./PixivCrawler/autoSerach.js');
+var downloadControl = require('./PixivCrawler/downloadControl.js');
+var randomImg = require('./ImgControler/randomImg.js');
+var proxyImg = require('./ImgControler/proxyImg.js');
 
 
 

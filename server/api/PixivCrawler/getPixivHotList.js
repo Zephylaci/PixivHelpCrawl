@@ -5,17 +5,17 @@
 **/
 
 const getPixivData = require('./getPixivData.js');
-const downloadImg = require('./downloadImg.js');
+const downloadImg = require('../CrawlerCommon/downloadImg.js');
 
 const events = require('events');
-const StringTool = require('./../../tool/main.js')['StringTool'];
+const StringTool = require('../../../tool/main.js')['StringTool'];
 
 const MainStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
 //缓存设置
-const redisConfig = require('../../config/index.js')['redisConfig'];
-const redisCtl = require('../dataBaseControl/redisControl.js');
+const redisConfig = require('../../../config/index.js')['redisConfig'];
+const redisCtl = require('../../dataBaseControl/redisControl.js');
 //url解析
-const parseUrl = require('url');
+const parseUrl = require('url')
 const querystring = require('querystring');
 
 
@@ -132,7 +132,7 @@ var mainObj = {
 						console.time('downImgList');
 						let setItem = await handleData(res);
 						if (setItem.cashDownList) {
-							const downloadThread = require('./downloadThread.js');
+							const downloadThread = require('../CrawlerCommon/downloadThread.js');
 							var path = 'client/cash';
 							var downList = setItem.cashDownList
 							var downObj = new downloadThread({

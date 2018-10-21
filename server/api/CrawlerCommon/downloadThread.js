@@ -142,7 +142,7 @@ class makeDownLoadObj {
         let common = downLoadObj.common;
         let processList = common.processList
         if (processList.length === 0) {
-            var downChild = cp.fork('./server/api/downloadChild.js', {
+            var downChild = cp.fork('./server/api/CrawlerCommon/downloadChild.js', {
                 silent:true
             });
 

@@ -1,8 +1,8 @@
 
-const request = require('../../tool/customRequest.js');
+const request = require('../../../tool/customRequest.js');
 const fs = require('fs');
 
-var pixivAbout = require('../../config/')['pixivConfig'];
+var pixivAbout = require('../../../config')['pixivConfig'];
 var events = require('events');
 var emitter = new events.EventEmitter();
 emitter.on("getHtmlOver",()=>{
@@ -79,7 +79,6 @@ emitter.on('getCookieOver',(url)=>{
     var j = request.jar(); 
     var rcookie = request.cookie(cookies); 
     j.setCookie(rcookie, url); 
-
     var mainQuery=request(
         {   
             url: url,

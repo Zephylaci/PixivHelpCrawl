@@ -1,7 +1,7 @@
 
 const cp = require('child_process');
 const judgePath = require('path');
-const mySqlCtl = require('../dataBaseControl/mysqlControl.js');
+const mySqlCtl = require('../../dataBaseControl/mysqlControl.js');
 
 function resetCommon(){
     mainObj.common.runStat=false;
@@ -205,7 +205,7 @@ function makeprocess(imgId){
    
 
     if(processList.length===0){
-        var downChild = cp.fork('./server/api/downChild.js',{
+        var downChild = cp.fork('./server/api/PixivCrawler/downChild.js',{
            //silent:true
         });
         downChild.on('message',(parames)=>{

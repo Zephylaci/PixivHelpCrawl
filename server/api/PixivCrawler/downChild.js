@@ -1,5 +1,5 @@
 
-const downloadImg = require('./downloadImg.js');
+const downloadImg = require('../CrawlerCommon/downloadImg.js');
 process.on('message', (opt)=>{
 
     childFun(opt); 
@@ -9,7 +9,7 @@ var wait = 5000;
 function childFun(parames){
     var imgId = parames.imgId;
     var imgIdNum = parames.imgIdNum;
-    var StringTool = require('./../../tool/main.js')['StringTool'];
+    var StringTool = require('../../../tool/main.js')['StringTool'];
     var getPixivData = require('./getPixivData.js');
     var url = `https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${imgId}`;
     var upUrl = StringTool.strToHexCharCode(url);
@@ -24,7 +24,7 @@ function childFun(parames){
     getPixivData.contrl(fakeCtx)
         .then((res) => {
             tryGet = 1;
-
+   
             parames.resultData = res;
             var downUrl = res.urls.original;
             if (downUrl){
@@ -38,7 +38,7 @@ function childFun(parames){
         }).catch((err) => {
             console.log('downChild：进入重试流程，等待时间，', wait / 1000, 's');
             if (tryGet < 5) {
-                console.log(parames);
+                console.log(parames,err);
                 setTimeout(() => {
                     childFun(parames)
                 }, wait)
