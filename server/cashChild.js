@@ -1,4 +1,4 @@
-const getPixivHotList = require('./api/getPixivHotList.js');
+const getPixivHotList = require('./api/PixivCrawler/getPixivHotList.js');
 var activeEndRedis = null
 var tryGet = 1;
 var wait = 5000;

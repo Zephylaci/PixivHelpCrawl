@@ -1,0 +1,93 @@
+@CHARSET "UTF-8";
+
+/*   loading   */
+#loaderContent{
+    width:100%;
+}
+#loaderEnd{
+    width:100%;
+    text-align:center;
+    margin-top:5px;
+    padding:10px 0;
+    background:#fff;
+}
+.main-drawer{
+    width:200px;
+    padding-top:65px;
+}
+.main-drawer ul li i{
+    margin-right:15px;
+}
+.dailyControl{
+    margin-top:20px;
+}
+.daily-type{
+    text-align:center;
+    
+}
+.daily-type>.mdui-btn{
+    margin-right:20px;
+    color:#fff;
+}
+.daily-config{
+    padding:10px 50px;
+    overflow: auto;
+}
+.normal-input{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+.normal-input>input{
+    flex:1;
+    width:auto;
+}
+.w100{
+    width:100px!important;
+}
+.config-ml{
+    margin-left:35px;
+}
+.ml15{
+    margin-left:15px;
+}
+.daily-control{
+   overflow: auto;
+}
+.mdui-card-actions.normal-infoItem{
+    display:flex;
+    padding:12px;
+    align-items: center;
+    justify-content: space-between;
+}
+.normal-infoItem>span{
+    flex:1;
+
+}
+.normal-infoItem .text-id{
+    text-align:right;
+}
+.item-list{
+    margin:0 auto;
+}
+.img-item{
+    width:24.5%;
+}
+.showContent{
+    margin-top:30px;
+    margin-left:0.8%;
+}
+.daily-type .active{
+    background-color: #F44336!important;
+}
+.loadingContent{
+    width:100%;
+    text-align:center;
+}
+.loadingContent .mdui-spinner{
+    margin-top:20px;
+}
+.mdui-card.active{
+    border: 3px solid #448aff;
+}

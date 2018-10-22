@@ -7,106 +7,16 @@
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css" rel="stylesheet">
 <!-- 时间选择器-->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.css" rel="stylesheet">
+<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.css" rel="stylesheet"> -->
 
-
-<style>
-/*   loading   */
-#loaderContent{
-    width:100%;
-}
-#loaderEnd{
-    width:100%;
-    text-align:center;
-    margin-top:5px;
-    padding:10px 0;
-    background:#fff;
-}
-.main-drawer{
-    width:200px;
-    padding-top:65px;
-}
-.main-drawer ul li i{
-    margin-right:15px;
-}
-.dailyControl{
-    margin-top:20px;
-}
-.daily-type{
-    text-align:center;
-    
-}
-.daily-type>.mdui-btn{
-    margin-right:20px;
-    color:#fff;
-}
-.daily-config{
-    padding:10px 50px;
-    overflow: auto;
-}
-.normal-input{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-}
-.normal-input>input{
-    flex:1;
-    width:auto;
-}
-.w100{
-    width:100px!important;
-}
-.config-ml{
-    margin-left:35px;
-}
-.ml15{
-    margin-left:15px;
-}
-.daily-control{
-   overflow: auto;
-}
-.mdui-card-actions.normal-infoItem{
-    display:flex;
-    padding:12px;
-    align-items: center;
-    justify-content: space-between;
-}
-.normal-infoItem>span{
-    flex:1;
-
-}
-.normal-infoItem .text-id{
-    text-align:right;
-}
-.item-list{
-    margin:0 auto;
-}
-.img-item{
-    width:24.5%;
-}
-.showContent{
-    margin-top:30px;
-    margin-left:0.8%;
-}
-.daily-type .active{
-    background-color: #F44336!important;
-}
-.loadingContent{
-    width:100%;
-    text-align:center;
-}
-.loadingContent .mdui-spinner{
-    margin-top:20px;
-}
-.mdui-card.active{
-    border: 3px solid #448aff;
-}
-</style>
+<!-- <link href="./css/index.css" rel="stylesheet"> -->
 </head>
 <!--mdui-theme-primary-blue-grey mdui-theme-accent-blue mdui-drawer-body-left mdui-loaded-->
+
 <body class="mdui-appbar-with-toolbar mdui-theme-primary-blue-grey mdui-theme-accent-blue mdui-loaded mdui-drawer-body-left">
-    <header class="mdui-appbar mdui-color-theme mdui-appbar-fixed">
+    <!-- 头部及侧边栏容器 -->
+    <div id="header-content">
+            <header class="mdui-appbar mdui-color-theme mdui-appbar-fixed">
       <div class="mdui-toolbar mdui-container"> <!--mdui-drawer="{target: '#main-drawer', swipe: true}"-->
         <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white" id="mainDrawerControl"><i class="mdui-icon material-icons">menu</i></span>
       </div>
@@ -124,42 +34,31 @@
         </li>
         </ul>
     </div>
-	<div class="mdui-container">
-	    <!--控制栏-->
-		<div class="mdui-card dailyControl" id="dailyControl" style="overflow:inherit">
-			<div class="mdui-card-actions">
-				<div id="getType" class="control-list daily-type" >
-					<span data-type="mode=daily"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">日榜</span>
-					<span data-type="mode=rookie" class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">新人榜</span>
-					<span data-type="mode=weekly"   class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">周榜</span>
-					<span data-type="mode=male"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">男性日榜</span>
-					<span data-type="mode=daily_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">日榜R18</span>
-					<span data-type="mode=weekly_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">周榜R18</span>
-					<span data-type="mode=male_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">男性日榜R18</span>
-				</div>
- 				<div class="control-list daily-config" >
-     				<div  class="input-content  mdui-float-left normal-input">
-                      <span>榜单时间：</span>
-                      <input id="queryDate" class="mdui-textfield-input w100"/>
+    </div>
+    <!-- 主体容器-->
+    <div id="main-content">
+            	<div class="mdui-container">
+    	    <!--控制栏-->
+    		<div class="mdui-card dailyControl" id="dailyControl" style="overflow:inherit">
+    			<div class="mdui-card-actions">
+    				<div id="getType" class="control-list daily-type" >
+    					<span data-type="mode=daily"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">日榜</span>
+    					<span data-type="mode=rookie" class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">新人榜</span>
+    					<span data-type="mode=weekly"   class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">周榜</span>
+    					<span data-type="mode=male"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">男性日榜</span>
+    					<span data-type="mode=daily_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">日榜R18</span>
+    					<span data-type="mode=weekly_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">周榜R18</span>
+    					<span data-type="mode=male_r18"  class="mdui-btn mdui-btn-raised mdui-color-blue-accent ">男性日榜R18</span>
     				</div>
-    				<div  class="input-content  mdui-float-left normal-input config-ml">
-                      <span>开始页数：</span>
-    		 		  <select class="mdui-select" id="startPage">
-                          <option value="1" selected>1</option>
-                          <option value="2"> 2</option>
-                          <option value="3"> 3</option>
-                          <option value="4"> 4</option>
-                          <option value="5"> 5</option>
-                          <option value="6"> 6</option>
-                          <option value="7"> 7</option>
-                          <option value="8"> 8</option>
-                          <option value="9"> 9</option>
-                          <option value="10">10</option>
-                        </select>
-                        <span class="ml15">结束页数：</span>
-        		 		 <select class="mdui-select" id="endPage">
-        		 		       <option value="1">1</option>
-                              <option value="2" selected> 2</option>
+     				<div class="control-list daily-config" >
+         				<div  class="input-content  mdui-float-left normal-input">
+                          <span>榜单时间：</span>
+                          <input id="queryDate" class="mdui-textfield-input w100"/>
+        				</div>
+        				<div  class="input-content  mdui-float-left normal-input config-ml">
+                          <span>开始页数：</span>
+        		 		  <select class="mdui-select" id="startPage">
+                              <option value="1" selected>1</option>
                               <option value="2"> 2</option>
                               <option value="3"> 3</option>
                               <option value="4"> 4</option>
@@ -169,345 +68,80 @@
                               <option value="8"> 8</option>
                               <option value="9"> 9</option>
                               <option value="10">10</option>
-                         </select>
-        			 </div>
-                    <label class="mdui-checkbox  config-ml">
-                      <input type="checkbox" name="filter" value="true" checked/>
-                      <i class="mdui-checkbox-icon"></i>
-                      启用过滤
-                    </label>
-                    <label class="mdui-checkbox  config-ml">
-                      <input type="checkbox" name="useCash" value="true" checked/>
-                      <i class="mdui-checkbox-icon"></i>
-                      启用redis缓存(如果有)
-                    </label>
-				</div>
-
-				<div class="control-list daily-control" >
-                    <span id="cloudDownloadAll" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">云端下载加载项</span>
-                    <span id="cloudDownloadSelect" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">云端下载选中项</span>
-                    <span id="searchImg" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">查询</span>
-				</div>
-			</div>
-		</div>
-
-    </div>
-    <!--展示栏-->
-    <div class="showContent" id="showContent">
-            <!-- <div class="loadingContent" >
-                <div class="mdui-spinner mdui-spinner-colorful"></div>
-            </div>
-             -->
-        <!-- <div class="item-list">
-                    <div class="img-item">
-                        <div class="mdui-card">
-                            <div class="mdui-card-media">
-                                <img src="https://upload-images.jianshu.io/upload_images/3923332-82d752d172258fd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-                            </div>
-                            <div class="mdui-card-actions normal-infoItem">
-                                <span class="mdui-ripple text-title">${strItems[1]}</span>
-                                <span class="mdui-ripple text-id">id:${strItems[2]}</span>
+                            </select>
+                            <span class="ml15">结束页数：</span>
+            		 		 <select class="mdui-select" id="endPage">
+            		 		       <option value="1">1</option>
+                                  <option value="2" selected> 2</option>
+                                  <option value="2"> 2</option>
+                                  <option value="3"> 3</option>
+                                  <option value="4"> 4</option>
+                                  <option value="5"> 5</option>
+                                  <option value="6"> 6</option>
+                                  <option value="7"> 7</option>
+                                  <option value="8"> 8</option>
+                                  <option value="9"> 9</option>
+                                  <option value="10">10</option>
+                             </select>
+            			 </div>
+                        <label class="mdui-checkbox  config-ml">
+                          <input type="checkbox" name="filter" value="true" checked/>
+                          <i class="mdui-checkbox-icon"></i>
+                          启用过滤
+                        </label>
+                        <label class="mdui-checkbox  config-ml">
+                          <input type="checkbox" name="useCash" value="true" checked/>
+                          <i class="mdui-checkbox-icon"></i>
+                          启用redis缓存(如果有)
+                        </label>
+    				</div>
+    
+    				<div class="control-list daily-control" >
+                        <span id="cloudDownloadAll" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">云端下载加载项</span>
+                        <span id="cloudDownloadSelect" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">云端下载选中项</span>
+                        <span id="searchImg" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">查询</span>
+    				</div>
+    			</div>
+    		</div>
+    
+        </div>
+        <!--展示栏-->
+        <div class="showContent" id="showContent">
+                <!-- <div class="loadingContent" >
+                    <div class="mdui-spinner mdui-spinner-colorful"></div>
+                </div>
+                 -->
+            <!-- <div class="item-list">
+                        <div class="img-item">
+                            <div class="mdui-card">
+                                <div class="mdui-card-media">
+                                    <img src="https://upload-images.jianshu.io/upload_images/3923332-82d752d172258fd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+                                </div>
+                                <div class="mdui-card-actions normal-infoItem">
+                                    <span class="mdui-ripple text-title">${strItems[1]}</span>
+                                    <span class="mdui-ripple text-id">id:${strItems[2]}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-            </div> -->
+                </div> -->
+        </div>
     </div>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/css/mdui.min.css" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js'></script>
-    
+     <!--
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.1/masonry.pkgd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.min.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/l10n/zh.js"></script>
-    <script src="./js/index.js"></script>
-	<script>
-        var common = {
-            result:{
-                contents:[] //前端分页用得数组
-            } //返回值
-        };
-        var loadingConturl={
-            loadingHtml:`<div class="loadingContent" >
-                    <div class="mdui-spinner mdui-spinner-colorful"></div>
-             </div>
-            `,
-            appendLoading:function(content='#showContent'){
-                loadingConturl.removeLoading();
-                var me = loadingConturl;
-                $(content).append(me.loadingHtml);
-                mdui.mutation();
-            },
-            removeLoading:function(content='#showContent'){
-                $(content+'>.loadingContent').remove();
-            }
-        }
-       $(function () {
-           var inst = new mdui.Drawer('#main-drawer');
-           $('#mainDrawerControl').click(function(){
-                inst.toggle();
-                var list = $('.img-item');
-                var length = list.length
-               if (length != 0) {
-                var content = $('.item-list');
-                    content.masonry('destroy');
-                    content.html('');
-                    loadingConturl.appendLoading('.item-list');
-                   setTimeout(function(){
-                    loadingConturl.removeLoading('.item-list');
-                       showList(0, length - 1)
-                   },800)
-               }
 
-                
-
-           })
-           $('#showContent').on('click','.img-item',function(){
-               $(this).find('.mdui-card').toggleClass('active');
-           })
-           $('body').on('click','#cloudDownloadSelect',function(){
-               var list = [];
-               var checkList = $('#showContent .active');
-               for (var i = 0; i < checkList.length; i++) {
-                   var dom = $(checkList[i]);
-                   var item = { illust_id: dom.data('id') };
-                   list.push(item);
-                   dom.removeClass('active');
-               }
-               var downList = JSON.stringify(list);
-               var upData = { downList: downList };
-
-               postData(upData, '/api/download').success((data) => {
-                   alert(data.content);
-               });
-           });
-           $("#queryDate").val(new Date(new Date()-86400000).toLocaleDateString())
-           $("#queryDate").flatpickr();
-             
-            $('#dailyControl').on('click','#getType>span',function(){
-                $('#dailyControl').find('#getType>span').removeClass('active');
-                $(this).addClass('active');
-            });
-            $('#dailyControl').on('click','#searchImg',function(){
-                
-               
-                var type = $('#getType span.active').data('type');
-                if(!type){
-                      mdui.snackbar({
-                        message: '请选择榜单类型',
-                        position: 'top'
-                      });
-                      return
-                }
-                $('#showContent').html('');
-                loadingConturl.appendLoading();
-                
-                var date = $('#queryDate').val();
-
-                var filter =  $('input[name=filter]:checked').val();
-                var useCash =  $('input[name=useCash]:checked').val();
-                var startPage = $('#startPage').val();
-                var endPage = $('#endPage').val();
-                
-                
-                var upData = {
-                     filter:filter,
-                     useCash:useCash,
-                     type:type,
-                     date:date,
-                     startPage:startPage,
-                     endPage:endPage
-                 };
-                 for(key in upData){
-                     if(typeof upData[key]==='undefinde'){
-                         upData[key] = false;
-                     }
-                 }
-
-                postData(upData,'/api/getPixivHotList').success(function(res){
-                    var creatHtml = createShowHtml({
-                        showData:res.contents
-                    });
-                    addToShowContent(creatHtml);
-                    common.result.contents = res.contents;
-                    activeLoad();
-
-                });
-            
-            });
-        });
-        
-        function postData(upData,url){
-            var promise = $.ajax({
-                type:'POST',
-                url:url,
-                data:upData,
-                dataType:'json'
-            }); 
-            return  promise; 
-        }
-
-        function createShowHtml({
-                showData,
-                showItem = ['url', 'title', 'illust_id'],
-                startNum = 0,
-                endNum = 12
-            }) {
-
-                var itemListHtml = "";
-
-                //保证一次读取12个
-                var endNum = endNum > showData.length ? showData.length : endNum;
-                if (Object.prototype.toString.call(showData) === "[object Array]") {
-
-                    for (var i = startNum; i < endNum; i++) {
-                        var strItems = [];
-                        for (var j = 0; j < showItem.length; j++) {
-                            var str = showData[i][showItem[j]];
-                            if (str) {
-                                strItems.push(str)
-                            } else {
-                                strItems.push('无数据');
-                            }
-                        }
-
-                        var itemHtml = `<div class="img-item">
-                                        <div class="mdui-card" data-id="${strItems[2]}">
-                                            <div class="mdui-card-media">
-                                                <img src="${strItems[0]}">
-                                            </div>
-                                            <div class="mdui-card-actions normal-infoItem">
-                                                <span class="mdui-ripple text-title">${strItems[1]}</span>
-                                                <span class="mdui-ripple text-id">id:${strItems[2]}</span>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                        itemListHtml = itemListHtml + itemHtml;
-                    }
-                }
-                var content = `<div class="item-list">${itemListHtml}</div>`;
-                return content;
-            }
     
-        function addToShowContent(htmlString,content='.item-list'){
-            var listContentDom = $(content);
-            var listDom = $(htmlString);
-             if (listContentDom[0]) {
-                listContentDom.remove();
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/l10n/zh.js"></script> -->
+    
+    <script src="./js/common/innerConfig.js"></script>
+    <script src="./js/common/common.js"></script>
+    <script src="./js/common/tool.js"></script>
+    <!--<script src="./js/index.js"></script>-->
 
-            }
-
-            listDom.css('display', 'none');
-            $('#showContent').prepend(listDom);
-            var $container = $(content);
-
-
-            imagesLoaded($container, function () {
-                listDom.css('display', 'block');
-                $container.masonry({
-                    isAnimated: true,
-                    //columnWidth: 450,
-                    isFitWidth: true     // 自适应宽度
-                });
-                
-                loadingConturl.removeLoading();
-            });
-
-        }
-        function appendToShowContent(htmlString,content='.item-list'){
-            var listContentDom = $(content);
-            var listDom = $(htmlString)
-            loadingConturl.appendLoading();
-            listDom.find('.img-item').css('display', 'none');
-            listHtml = $(listDom.html());
-            listContentDom.append(listHtml);
-            
-
-            imagesLoaded(listContentDom, function () {
-                listHtml.css('display','block');
-                loadingConturl.removeLoading();
-                if(listContentDom.data('masonry')){
-                    listContentDom.masonry('appended', listHtml);
-                }else{
-                    listContentDom.masonry({
-                        isAnimated: true,
-                        //columnWidth: 450,
-                        isFitWidth: true     // 自适应宽度
-                    });
-                }
-               
-                over= true
-                timerOver();
-   
-            });
-        }
-        //简单的节流操作
-        var timer = null;
-        var over = true //保证完成
-        var wait = 3000;
-        function timerOver(){
-            clearTimeout(timer);
-            timer=null;
-        }
-        function timerSet(){
-            timer=setTimeout(()=>{
-                timerOver();
-            },wait)
-        }
-         //节流操作结束
-        function activeLoad(showItem) {
-
-                if($('#loaderEnd')[0]){
-                    $('#loaderEnd').remove();
-                }
-
-                $(window).scroll(function () {
-                    var scrollTop = $(this).scrollTop(); var scrollHeight = $(document).height(); var windowHeight = $(this).height();
-                    if (scrollTop + windowHeight == scrollHeight) {
-                        if(timer!=null||over===false){
-                            return
-                        }
-                        over= false
-                        timerSet();
-                        showList();
-
-                    }
-                })
-        }
-        function showList(start,end,showItem=['url', 'title', 'illust_id']){
-
-            var $container = $('.item-list');
-                        var have = Number($container.find('.img-item').length);
-         
-                        var opt = {
-                            showData: common.result.contents,
-                            showItem: showItem,
-                            startNum: start||have,
-                            endNum: end||have + 12 > common.result.contents.length ? common.result.contents.length : have + 12
-                        }
-
-                        if(end){
-                            opt.endNum = end
-                        }
-
-
-                        if (opt.startNum === opt.endNum) {
-                            var loaderEnd = $('#loaderEnd').html();
-                            if (loaderEnd) {
-                                $(window).scroll(function () { });
-                            } else {
-                                $container.parent().append('<div id="loaderEnd">加载完成</div>');
-                                $(window).scroll(function () { });
-                            }
-
-                            return;
-                        }
-                        
-                        var htmlString = createShowHtml(opt);
-                        appendToShowContent(htmlString);
-        }
-            
-    </script>	
 </body>
 </html>
