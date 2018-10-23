@@ -1,9 +1,14 @@
 
-const request = require('../../../tool/customRequest.js');
-const fs = require('fs');
+// const request = require('../../../tool/customRequest.js');
+// const fs = require('fs');
 
-var pixivAbout = require('../../../config')['pixivConfig'];
-var events = require('events');
+// 
+// var events = require('events');
+const servicePath = '../';
+const manPath = '../../';
+const requireMehod = require(servicePath+'router/refPath.js');
+requireMehod('getHtmlData');
+var pixivAbout = require(manPath+'config')['pixivConfig'];
 var emitter = new events.EventEmitter();
 emitter.on("getHtmlOver",()=>{
     mainObj.end({

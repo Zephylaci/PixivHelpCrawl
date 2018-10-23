@@ -7,7 +7,6 @@
         };
 
        $(function () {
-		   /*
            var inst = new mdui.Drawer('#main-drawer');
            $('#mainDrawerControl').click(function(){
                 inst.toggle();
@@ -26,7 +25,7 @@
 
                 
 
-           })*/
+           })
            $('#showContent').on('click','.img-item',function(){
                $(this).find('.mdui-card').toggleClass('active');
            })
@@ -254,6 +253,7 @@
                                 $(window).scroll(function () { });
                             } else {
                                 $container.parent().append('<div id="loaderEnd">加载完成</div>');
+                                over= true
                                 $(window).scroll(function () { });
                             }
 

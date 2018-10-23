@@ -1,6 +1,6 @@
 /*
  *  页面引用的配置
- * 
+ *  行为：COMMON中挂上routerConfig
  */
 (function(){
     var routerConfig ={
@@ -20,7 +20,7 @@
             timePick:{
                 js:[
                     "https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.js",
-                     "https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/l10n/zh.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/l10n/zh.js",
                 ],
                 css:[
                     "https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.css",
@@ -29,7 +29,6 @@
             masonryLayouts:{
                 js:[
                     "https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.1/masonry.pkgd.min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.min.js"
                 ],
                 css:[],
             }
@@ -39,7 +38,8 @@
             inner:'', //引用的html地址
             path:'', //使用的url地址
             js:[
-                "./js/index.js"
+                "https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.min.js",
+                "./js/index.js",
             ], //需要引用的独有js文件
             css:[
                 "./css/index.css"
@@ -48,5 +48,8 @@
         },
         
     }
-    window.routerConfig=routerConfig;
+    if(!window.COMMON){
+        window.COMMON={};
+    }
+    window.COMMON.routerConfig=routerConfig;
 }(window))

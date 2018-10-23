@@ -1,9 +1,15 @@
-var pathConfig = require('../../../config')['pathConfig'];
-var pixivAbout = require('../../../config')['pixivConfig'];
-var StringTool = require('../../../tool/main.js')['StringTool'];
-var URL = require('url');
-const request = require('../../../tool/customRequest.js');
+const servicePath = '../../';
+const manPath = '../../../';
 
+var pathConfig = require(manPath+'config')['pathConfig'];
+var pixivAbout = require(manPath+'config')['pixivConfig'];
+// var StringTool = require(servicePath+'utils/StringTool.js')
+// var URL = require('url');
+// const request = require(servicePath+'utils/customRequest.js');
+
+
+const requireMehod = require(servicePath+'router/refPath.js');
+requireMehod('proxyImg');
 
 var mainObj={
     contrl: async (ctx, next) => {

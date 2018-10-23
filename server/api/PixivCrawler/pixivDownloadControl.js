@@ -1,7 +1,11 @@
 
-const cp = require('child_process');
-const judgePath = require('path');
-const mySqlCtl = require('../../dataBaseControl/mysqlControl.js');
+// const cp = require('child_process');
+// const judgePath = require('path');
+// const mySqlCtl = require('../dataBaseControl/mysqlControl.js');
+const servicePath = '../../';
+const manPath = '../../../';
+const requireMehod = require(servicePath+'router/refPath.js');
+requireMehod('pixivDownloadControl');
 
 function resetCommon(){
     mainObj.common.runStat=false;
@@ -205,7 +209,7 @@ function makeprocess(imgId){
    
 
     if(processList.length===0){
-        var downChild = cp.fork('./server/api/PixivCrawler/downChild.js',{
+        var downChild = cp.fork('./server/service/process/pxivDownChild.js',{
            //silent:true
         });
         downChild.on('message',(parames)=>{

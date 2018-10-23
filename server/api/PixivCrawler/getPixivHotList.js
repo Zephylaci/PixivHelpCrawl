@@ -3,23 +3,25 @@
 *  功能：根据前端数据返回榜单数据
 *  未完成      
 **/
+const servicePath = '../../';
+const manPath = '../../../';
+// const getPixivData = require('./getPixivData.js');
+// const downloadImg = require('../CrawlerCommon/downloadImg.js');
+// const StringTool = require('../../../tool/main.js')['StringTool'];
 
-const getPixivData = require('./getPixivData.js');
-const downloadImg = require('../CrawlerCommon/downloadImg.js');
+// //缓存设置
+// const redisConfig = require('../../../config/index.js')['redisConfig'];
+// const redisCtl = require('../../dataBaseControl/redisControl.js');
+// //url解析
+// const parseUrl = require('url')
+// const querystring = require('querystring');
 
-const events = require('events');
-const StringTool = require('../../../tool/main.js')['StringTool'];
+const redisConfig = require('../../../config/index.js')['redisConfig'];
+
+const requireMehod = require(servicePath+'router/refPath.js');
+requireMehod('getPixivHotList');
 
 const MainStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
-//缓存设置
-const redisConfig = require('../../../config/index.js')['redisConfig'];
-const redisCtl = require('../../dataBaseControl/redisControl.js');
-//url解析
-const parseUrl = require('url')
-const querystring = require('querystring');
-
-
-//var emitter = new events.EventEmitter();
 var mainObj = {
 	contrl: async (ctx, next) => {
 		ctx.body = {
@@ -132,7 +134,7 @@ var mainObj = {
 						console.time('downImgList');
 						let setItem = await handleData(res);
 						if (setItem.cashDownList) {
-							const downloadThread = require('../CrawlerCommon/downloadThread.js');
+	
 							var path = 'client/cash';
 							var downList = setItem.cashDownList
 							var downObj = new downloadThread({

@@ -1,5 +1,8 @@
+const servicePath = '../../'
+const downloadImg = require('../downloadImg.js');
 
-const downloadImg = require('../CrawlerCommon/downloadImg.js');
+const StringTool = require(servicePath+'utils/stringTool.js');
+const getPixivData = require('../getPixivData.js');
 process.on('message', (opt)=>{
 
     childFun(opt); 
@@ -9,8 +12,7 @@ var wait = 5000;
 function childFun(parames){
     var imgId = parames.imgId;
     var imgIdNum = parames.imgIdNum;
-    var StringTool = require('../../../tool/main.js')['StringTool'];
-    var getPixivData = require('./getPixivData.js');
+
     var url = `https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${imgId}`;
     var upUrl = StringTool.strToHexCharCode(url);
     var fakeCtx={

@@ -4,7 +4,7 @@ var pixivAbout = require('../config/')['pixivConfig']
 var fs = require('fs');
 var events = require('events');
 var emitter = new events.EventEmitter();
-var request = require('../tool/customRequest.js');
+var request = require('./utils/customRequest.js');
 var cheerio = require('cheerio');
 
 var main={

@@ -114,7 +114,7 @@ function startCash(){
         makeprocess:function(){
             let  processList=processMain.processList
             if(processList.length===0){
-                var downChild = cp.fork('./server/cashChild.js',{
+                var downChild = cp.fork('./server/service/process/cashChild.js',{
                    silent:true
                 });
                 

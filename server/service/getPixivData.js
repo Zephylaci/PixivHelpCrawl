@@ -1,10 +1,13 @@
-const StringTool = require('../../../tool/main.js')['StringTool'];
-const getHtmlData = require('../CrawlerCommon/getHtmlData.js');
-const imgFilter = require('../ImgControler/imgFilter.js')
-const cheerio = require('cheerio');
-const request = require('../../../tool/customRequest.js');
+const servicePath = '../';
+const manPath = '../../';
+// const StringTool = require(servicePath+'utils/main.js')['StringTool'];
+// const getHtmlData = require(servicePath+'service/getHtmlData.js');
+// const imgFilter = require(servicePath+'utils/imgFilter.js')
+// const cheerio = require('cheerio');
+// const request = require(servicePath+'utils/customRequest.js');
 
-
+const requireMehod = require(servicePath+'router/refPath.js');
+requireMehod('getPixivData');
 
 
 
@@ -14,12 +17,12 @@ var mainObj = {
       code: 200
     }
     //代理逻辑
-    var mainConfig = require('../../../config');
+    var mainConfig = require(manPath+'config');
     if(mainConfig.proxyApi){
         var trueUrl = mainConfig.proxyApi+'/api/getPixivData';
         console.log(trueUrl);
         var requestData=ctx.request.body;
-        var promise = require({
+        var promise = request({
             type: 'POST',
             url: trueUrl,
             data: requestData

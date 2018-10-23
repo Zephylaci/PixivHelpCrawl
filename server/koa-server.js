@@ -5,14 +5,14 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const KoaRouter = require('koa-router')()
-const apiRouter = require('./api/api-routers.js')
+const apiRouter = require('./router/api-routers.js')
 const proxyRouter = require('./proxyApi/proxyControlAndRouters.js')
 const static = require('koa-static');
 const path = require('path');
 
 var mainConfig = require('../config/index.js')
 var pathConfig = mainConfig['pathConfig']
-var makeRouterList = require('../tool/main.js')['makeRouterList'];
+var makeRouterList = require('./utils/makeRouterList.js');
 onerror(app)
 
 

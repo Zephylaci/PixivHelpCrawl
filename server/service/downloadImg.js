@@ -3,15 +3,19 @@
 *  功能：根据url下载文件到指定文件夹 
 *        
 **/
-const request = require('../../../tool/customRequest.js');
-const fs = require('fs');
-const handleUrl = require('url');
+const servicePath = '../';
+const manPath = '../../';
+// const request = require(servicePath+'/utils/customRequest.js');
+// const fs = require('fs');
+// const handleUrl = require('url');
 
-var pixivAbout = require('../../../config')['pixivConfig'];
-var pathConfig = require('../../../config')['pathConfig'];
-var checkImg = require('../ImgControler/checkImg.js');
+var pixivAbout = require(manPath+'config')['pixivConfig'];
+var pathConfig = require(manPath+'config')['pathConfig'];
 
-var events = require('events');
+const requireMehod = require(servicePath+'router/refPath.js');
+requireMehod('downloadImg');
+// var checkImg = require('../ImgControler/checkImg.js');
+// var events = require('events');
 var emitter = new events.EventEmitter();
 
 //if (!fs.existsSync(pathConfig.downloadPath)) fs.mkdirSync(pathConfig.downloadPath);

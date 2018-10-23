@@ -1,3 +1,7 @@
+/*
+* 需要：jq载入后
+* 行为：将loadingConturl,postData挂到jq中
+*/
 $(function(window,$){
         //显示/删除一个加载中的转圈
         var loadingConturl={

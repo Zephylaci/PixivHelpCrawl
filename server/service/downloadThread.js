@@ -1,6 +1,6 @@
 
 const cp = require('child_process');
-const judgePath = require('path');
+
 
 class makeDownLoadObj {
     constructor({ path = 'client/cash', limitRunNum = 5 }) {
@@ -142,7 +142,7 @@ class makeDownLoadObj {
         let common = downLoadObj.common;
         let processList = common.processList
         if (processList.length === 0) {
-            var downChild = cp.fork('./server/api/CrawlerCommon/downloadChild.js', {
+            var downChild = cp.fork('./server/service/process/downloadChild.js', {
                 silent:true
             });
 

@@ -1,6 +1,6 @@
-const proxyMain = require('./proxyMain.js')
-var KoaRouter = require('koa-router')();
-const request = require('../../tool/customRequest.js');
+// const proxyMain = require('./proxyMain.js')
+// var KoaRouter = require('koa-router')();
+// const request = require('../../tool/customRequest.js');
 
 var routerConfig={
     

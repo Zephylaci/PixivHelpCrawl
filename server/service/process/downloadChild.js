@@ -1,5 +1,5 @@
 
-const downloadImg = require('./downloadImg.js');
+const downloadImg = require('../downloadImg.js');
 var tryGet = 1;
 var wait = 5000;
 

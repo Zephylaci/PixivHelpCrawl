@@ -1,4 +1,3 @@
-@CHARSET "UTF-8";
 
 /*   loading   */
 #loaderContent{
@@ -56,14 +55,12 @@
    overflow: auto;
 }
 .mdui-card-actions.normal-infoItem{
-    display:flex;
     padding:12px;
-    align-items: center;
-    justify-content: space-between;
-}
-.normal-infoItem>span{
-    flex:1;
+    overflow:hidden;
 
+}
+.normal-infoItem>.text-id{
+    float:right;
 }
 .normal-infoItem .text-id{
     text-align:right;
@@ -72,7 +69,7 @@
     margin:0 auto;
 }
 .img-item{
-    width:24.5%;
+    width:24%;
 }
 .showContent{
     margin-top:30px;
