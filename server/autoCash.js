@@ -1,6 +1,5 @@
 const redisConfig = require('../config/index.js')['redisConfig'];
 const autoCash = redisConfig['autoCash'];
-
 if(redisConfig.useCash===false||autoCash.enable===false){
     return
 }
