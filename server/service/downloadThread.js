@@ -14,7 +14,7 @@ class makeDownLoadObj {
             runNum: 0,
             path: path,
             limitRunNum: limitRunNum,
-            downRes:[],
+            downRes: [],
             downOver: null
         }
         this.DEFALUT = {
@@ -27,7 +27,7 @@ class makeDownLoadObj {
             runNum: 0, //当前正在运行的数量
             path: path,//下载保存到的路径
             limitRunNum: limitRunNum, //限制运行的数量
-            downRes:[], //缓存所有下载完后的返回值
+            downRes: [], //缓存所有下载完后的返回值
             downOver: null //下载完成执行,如果存在
         }
     }
@@ -84,7 +84,7 @@ class makeDownLoadObj {
             }
 
         }
-        console.log('downloadThread 下载对象：队列中：', common.linkList.length, '运行中:', common.runNum, '限制数：', common.limitRunNum);
+
         if (common.linkList.length != 0 && common.limitRunNum != 0) {
             while (common.runNum < common.limitRunNum) {
                 common.runNum++;
@@ -114,6 +114,7 @@ class makeDownLoadObj {
                 }
             }
         }
+        console.log('downloadThread 下载对象：队列中：', common.linkList.length, '运行中:', common.runNum, '限制数：', common.limitRunNum);
 
     }
 
@@ -143,7 +144,7 @@ class makeDownLoadObj {
         let processList = common.processList
         if (processList.length === 0) {
             var downChild = cp.fork('./server/service/process/downloadChild.js', {
-                silent:true
+                silent: true
             });
 
             downChild.on('message', (parames) => {

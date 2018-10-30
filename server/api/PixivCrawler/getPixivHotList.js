@@ -18,7 +18,7 @@ const manPath = '../../../';
 
 const redisConfig = require('../../../config/index.js')['redisConfig'];
 
-const requireMehod = require(servicePath+'router/refPath.js');
+const requireMehod = require(servicePath + 'router/refPath.js');
 requireMehod('getPixivHotList');
 
 const MainStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
@@ -34,7 +34,7 @@ var mainObj = {
 		if (ctx.myGetType) {
 			var useCash = true
 			var upTime = ctx.upTime;
-			redisCtl.myOneSetpAllOver =true// 是否重试的开关
+			redisCtl.myOneSetpAllOver = true// 是否重试的开关
 			getList.push(ctx.url)
 
 		} else {
@@ -72,7 +72,7 @@ var mainObj = {
 			ctx.body.contents = '缓存不存在且读取出错';
 		}
 		//autoCash需要拿到这个对象来方便结束
-		if(ctx.myGetType){
+		if (ctx.myGetType) {
 			return redisCtl
 		}
 		function queryHotList(queryUrl) {
@@ -92,12 +92,9 @@ var mainObj = {
 				let timeKey = upTime.replace(/-/g, '') + '_p' + page;
 
 				//读取缓存
-				redisCtl.deal({
-					type: 'HMGET',
-					contents: {
-						mainKey: type,
-						key: timeKey
-					}
+				redisCtl.HMGET({
+					mainKey: type,
+					key: timeKey
 				}).then((res) => {
 					if (Object.prototype.toString.call(res) === "[object Array]") {
 						var cashData = res[0];
@@ -125,7 +122,7 @@ var mainObj = {
 				var _promise = getPixivData.contrl(fakeCtx)
 				_promise.then(async (res) => {
 					if (!res) {
-						myErrHandle('缓存不存在且读取出错,res is null',res)
+						myErrHandle('缓存不存在且读取出错,res is null', res)
 
 						return
 					}
@@ -134,7 +131,7 @@ var mainObj = {
 						console.time('downImgList');
 						let setItem = await handleData(res);
 						if (setItem.cashDownList) {
-	
+
 							var path = 'client/cash';
 							var downList = setItem.cashDownList
 							var downObj = new downloadThread({
@@ -164,10 +161,7 @@ var mainObj = {
 						var needData = JSON.stringify(setItem.data);
 						//缓存 榜单的信息
 						if (useCash) {
-							await redisCtl.deal({
-								type: 'HMSET',
-								contents: setItem
-							});
+							await redisCtl.HMSET(setItem);
 						}
 
 
@@ -188,7 +182,7 @@ var mainObj = {
 								teype: 'nomarl',
 								method: changeData
 							}];
-							if(useCash){
+							if (useCash) {
 								handleList.push({
 									type: 'nomarl',
 									method: makeDownList
@@ -251,23 +245,23 @@ var mainObj = {
 							return outData;
 						}
 					} else {
-						myErrHandle('缓存不存在且读取出错,res.error',res)
-						
+						myErrHandle('缓存不存在且读取出错,res.error', res)
+
 					}
 
 				})
 				_promise.catch((err) => {
-					myErrHandle('break',err)
+					myErrHandle('break', err)
 				})
 
-				function myErrHandle(msg,err){
-					console.log(msg,err)
-					if(ctx.myGetType){
+				function myErrHandle(msg, err) {
+					console.log(msg, err)
+					if (ctx.myGetType) {
 						redisCtl.myOneSetpAllOver = false
 					}
 					errorStep('err')
 				}
-				
+
 				return _promise
 			}
 			return promise;
