@@ -16,6 +16,8 @@ let pathAddress = {
     pixivDownloadControl: servicePath + 'service/pixivDownloadControl.js',
     getHtmlData: servicePath + 'service/getHtmlData.js',
     getPixivData: servicePath + 'service/getPixivData.js',
+    handlePixivHotList: servicePath + 'service/handlePixivHotList.js',
+
 
     cp: 'child_process',
     judgePath: 'path',
@@ -34,7 +36,7 @@ letPathConfig = {
     getHtmlData: ['request', 'fs', 'events'],
     pixivDownloadControl: ['cp', 'judgePath', 'mySqlCtl'],
     proxyImg: ['StringTool', 'URL', 'request'],
-    getPixivHotList: ['getPixivData', 'downloadImg', 'StringTool', 'redisCtl', 'parseUrl', 'querystring', 'downloadThread'],
+    getPixivHotList: ['getPixivData', 'downloadImg', 'StringTool', 'redisCtl', 'parseUrl', 'querystring', 'downloadThread', 'handlePixivHotList'],
     downloadImg: ['request', 'fs', 'handleUrl', 'checkImg', 'events'],
 }
 function requireMehod(configKey) {
