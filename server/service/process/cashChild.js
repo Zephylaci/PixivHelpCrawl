@@ -1,58 +1,41 @@
-const getPixivHotList = require('../../api/PixivCrawler/getPixivHotList.js');
-var activeEndRedis = null
+
+global['redisCtl'] = require('../../model/redisControl.js');
+global['StringTool'] = require('../../utils/stringTool.js');
+global['getPixivData'] = require('../../service/getPixivData.js');
+global['downloadThread'] = require('../../service/downloadThread.js');
+
+const handlePixivHotList = require('../handlePixivHotList.js');
+
+
 var tryGet = 1;
 var wait = 5000;
 
-function childFun(parames) {
-    var fakeCtx={
-        myGetType:'autoCash',
-        url:parames.url,
-		upTime:getYesterday()
-    }
-	function getYesterday(){
+function childFun(getConfig) {
+	var mainQuery = new handlePixivHotList(getConfig);
 
-		var now = new Date();
-		var year = now.getFullYear();
-		var Month = addZero(now.getMonth()+1)
-		var day= addZero(now.getDate()-1);
-		function addZero(num){
-			var num = num.toString()
-			if(num.length===1){
-				num = '0'+num
-			}
-			return num
-		}
-		return year+'-'+Month+'-'+day
-
-	}
-    getPixivHotList.contrl(fakeCtx)
-        .then((redisObj) => {
+    mainQuery.queryStartWithCash()
+        .then(() => {
 			tryGet = 1;
-			if(redisObj.myOneSetpAllOver===false){
-				myCatch(err,parames);
-			}else{
-				activeEndRedis=redisObj.end
-				process.send(fakeCtx);
-			}
-
+			process.send(getConfig);
         }).catch((err) => {
-			myCatch(err,parames);
+		    console.log(err);
+			myCatch(err,getConfig);
 
         });
 }
-function myCatch(err,parames){
+function myCatch(err,getConfig){
 	console.log('cashChild：进入重试流程，等待时间，', wait / 1000, 's');
 	if (tryGet < 5) {
-		console.log(parames);
+		console.log(getConfig);
 		setTimeout(() => {
-			childFun(parames)
+			childFun(getConfig)
 		}, wait)
 		tryGet++
 		wait += wait;
 	} else {
 		tryGet = 1;
-		parames.downState = 'faill';
-		process.send(parames);
+		getConfig.downState = 'faill';
+		process.send(getConfig);
 	}
 }
 process.on('message', (opt) => {
@@ -60,17 +43,13 @@ process.on('message', (opt) => {
 });
 
 process.on('close', () => {
-    // endRedis();
-    // endRedis = function () { };
+
     console.log('autoCash process close!')
 
 });
 
 process.on('disconnect', () => {
-	if(typeof activeEndRedis==='function'){
-		activeEndRedis();
-	}
-	activeEndRedis = null
+	redisCtl.end();
     console.log('autoCash process disconnect!')
 
 

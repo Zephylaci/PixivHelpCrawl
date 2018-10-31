@@ -1,4 +1,5 @@
 
+//调用这个类的页面需要载入redisCtl
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
 class handlePixivHotlist {
     constructor(

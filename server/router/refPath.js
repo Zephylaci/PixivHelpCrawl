@@ -39,6 +39,8 @@ letPathConfig = {
     getPixivHotList: ['getPixivData', 'downloadImg', 'StringTool', 'redisCtl', 'parseUrl', 'querystring', 'downloadThread', 'handlePixivHotList'],
     downloadImg: ['request', 'fs', 'handleUrl', 'checkImg', 'events'],
 }
+//这样做不好，会污染运行的全局
+//TODO 在不破坏封装性的情况下，对引入进行管理,参考依赖注入，nest
 function requireMehod(configKey) {
     let config = letPathConfig[configKey];
     if (config) {

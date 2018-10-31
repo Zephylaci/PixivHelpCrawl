@@ -101,15 +101,12 @@ function startCash() {
 
         },
         oneStep: function () {
-            var url = processMain.linkList.shift();
-            console.log(`autoCash: ${url} 缓存开始`);
+            var getConfig = processMain.linkList.shift();
+            console.log(`autoCash: ${JSON.stringify(getConfig)} 缓存开始`);
 
             var downChild = processMain.makeprocess();
 
-            var opt = {
-                url: url
-            }
-            downChild.send(opt);
+            downChild.send(getConfig);
         },
         makeprocess: function () {
             let processList = processMain.processList
@@ -121,8 +118,8 @@ function startCash() {
 
                 processMain.allCreate.push(downChild);
 
-                downChild.on('message', (parames) => {
-                    console.log(`autoCash process: ${parames.url} 缓存过程结束`);
+                downChild.on('message', (getConfig) => {
+                    console.log(`autoCash process: ${JSON.stringify(getConfig)} 缓存过程结束`);
                     processMain.runNum--;
                     console.log('END缓存过程状态：', '队列中：', processMain.linkList.length, '运行中:', processMain.runNum)
                     if (processMain.linkList.length === 0 && processMain.runNum === 0) {
@@ -154,18 +151,35 @@ function startCash() {
 
     function makeLinkList(plan, deep) {
         var linkList = [];
+
         for (var i = 0; i < plan.length; i++) {
-            for (var j = 1; j <= deep; j++) {
-                let type = plan[i];
-                let page = j;
-                let baseUrl = `https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}`;
-                linkList.push(baseUrl);
-            }
+            linkList.push({
+                getType: plan[i],
+                getDate: getYesterday(),
+                startPage: 1,
+                endPage: deep
+            })
         }
 
         return linkList
     }
+    function getYesterday(){
+		var now = new Date();
+		var year = now.getFullYear();
+		var Month = addZero(now.getMonth()+1)
+		var day= addZero(now.getDate()-1);
+		function addZero(num){
+			var num = num.toString()
+			if(num.length===1){
+				num = '0'+num
+			}
+			return num
+		}
+		return year+'-'+Month+'-'+day
+
+	}
 }
+
 
 function makePlan() {
     if (timePlan != null) {
