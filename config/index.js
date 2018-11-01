@@ -2,6 +2,7 @@ const fs = require('fs');
 var development_env ={                                                                                                                                                                                             
     port: 8082,                                                                                                                                                                                                    
     mysqlConfig: {
+        useMysql:true,
 		host: '',
 		user: '',
 		password: '',

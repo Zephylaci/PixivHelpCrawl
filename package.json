@@ -13,7 +13,7 @@
     "Crawl"
   ],
   "author": "zephyru@163.com",
-  "license": "ISC",
+  "license": "GPL",
   "dependencies": {
     "async": "^2.6.1",
     "axios": "^0.18.0",

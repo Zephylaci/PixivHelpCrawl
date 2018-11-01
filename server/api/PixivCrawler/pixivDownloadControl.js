@@ -4,8 +4,8 @@ const manPath = '../../../';
 const requireMehod = require(servicePath + 'router/refPath.js');
 
 const cp = requireMehod('cp');
-const parsePath = requireMehod('parsePath');
-const mySqlCtl = requireMehod('mySqlCtl');
+
+const pixivDownloadModel = requireMehod('pixivDownloadModel')
 
 function resetCommon() {
     mainObj.common.runStat = false;
@@ -67,85 +67,9 @@ var mainObj = {
             }
         }
     },
-    downImgInsertSql: downImgInsertSql
+    downImgInsertSql: pixivDownloadModel.downImgInsertSql
 }
-function downImgInsertSql(downData) {
-    var cashInfo = downData;
 
-    var fileName = cashInfo.fileName;
-    //保存图片信息和tags到数据库
-    //filName 与imgPath由 下载的参数提供
-    let imgId = Date.now();
-    let imgTitle = cashInfo.illustTitle;
-    let imgName = fileName;
-    let imgOrigin = 'PiGetPixiv';
-    let imgTruePath = parsePath.join(__dirname + '../../.' + cashInfo.imgPath);
-    let imgPath = '/download' + fileName;
-    let authorName = cashInfo.userName;
-
-    var imgInsertSql = {
-        type: 'insert',
-        tableName: 'imgStorage',
-        insertOpt: {
-            imgId: imgId,
-            imgTitle: imgTitle,
-            imgName: imgName,
-            imgOrigin: imgOrigin,
-            imgTruePath: imgTruePath,
-            imgPath: imgPath
-        }
-    }
-    var sqlOpt = [];
-
-    sqlOpt.push(imgInsertSql);
-
-    sqlOpt = makeTagSqlOpt(cashInfo.tags.tags, sqlOpt)
-    function makeTagSqlOpt(tagsArr, sqlOpt) {
-        var length = tagsArr.length <= 4 ? tagsArr.length : 4;
-
-        for (var i = 0; i < length; i++) {
-            let targItem = tagsArr[i];
-            var tagInsertSql = {
-                type: 'insert',
-                tableName: 'pixivTages',
-                insertOpt: {
-                    tagName: targItem.tag,
-                    romaji: targItem.romaji,
-                    imgTitle: imgTitle,
-                    authorName: authorName,
-                    authorId: cashInfo.userId,
-                    imgName: imgName
-
-                }
-            }
-            if (typeof targItem.translation != "undefined") {
-                tagInsertSql.insertOpt.tagTrans = JSON.stringify(targItem.translation)
-            }
-            sqlOpt.push(tagInsertSql)
-        }
-        return sqlOpt
-    }
-    var judgeSqlOpt = {
-        type: 'search',
-        getValue: ['imgId'],
-        tableName: 'imgStorage',
-        key: { imgName: imgName }
-    }
-    var sqlResult = '';
-    mySqlCtl.contrl(judgeSqlOpt)
-        .then((res) => {
-            if (res.length === 0) {
-                //不存在才写入
-                mySqlCtl.contrl(sqlOpt)
-                    .then((res) => {
-                        console.log(fileName, '相关信息数据库写入完成');
-                    });
-            } else {
-                console.log(`getPixivData : ${fileName} 数据库中已存在信息,不重复写入`);
-            }
-        });
-
-}
 function controlStep() {
     var common = mainObj.common;
 
@@ -217,7 +141,7 @@ function makeprocess(imgId) {
             //写入数据库
             //以后可以写错误处理
             if (parames.downState != 'faill') {
-                downImgInsertSql(parames.resultData);
+                mainObj.downImgInsertSql(parames.resultData);
             }
 
             var common = mainObj.common

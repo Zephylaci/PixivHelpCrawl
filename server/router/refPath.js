@@ -21,8 +21,10 @@ let pathAddress = {
 
     cp: 'child_process',
     
-    mySqlCtl: servicePath + 'dataBaseControl/mysqlControl.js',
+    mySqlCtl: servicePath + 'model/mysqlControl.js',
     redisCtl: servicePath + 'model/redisControl.js',
+
+    pixivDownloadModel:servicePath + 'model/pixivDownloadModel.js',
 
     parsePath: 'path',
     parseUrl: 'url',

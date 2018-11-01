@@ -3,38 +3,6 @@ SET NAMES utf8mb4;
 CREATE DATABASE  IF NOT EXISTS imageAdmin DEFAULT CHARSET=utf8mb4;
 use imageAdmin;
 /*
- userList 用户表
-
-CREATE TABLE IF NOT EXISTS userList(
-	`uid` INT PRIMARY KEY AUTO_INCREMENT,
-	`user` VARCHAR(10),
-	`password` VARCHAR(255),
-	`salt` VARCHAR(255),
-	`createTime` BIGINT,
-	`lastLoginTime` BIGINT
-);
-
-ALTER TABLE userList ADD UNIQUE (user);
-*/
-/*
- todoList todoList表
- id 唯一标示
- sort 排序，展示顺序越小越优先，同级的话按先后顺序算
- state 状态 0 创建  1完成 2不展示
- content 内容
- createTime 创建时间
- completeTime 完成时间
-
-CREATE TABLE IF NOT EXISTS todoList(
-	`id` INT PRIMARY KEY AUTO_INCREMENT,
-	`sort` TINYINT,
-	`state` TINYINT,
-	`content`  VARCHAR(255),
-	`createTime` BIGINT,
-	`completeTime` BIGINT
-);
-*/
-/*
  imgStorage 图片总表
  imgId:图片唯一标识id 入库的时候存时间戳来作为唯一id
  imgTitle p站标题
