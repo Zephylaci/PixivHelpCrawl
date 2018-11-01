@@ -1,20 +1,18 @@
 const servicePath = '../../';
 const manPath = '../../../';
 
-var pathConfig = require(manPath+'config')['pathConfig'];
-var pixivAbout = require(manPath+'config')['pixivConfig'];
-// var StringTool = require(servicePath+'utils/StringTool.js')
-// var URL = require('url');
-// const request = require(servicePath+'utils/customRequest.js');
-
+const pathConfig = require(manPath+'config')['pathConfig'];
+const pixivAbout = require(manPath+'config')['pixivConfig'];
 
 const requireMehod = require(servicePath+'router/refPath.js');
-requireMehod('proxyImg');
+const StringTool = requireMehod('StringTool')
+const parseUrl = requireMehod('parseUrl')
+const request = requireMehod('request')
 
 var mainObj={
     contrl: async (ctx, next) => {
         var Url = ctx.url;
-        var key = URL.parse(Url,true).query;
+        var key = parseUrl.parse(Url,true).query;
         var getUrl = StringTool.hexCharCodeToStr(key.url);
         console.log(getUrl);
 

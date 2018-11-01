@@ -1,5 +1,5 @@
 /*
-* 所有的页面引用在此管理
+* 模块地址在此管理
  */
 
 const servicePath = '../';
@@ -20,41 +20,31 @@ let pathAddress = {
 
 
     cp: 'child_process',
-    judgePath: 'path',
+    
     mySqlCtl: servicePath + 'dataBaseControl/mysqlControl.js',
     redisCtl: servicePath + 'model/redisControl.js',
-    URL: 'url',
+
+    parsePath: 'path',
     parseUrl: 'url',
-    handleUrl: 'url',
-
 
 }
 
-
+/*
 letPathConfig = {
-    getPixivData: ['StringTool', 'getHtmlData', 'imgFilter', 'cheerio', 'request'],
-    getHtmlData: ['request', 'fs', 'events'],
-    pixivDownloadControl: ['cp', 'judgePath', 'mySqlCtl'],
-    proxyImg: ['StringTool', 'URL', 'request'],
-    getPixivHotList: ['getPixivData', 'downloadImg', 'StringTool', 'redisCtl', 'parseUrl', 'querystring', 'downloadThread', 'handlePixivHotList'],
-    downloadImg: ['request', 'fs', 'handleUrl', 'checkImg', 'events'],
+    //getPixivData: ['StringTool', 'getHtmlData', 'imgFilter', 'cheerio', 'request'],
+    //getHtmlData: ['request', 'fs', 'events'],
+    //pixivDownloadControl: ['cp', 'parsePath', 'mySqlCtl'],
+    //proxyImg: ['StringTool', 'parseUrl', 'request'],
+   // getPixivHotList: ['getPixivData', 'downloadImg', 'StringTool', 'redisCtl', 'parseUrl', 'querystring', 'downloadThread', 'handlePixivHotList'],
+    //downloadImg: ['request', 'fs', 'handleUrl', 'checkImg', 'events','parseUrl'],
 }
-//这样做不好，会污染运行的全局
-//TODO 在不破坏封装性的情况下，对引入进行管理,参考依赖注入，nest
-function requireMehod(configKey) {
-    let config = letPathConfig[configKey];
-    if (config) {
-        for (let i = 0, len = config.length; i < len; i++) {
-            let reqName = config[i];
-            let address = pathAddress[reqName]
-            if (typeof address !== 'string') {
-                address = reqName;
-            }
-            global[reqName] = require(address);
-        }
-
+*/
+function requireMehod(modulName) {
+    let addr = pathAddress[modulName];
+    if (addr) {
+        return require(addr);
     } else {
-        throw 'Config NOt Find';
+         return require(modulName);
     }
 }
 module.exports = requireMehod;

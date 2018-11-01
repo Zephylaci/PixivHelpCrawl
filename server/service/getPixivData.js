@@ -1,15 +1,13 @@
 const servicePath = '../';
 const manPath = '../../';
-// const StringTool = require(servicePath+'utils/main.js')['StringTool'];
-// const getHtmlData = require(servicePath+'service/getHtmlData.js');
-// const imgFilter = require(servicePath+'utils/imgFilter.js')
-// const cheerio = require('cheerio');
-// const request = require(servicePath+'utils/customRequest.js');
 
 const requireMehod = require(servicePath + 'router/refPath.js');
-requireMehod('getPixivData');
 
-
+const StringTool = requireMehod('StringTool');
+const getHtmlData = requireMehod('getHtmlData');
+const imgFilter = requireMehod('imgFilter');
+const cheerio = requireMehod('cheerio');
+const request = requireMehod('request');
 
 var mainObj = {
     contrl: async (ctx, next) => {

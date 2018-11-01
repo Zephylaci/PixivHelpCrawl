@@ -1,15 +1,14 @@
 
-// const request = require('../../../tool/customRequest.js');
-// const fs = require('fs');
-
-// 
-// var events = require('events');
 const servicePath = '../';
 const manPath = '../../';
 const requireMehod = require(servicePath + 'router/refPath.js');
-requireMehod('getHtmlData');
-var pixivAbout = require(manPath + 'config')['pixivConfig'];
-var emitter = new events.EventEmitter();
+
+const request = requireMehod('request');
+const fs = requireMehod('fs');
+const events = requireMehod('events');
+
+const pixivAbout = require(manPath + 'config')['pixivConfig'];
+const emitter = new events.EventEmitter();
 emitter.on("getHtmlOver", () => {
     mainObj.end({
         code: 200,

@@ -1,11 +1,11 @@
 
-// const cp = require('child_process');
-// const judgePath = require('path');
-// const mySqlCtl = require('../dataBaseControl/mysqlControl.js');
 const servicePath = '../../';
 const manPath = '../../../';
 const requireMehod = require(servicePath + 'router/refPath.js');
-requireMehod('pixivDownloadControl');
+
+const cp = requireMehod('cp');
+const parsePath = requireMehod('parsePath');
+const mySqlCtl = requireMehod('mySqlCtl');
 
 function resetCommon() {
     mainObj.common.runStat = false;
@@ -79,7 +79,7 @@ function downImgInsertSql(downData) {
     let imgTitle = cashInfo.illustTitle;
     let imgName = fileName;
     let imgOrigin = 'PiGetPixiv';
-    let imgTruePath = judgePath.join(__dirname + '../../.' + cashInfo.imgPath);
+    let imgTruePath = parsePath.join(__dirname + '../../.' + cashInfo.imgPath);
     let imgPath = '/download' + fileName;
     let authorName = cashInfo.userName;
 

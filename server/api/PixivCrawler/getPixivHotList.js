@@ -5,22 +5,18 @@
 **/
 const servicePath = '../../';
 const manPath = '../../../';
-// const getPixivData = require('./getPixivData.js');
-// const downloadImg = require('../CrawlerCommon/downloadImg.js');
-// const StringTool = require('../../../tool/main.js')['StringTool'];
-
-// //缓存设置
-// const redisConfig = require('../../../config/index.js')['redisConfig'];
-// const redisCtl = require('../../dataBaseControl/redisControl.js');
-// //url解析
-// const parseUrl = require('url')
-// const querystring = require('querystring');
-
-const redisConfig = require('../../../config/index.js')['redisConfig'];
 
 const requireMehod = require(servicePath + 'router/refPath.js');
-requireMehod('getPixivHotList');
+const getPixivData = requireMehod('getPixivData');
+const downloadImg = requireMehod('downloadImg');
+const handlePixivHotList = requireMehod('handlePixivHotList');
+const StringTool = requireMehod('StringTool');
 
+const redisConfig = require('../../../config/index.js')['redisConfig'];
+const redisCtl = requireMehod('redisCtl');
+
+const parseUrl = requireMehod('parseUrl');
+const querystring = requireMehod('querystring');
 
 var mainObj = {
 	contrl: async (ctx, next) => {

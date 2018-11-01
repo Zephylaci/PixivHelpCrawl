@@ -5,33 +5,32 @@
 **/
 const servicePath = '../';
 const manPath = '../../';
-// const request = require(servicePath+'/utils/customRequest.js');
-// const fs = require('fs');
-// const handleUrl = require('url');
 
-var pixivAbout = require(manPath + 'config')['pixivConfig'];
-var pathConfig = require(manPath + 'config')['pathConfig'];
+const pixivAbout = require(manPath + 'config')['pixivConfig'];
+const pathConfig = require(manPath + 'config')['pathConfig'];
 
 const requireMehod = require(servicePath + 'router/refPath.js');
-requireMehod('downloadImg');
-// var checkImg = require('../ImgControler/checkImg.js');
-// var events = require('events');
+const request = requireMehod('request');
+const fs = requireMehod('fs');
+const parseUrl = requireMehod('url');
+const checkImg = requireMehod('checkImg');
+const events = requireMehod('events');
+
 var emitter = new events.EventEmitter();
 
-//if (!fs.existsSync(pathConfig.downloadPath)) fs.mkdirSync(pathConfig.downloadPath);
 
 var wait = 30000;
 var waitTimer = null;
 
 
+function downLoadMethod(url, upPath=pathConfig.downloadPath) {
 
-function downLoadMethod(url, upPath) {
-
-    var urlObj = handleUrl.parse(url);
+    var urlObj = parseUrl.parse(url);
     var fileName = urlObj.path.slice(urlObj.path.lastIndexOf('/'));
-    var imgPath = pathConfig.downloadPath + fileName;
-    if (upPath) {
-        imgPath = upPath + fileName;
+    var imgPath = upPath+ fileName;
+
+    if (!fs.existsSync(upPath)){
+        fs.mkdirSync(upPath)
     }
 
 

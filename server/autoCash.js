@@ -163,11 +163,11 @@ function startCash() {
 
         return linkList
     }
-    function getYesterday(){
-		var now = new Date();
-		var year = now.getFullYear();
-		var Month = addZero(now.getMonth()+1)
-		var day= addZero(now.getDate()-1);
+   function getYesterday(){
+		var need = new Date(new Date().getTime()-86400000);
+		var year = need.getFullYear();
+		var Month = addZero(need.getMonth()+1)
+		var day= addZero(need.getDate());
 		function addZero(num){
 			var num = num.toString()
 			if(num.length===1){

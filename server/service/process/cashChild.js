@@ -1,9 +1,3 @@
-
-global['redisCtl'] = require('../../model/redisControl.js');
-global['StringTool'] = require('../../utils/stringTool.js');
-global['getPixivData'] = require('../../service/getPixivData.js');
-global['downloadThread'] = require('../../service/downloadThread.js');
-
 const handlePixivHotList = require('../handlePixivHotList.js');
 
 
@@ -49,8 +43,6 @@ process.on('close', () => {
 });
 
 process.on('disconnect', () => {
-	redisCtl.end();
+    handlePixivHotList.closeRedis();
     console.log('autoCash process disconnect!')
-
-
 })

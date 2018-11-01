@@ -1,7 +1,14 @@
+const servicePath = '../'
+const requireMehod = require(servicePath + 'router/refPath.js');
 
-//调用这个类的页面需要载入redisCtl
+const getPixivData = requireMehod('getPixivData')
+const downloadThread = requireMehod('downloadThread')
+const StringTool = requireMehod('StringTool')
+const redisCtl = requireMehod('redisCtl')
+
+
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
-class handlePixivHotlist {
+class handlePixivHotList {
     constructor(
         {
             getType = null, //获取的类型（不能为null）
@@ -223,5 +230,6 @@ class handlePixivHotlist {
         return queryResult.data.contents;
     }
 }
+handlePixivHotList.closeRedis = redisCtl.end;
 
-module.exports = handlePixivHotlist;
+module.exports = handlePixivHotList;
