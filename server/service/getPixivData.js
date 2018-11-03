@@ -2,63 +2,29 @@ const servicePath = '../';
 const manPath = '../../';
 
 const requireMehod = require(servicePath + 'router/refPath.js');
-
 const StringTool = requireMehod('StringTool');
 const getHtmlData = requireMehod('getHtmlData');
-const imgFilter = requireMehod('imgFilter');
 const cheerio = requireMehod('cheerio');
-const request = requireMehod('request');
 
-var mainObj = {
-    contrl: async (ctx, next) => {
-        ctx.body = {
-            code: 200
+
+const mainObj = {
+    //通用的返回
+    contrl: async (queryUrl) => {
+        let opt = {
+            url: queryUrl
         }
-        //代理逻辑
-        var mainConfig = require(manPath + 'config');
-        if (mainConfig.proxyApi) {
-            var trueUrl = mainConfig.proxyApi + '/api/getPixivData';
-            console.log(trueUrl);
-            var requestData = ctx.request.body;
-            var promise = request({
-                type: 'POST',
-                url: trueUrl,
-                data: requestData
-            });
-            var result = null
-            await promise.then(function (response) {
-                ctx.status = 200;
-                ctx.body = response.data;
-                result = response.data;
-            }).catch(function (error) {
-                console.log(error);
-                ctx.status = 404;
-                ctx.body = 'error';
-            });
-            return result
-        }
-        //代理逻辑结束
+        let result ={};
 
-        var upUrl = StringTool.hexCharCodeToStr(ctx.request.body.Url);
-        var filter = ctx.request.body.Filter || true;
-
-        var opt = {
-            url: upUrl
-        }
-        var getHtmlPromise = getHtmlData.start(opt);
-
+        let getHtmlPromise = getHtmlData.start(opt);
         getHtmlPromise.then((getResult) => {
-
             if (getResult.code === 200) {
-                var handleOpt = {
-                    upUrl: upUrl,
+                let handleOpt = {
+                    upUrl: queryUrl,
                     info: getResult.data,
-                    filter: filter
                 }
 
                 result = Trial(handleOpt);
             } else {
-                ctx.body.code = -1;
                 result = getResult.data
             }
         })
@@ -67,8 +33,6 @@ var mainObj = {
         })
         await getHtmlPromise
 
-
-        ctx.body.content = result;
         return result;
 
     }
@@ -88,8 +52,6 @@ function Norn() {
 
         Public.upUrl = handleOpt.upUrl;
         Public.info = handleOpt.info;
-        Public.filter = handleOpt.filter;
-
 
         var Method = Norn.Scales;
         var i = 0;
@@ -102,13 +64,6 @@ function Norn() {
             }
         }
         return result;
-        /*            for(var i =0;i<Alignment.length;i++){
-                        result=Method[Alignment[i]]();      
-                        if(!(result ==='next')){
-                            return result;
-                        }
-                    }  */
-
     }
 }
 /*
@@ -128,23 +83,14 @@ Norn.Scales = {
     Convenient: () => {
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
-
         var info = Public.info;
-
         if (upUrl.indexOf('format=json') != -1) {
             if (typeof info === "string") {
                 //linux兼容
                 info = JSON.parse(Public.info)
             }
 
-            var opt = {
-                filterType: 'Convenient',
-                sourceData: info
-            }
-            if (Public.filter == true) {
-                var result = imgFilter(opt);
-                info.contents = result.resultData;
-            }
+
             //2018/7/28 p站缩略图403对策
             var resArr = info.contents;
             for (var i = 0; i < resArr.length; i++) {
@@ -207,7 +153,6 @@ Norn.Scales = {
         }
     },
     Ordinary: () => {
-
         var Public = Norn.Scales.Public;
         var $ = Public.$;
         var css = $('link');
@@ -218,8 +163,6 @@ Norn.Scales = {
     }
 }
 
-Norn.Trial = function (type) {
 
-}
 
 module.exports = mainObj;

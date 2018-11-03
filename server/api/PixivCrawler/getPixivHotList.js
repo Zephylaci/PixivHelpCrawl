@@ -7,16 +7,10 @@ const servicePath = '../../';
 const manPath = '../../../';
 
 const requireMehod = require(servicePath + 'router/refPath.js');
-const getPixivData = requireMehod('getPixivData');
-const downloadImg = requireMehod('downloadImg');
 const handlePixivHotList = requireMehod('handlePixivHotList');
-const StringTool = requireMehod('StringTool');
 
 const redisConfig = require('../../../config/index.js')['redisConfig'];
-const redisCtl = requireMehod('redisCtl');
 
-const parseUrl = requireMehod('parseUrl');
-const querystring = requireMehod('querystring');
 
 var mainObj = {
 	contrl: async (ctx, next) => {

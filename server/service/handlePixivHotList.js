@@ -3,7 +3,7 @@ const requireMehod = require(servicePath + 'router/refPath.js');
 
 const getPixivData = requireMehod('getPixivData')
 const downloadThread = requireMehod('downloadThread')
-const StringTool = requireMehod('StringTool')
+
 const redisCtl = requireMehod('redisCtl')
 
 
@@ -55,15 +55,15 @@ class handlePixivHotList {
 
         let BaseUrl = MainUrlStr.replace('${type}', COMMON.getType).replace('${date}', COMMON.getDate.replace(/-/g, ''));
         for (let i = COMMON.startPage; i <= COMMON.endPage; i++) {
-            var queryUrl = BaseUrl.replace('${page}', i);
-            var _cashResult = null;
+            let queryUrl = BaseUrl.replace('${page}', i);
+            let _cashResult = null;
             //读取缓存
             await redisCtl.HMGET({
                 mainKey: mainKey,
                 key: timeKey + i
             }).then((res) => {
                 if (Object.prototype.toString.call(res) === "[object Array]") {
-                    var cashData = res[0];
+                    let cashData = res[0];
                     //缓存的数据
                     if (cashData) {
                         _cashResult = JSON.parse(cashData).contents;
@@ -83,14 +83,8 @@ class handlePixivHotList {
 
     }
     async originQuery(url, useCash) {
-        let fakeCtx = {
-            request: {
-                body: {
-                    Url: StringTool.strToHexCharCode(url)
-                }
-            }
-        }
-        let _promise = getPixivData.contrl(fakeCtx);
+
+        let _promise = getPixivData.contrl(url);
         let result = null;
 
         _promise.catch((err) => {
@@ -134,7 +128,8 @@ class handlePixivHotList {
                         })
                     }
 
-                    let outData = {};
+                   let outData = {};
+                   
                     outData.key = inData.date + '_p' + inData.page;
 
                     //主哈希
