@@ -6,14 +6,14 @@ const StringTool = requireMehod('StringTool');
 const getHtmlData = requireMehod('getHtmlData');
 const cheerio = requireMehod('cheerio');
 
-
+var Trial = Norn();
 const mainObj = {
     //通用的返回
     contrl: async (queryUrl) => {
         let opt = {
             url: queryUrl
         }
-        let result ={};
+        let result = {};
 
         let getHtmlPromise = getHtmlData.start(opt);
         getHtmlPromise.then((getResult) => {
@@ -37,8 +37,42 @@ const mainObj = {
 
     }
 }
+mainObj.MonomersClass = class {
+    constructor() {
+    }
+    async contrl(queryUrl) {
+        let opt = {
+            url: queryUrl
+        }
+        let result = {};
 
-var Trial = Norn();
+        let promise = new Promise((resolve, reject) => {
+            let getHtmlPromise = new getHtmlData.getPixivHtmlClass().start(opt);
+            //let getHtmlPromise = getHtmlTest;
+            getHtmlPromise.then((getResult) => {
+                let result = null;
+                if (getResult.code === 200) {
+                    let handleOpt = {
+                        upUrl: queryUrl,
+                        info: getResult.data,
+                    }
+                    result = Trial(handleOpt);
+                } else {
+                    result = getResult.data
+                }
+                console.log('getPixivData MonomersClass getOver', opt,result.urls.original);
+                resolve(result);
+            })
+            getHtmlPromise.catch((err) => {
+                result = err;
+            })
+
+        });
+
+        return promise;
+    }
+}
+
 /**
 * upUrl 读取到的url 不同的url进不同的处理过程
 * info getHtmlData返回的数据，可能是json也可能是Html
@@ -81,6 +115,7 @@ Norn.Scales = {
         info: ''
     },
     Convenient: () => {
+         
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
         var info = Public.info;
@@ -132,7 +167,6 @@ Norn.Scales = {
                 }
 
             }
-
 
             return cashInfo;
 

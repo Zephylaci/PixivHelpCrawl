@@ -3,9 +3,8 @@ const servicePath = '../../';
 const manPath = '../../../';
 const requireMehod = require(servicePath + 'router/refPath.js');
 
-const cp = requireMehod('cp');
-
-const pixivDownloadModel = requireMehod('pixivDownloadModel')
+const getPixivImgOriginal = require(servicePath+'service/getPixivImgOriginal.js');
+const imgHandle = new getPixivImgOriginal();
 
 function resetCommon() {
     mainObj.common.runStat = false;
@@ -66,108 +65,15 @@ var mainObj = {
                 }
             }
         }
-    },
-    downImgInsertSql: pixivDownloadModel.downImgInsertSql
+    }
 }
 
 function controlStep() {
     var common = mainObj.common;
-
-    if (common.dataList.length < common.limitRunNum) {
-        common.limitRunNum = common.dataList.length;
-    }
-    //  console.log(common.dataList.length,common.runNum,common.limitRunNum);
-    if (common.dataList.length != 0 && common.limitRunNum != 0) {
-        while (common.runNum < common.limitRunNum) {
-            common.runNum++;
-            oneStep();
-        }
-    } else {
-        if (common.runNum === 0) {
-            if (common.waitList.length === 0) {
-                common.over = true;
-                console.log('downloadControl:整体下载完成，云端空闲');
-                if (processList.length !== 0) {
-                    var length = processList.length;
-                    for (var i = 0; i < length; i++) {
-                        var childProcess = processList.shift();
-                        childProcess.disconnect();
-                        console.log('downloadControl:释放 childe_process');
-                    }
-                }
-                console.log('downloadControl:process释放执行完成')
-            } else {
-                console.log('downloadControl:单次提交完成，开始下载等待队列中的数据');
-                common.dataList = common.waitList.shift();
-                common.runNum++;
-                common.limitRunNum = 5;
-                oneStep();
-            }
-        }
-    }
-
-}
-//线程池
-var processList = [];
-var imgIdNum = 0;
-function oneStep() {
-    var common = mainObj.common;
-    var item = common.dataList.shift();
-    var imgId = item.illust_id;
-    console.log('downloadControl:内部Id：', imgIdNum, 'ImgId:', imgId, '下载开始');
-
-    var downChild = makeprocess(imgId);
-
-
-    var opt = {
-        imgId: imgId,
-        imgIdNum: imgIdNum
-    }
-    downChild.send(opt);
-    imgIdNum++
-    //去子进程中执行的函数
-
-}
-
-function makeprocess(imgId) {
-
-
-    if (processList.length === 0) {
-        var downChild = cp.fork('./server/service/process/pxivDownChild.js', {
-            //silent:true
-        });
-        downChild.on('message', (parames) => {
-            console.log('downloadControl:内部Id：', parames.imgIdNum, 'ImgId:', parames.imgId, '下载结束');
-            //写入数据库
-            //以后可以写错误处理
-            if (parames.downState != 'faill') {
-                mainObj.downImgInsertSql(parames.resultData);
-            }
-
-            var common = mainObj.common
-            common.runNum--;
-            if (common.dataList.length === 0 && common.runNum === 0) {
-                downChild.disconnect();
-            } else {
-                if (processList.length > common.limitRunNum) {
-                    downChild.disconnect();
-                } else {
-                    processList.push(downChild);
-                }
-            }
-            controlStep();
-        });
-        downChild.on('close', (code) => {
-            console.log('downloadControl:', 'downChild子进程close，剩余空闲process:', processList.length);
-        });
-
-        downChild.on('disconnect', () => {
-            console.log('downloadControl:', 'downChild子进程disconnect，剩余空闲process:', processList.length);
-        });
-        return downChild;
-    } else {
-        return processList.shift();
-    }
+    imgHandle.downList(common.dataList);
+    imgHandle.overControl().then((res)=>{
+        console.log(res);
+    })
 
 }
 module.exports = mainObj;

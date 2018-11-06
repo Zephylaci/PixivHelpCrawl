@@ -42,7 +42,7 @@ function customRequest(opt){
                 if(typeof successFun === 'function'){
                     successFun(response,data)
                 }
-
+                
                 resolve({
                     response:response,
                     content:data

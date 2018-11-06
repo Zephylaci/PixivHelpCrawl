@@ -21,7 +21,7 @@ class makeDownLoadObj {
             runStat: false,
             promise: null,
             linkList: [], //需要下载的
-            waitList: [], //后续添加需要下载的
+            waitList: [], //后续添加需要下载的 TODO
             processList: [], //线程池
             idNum: 0, //方便输出的imgId
             runNum: 0, //当前正在运行的数量
