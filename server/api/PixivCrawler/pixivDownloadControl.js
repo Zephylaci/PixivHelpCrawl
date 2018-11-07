@@ -4,7 +4,7 @@ const manPath = '../../../';
 const requireMehod = require(servicePath + 'router/refPath.js');
 
 const getPixivImgOriginal = require(servicePath+'service/getPixivImgOriginal.js');
-const imgHandle = new getPixivImgOriginal();
+
 
 function resetCommon() {
     mainObj.common.runStat = false;
@@ -70,10 +70,11 @@ var mainObj = {
 
 function controlStep() {
     var common = mainObj.common;
-    imgHandle.downList(common.dataList);
-    imgHandle.overControl().then((res)=>{
-        console.log(res);
-    })
+    getPixivImgOriginal.downList(common.dataList).then((res)=>{
+        console.log('over',res);
+        common.runStat = false;
+    });
+
 
 }
 module.exports = mainObj;

@@ -48,7 +48,6 @@ mainObj.MonomersClass = class {
 
         let promise = new Promise((resolve, reject) => {
             let getHtmlPromise = new getHtmlData.getPixivHtmlClass().start(opt);
-            //let getHtmlPromise = getHtmlTest;
             getHtmlPromise.then((getResult) => {
                 let result = null;
                 if (getResult.code === 200) {
@@ -60,7 +59,7 @@ mainObj.MonomersClass = class {
                 } else {
                     result = getResult.data
                 }
-                console.log('getPixivData MonomersClass getOver', opt,result.urls.original);
+                console.log('MonomersClass queryOver', opt.url,'=>',result.urls.original);
                 resolve(result);
             })
             getHtmlPromise.catch((err) => {
