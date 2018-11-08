@@ -34,8 +34,8 @@
                var checkList = $('#showContent .active');
                for (var i = 0; i < checkList.length; i++) {
                    var dom = $(checkList[i]);
-                   var item = { illust_id: dom.data('id') };
-                   list.push(item);
+                   var imgId =dom.data('id');
+                   list.push(imgId);
                    dom.removeClass('active');
                }
                var downList = JSON.stringify(list);

@@ -19,16 +19,20 @@
         UNIT:{ //三方组件
             timePick:{
                 js:[
-                    "https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/l10n/zh.js",
+                    //"https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.js",
+                    //"https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/l10n/zh.js",
+					"js/unit/flatpickr/flatpick.min.js",
+					"js/unit/flatpickr/zh.js"
                 ],
                 css:[
-                    "https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.css",
-                ],
+                    //"https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.5.0/flatpickr.min.css",
+                	"js/unit/flatpickr/flatpickr.min.css"
+				],
             },
             masonryLayouts:{
                 js:[
-                    "https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.1/masonry.pkgd.min.js",
+                    //"https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.1/masonry.pkgd.min.js",
+					"js/unit/masonry.pkgd.min.js"
                 ],
                 css:[],
             }
@@ -38,7 +42,8 @@
             inner:'', //引用的html地址
             path:'', //使用的url地址
             js:[
-                "https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.min.js",
+				// https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.min.js 
+                "js/unit/imagesloaded.min.js",
                 "./js/index.js",
             ], //需要引用的独有js文件
             css:[

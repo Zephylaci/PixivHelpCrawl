@@ -59,7 +59,7 @@ var development_env ={
     },
     pathConfig:{                                                                                                                                                                                                   
         webPath:'./client',                                                                                                                                                                                        
-        downloadPath:'./client/download/'                                                                                                                                                                          
+        downloadPath:'./client/download'                                                                                                                                                                          
     }                                                                                                                                                                                                              
 
 }    

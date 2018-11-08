@@ -205,6 +205,7 @@ class handlePixivHotList {
         await downObj.overControl().then((downRes) => {
             var getIdReg = /\/([0-9]{8,})_/
             downRes.map((item, index) => {
+
                 var id = getIdReg.exec(item.fileName)[1];
                 fileNameMap[id] = item.fileName
             })

@@ -8,10 +8,17 @@ const requireMehod = require(servicePath + 'router/refPath.js');
 const parsePath = requireMehod('parsePath');
 const mySqlCtl = requireMehod('mySqlCtl');
 
-async function downImgInsertSql(downResult) {
-    if(!mysqlInfo.useMysql){
+async function downImgInsertSql(downResult = {
+    fileName: '',
+    illustTitle: '',
+    imgPath: '',
+    userName: '',
+    userId: '',
+    tags: {},
+}, imgOriginFrom) {
+    if (!mysqlInfo.useMysql) {
         console.log('No Use Mysql');
-        return
+        return;
     }
     let imgName = downResult.fileName;
     if (await judgeIsExist(imgName)) {
@@ -21,7 +28,7 @@ async function downImgInsertSql(downResult) {
     let imgId = Date.now();
     let imgTitle = downResult.illustTitle;
 
-    let imgOrigin = 'PiGetPixiv';
+    let imgOrigin = imgOriginFrom || 'PiGetPixiv';
     let imgTruePath = parsePath.join(__dirname + '../../.' + downResult.imgPath);
     let imgPath = '/download' + imgName;
     let authorName = downResult.userName;
@@ -66,12 +73,34 @@ async function downImgInsertSql(downResult) {
         sqlList.push(inserTagSql)
     }
 
-    mySqlCtl.order(sqlList)
+    await mySqlCtl.order(sqlList)
         .then((res) => {
             console.log(imgName, '相关信息数据库写入完成');
         });
 
 }
+//根据 imgId 查找相对路径
+async function searchPath(imgId) {
+    if (!mysqlInfo.useMysql) {
+        console.log('No Use Mysql');
+        return false;
+    }
+    let searchSqlOpt = {
+        getValue: ['imgPath'],
+        tableName: 'imgStorage',
+        key: `imgName like "%${imgId}%"`
+    }
+    let result = false;
+    let judgeImgExistSql = mySqlCtl.makeSqlString.getSearchSqlString(searchSqlOpt);
+    await mySqlCtl.order(judgeImgExistSql).then((res) => {
+        if (res.length !== 0) {
+            result = res;
+        }
+    });
+    return result
+
+}
+//根据imgName查找数据库中是否存在
 async function judgeIsExist(imgName) {
 
     let searchSqlOpt = {
@@ -90,5 +119,6 @@ async function judgeIsExist(imgName) {
 
 }
 module.exports = {
-    downImgInsertSql: downImgInsertSql
+    downImgInsertSql,
+    searchPath,
 }
