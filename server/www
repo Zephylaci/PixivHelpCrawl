@@ -19,6 +19,12 @@ var port = normalizePort(env.port || '3000');
 // 打印输出端口号
 console.log('listen prot: ' + env.port);
 
+//初始化相关目录
+var fs = require('fs');
+
+if (!fs.existsSync(env.pathConfig.downloadPath)) {
+    fs.mkdirSync(downObj.downToPath)
+}
 
 /**
  * Get port from environment and store in Express.
