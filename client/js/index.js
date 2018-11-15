@@ -51,7 +51,7 @@ var dailyListObject = {
         $('body').on('click', '#cloudDownloadAll', function () {
             var list = [];
             var dataList = dailyListObject.common.result.contents;
-            for (var i = 0,l=dataList.length; i < l; i++) {
+            for (var i = 0, l = dataList.length; i < l; i++) {
                 var item = dataList[i];
                 list.push(item.illust_id);
             }
@@ -179,6 +179,7 @@ var dailyListObject = {
             } else {
                 $container.parent().append('<div id="loaderEnd">加载完成</div>');
                 closureObj.over = true;
+                dailyListObject.closureOver();
                 $(window).scroll(function () { });
             }
 
@@ -232,6 +233,7 @@ var dailyListObject = {
                 isFitWidth: true     // 自适应宽度
             });
             closureObj.over = true;
+            dailyListObject.closureOver();
             $.loadingConturl.removeLoading();
         });
 
@@ -269,14 +271,16 @@ var dailyListObject = {
         var closureObj = dailyListObject.common.closure;
         if (closureObj.timer === null) {
             closureObj.timer = setTimeout(() => {
-                //dailyListObject.closureOver();
+                dailyListObject.closureOver();
             }, closureObj.wait)
         }
     },
     closureOver: function () {
         var closureObj = dailyListObject.common.closure;
-        clearTimeout(closureObj.timer);
-        closureObj.timer = null;
+        if (closureObj.timer !== null) {
+            clearTimeout(closureObj.timer);
+            closureObj.timer = null;
+        }
     }
 }
 

@@ -31,13 +31,20 @@ async function handleUpitem(queryItem) {
     //获得下载地址
     let queryObj = null;
     await getMonomers.contrl(queryUrl).then((res) => {
-        //此处也能拿到别的信息，可以扩展
-        result.downUrl = res.urls.original;
-        queryObj = res;
-        result.state = 'queryOver';
+        if (res) {
+            //此处也能拿到别的信息，可以扩展
+            result.downUrl = res.urls.original;
+            queryObj = res;
+            result.state = 'queryOver';
+        }else{
+            result.state='queryErr';
+        }
     }).catch((err) => {
         console.log(err)
     });
+    if(result.state==='queryErr'){
+        return result;
+    }
     //下载，及获得保存信息
     await downloadImg(result.downUrl).then((dres) => {
         result.fileName = dres.fileName;

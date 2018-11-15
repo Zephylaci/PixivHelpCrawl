@@ -59,7 +59,12 @@ mainObj.MonomersClass = class {
                 } else {
                     result = getResult.data
                 }
-                console.log('MonomersClass queryOver', opt.url,'=>',result.urls.original);
+                if(result){
+                    console.log('MonomersClass queryOver', opt.url,'=>',result.urls.original);
+                }else{
+                    console.log('MonomersClass queryOver err');
+                }
+               
                 resolve(result);
             })
             getHtmlPromise.catch((err) => {
@@ -120,7 +125,7 @@ Norn.Scales = {
         var info = Public.info;
         if (upUrl.indexOf('format=json') != -1) {
             if (typeof info === "string") {
-                //linux兼容
+                //兼容
                 info = JSON.parse(Public.info)
             }
 
@@ -155,13 +160,19 @@ Norn.Scales = {
                 var authorReg = new RegExp('.*,"name":"|","image":.*');
                 var objReg = new RegExp('.*,preload:|,user.*');
                 var strobj = 'var illustInfo = ' + result.split(objReg)[1] + '}';
-                eval(strobj);
+  
+                try{
+                    eval(strobj);
+                }
+                catch(e){
+                    console.log(e);
+                   return null; 
+                }
+               
                 //illustInfo.authorName = result.split(authorReg)[1];
 
                 cashInfo = illustInfo.illust;
-                var mainKey = '';
-                for (key in cashInfo) {
-                    mainKey = key;
+                for (let key in cashInfo) {
                     cashInfo = cashInfo[key];
                 }
 
