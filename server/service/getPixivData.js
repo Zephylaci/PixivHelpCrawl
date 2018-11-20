@@ -37,43 +37,97 @@ const mainObj = {
 
     }
 }
-mainObj.MonomersClass = class {
+
+//所有定制 请求方法的共用部分
+class NornClass{
+	queryContrl(opt={
+        url:''
+    }){
+
+        let result = {};
+        let promise = new Promise((resolve, reject) => {
+            let getHtmlPromise = new getHtmlData.getPixivHtmlClass().start(opt);
+            getHtmlPromise.then((getResult) => {
+               
+                resolve(getResult);
+            });
+            getHtmlPromise.catch((err) => {
+                result = err;
+                let fakeResult = {
+                    code:500,
+                    data:null
+                }
+                resolve(fakeResult,opt)
+            })
+
+        });
+
+        return promise;
+	}
+	
+}
+
+//单次页面解析的模板 getPixivImgOriginal 用
+mainObj.MonomersClass = class extends NornClass{
     constructor() {
     }
     async contrl(queryUrl) {
         let opt = {
             url: queryUrl
         }
-        let result = {};
-
-        let promise = new Promise((resolve, reject) => {
-            let getHtmlPromise = new getHtmlData.getPixivHtmlClass().start(opt);
-            getHtmlPromise.then((getResult) => {
-                let result = null;
-                if (getResult.code === 200) {
-                    let handleOpt = {
-                        upUrl: queryUrl,
-                        info: getResult.data,
-                    }
-                    result = Trial(handleOpt);
-                } else {
-                    result = getResult.data
+        let result = null;
+        await this.queryContrl(opt).then((getResult)=>{
+            if (getResult.code === 200) {
+                let handleOpt = {
+                    upUrl: queryUrl,
+                    info: getResult.data,
                 }
-                if(result){
-                    console.log('MonomersClass queryOver', opt.url,'=>',result.urls.original);
-                }else{
-                    console.log('MonomersClass queryOver err');
-                }
-               
-                resolve(result);
-            })
-            getHtmlPromise.catch((err) => {
-                result = err;
-            })
-
+                result = Trial(handleOpt);
+            }
+            else {
+                result = getResult.data
+            }
+            if(result){
+                console.log('MonomersClass queryOver', opt.url,'=>',result.urls.original);
+            }
+            else{
+                console.log('MonomersClass queryOver err');
+            }
         });
+        return result;
+    }
+}
 
-        return promise;
+//获取列表页用 handlePixivHotList 用
+mainObj.ConvenientClass = class extends NornClass{
+    constructor() {
+    }
+    async contrl(queryUrl) {
+        let opt = {
+            url: queryUrl
+        }
+        let result = null;
+        await this.queryContrl(opt).then((getResult,callbackArrConfig=[])=>{
+            if (getResult.code === 200) {
+                let handleOpt = {
+                    upUrl: queryUrl,
+                    info: getResult.data,
+                }
+                Object.assign(Norn.Scales.Public,handleOpt);
+                //需要过滤可以从这里传进去
+                result = Norn.Scales.Convenient(callbackArrConfig);
+            }else {
+                result = getResult.data
+            }
+            
+            if(result){
+                console.log('MonomersClass queryOver', opt.url,'=>',result.urls.original);
+            }
+            else{
+                console.log('MonomersClass queryOver err');
+            }
+        });
+        return result;
     }
 }
 
@@ -118,7 +172,7 @@ Norn.Scales = {
         $: '',
         info: ''
     },
-    Convenient: () => {
+    Convenient: (callbackArrConfig=[]) => {
          
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
@@ -128,19 +182,26 @@ Norn.Scales = {
                 //兼容
                 info = JSON.parse(Public.info)
             }
-
-
-            //2018/7/28 p站缩略图403对策
+            let callbackArr = [
+                (item)=>{
+                    //2018/7/28 p站缩略图403对策
+                    let url = item.url;
+                    let proxyUrl = '/api/proxyImg?url=' + StringTool.strToHexCharCode(url);
+                    item.originUrl = url;
+                    item.url = proxyUrl;
+                    return item;
+                }
+            ]
+            callbackArr = callbackArr.concat(callbackArrConfig);
             var resArr = info.contents;
-            for (var i = 0; i < resArr.length; i++) {
-                var url = resArr[i].url;
-                var proxyUrl = '/api/proxyImg?url=' + StringTool.strToHexCharCode(url);
-                resArr[i].originUrl = url;
-                resArr[i].url = proxyUrl;
-
+            info.contents = resArr.map(item){
+                callbackArr.forEach((step)=>{
+                   item=step(item,info);
+                })
+                return item;
             }
 
-            return JSON.stringify(info);
+            return info
         } else {
             var info = Public.info;
             Public.$ = cheerio.load(info, {

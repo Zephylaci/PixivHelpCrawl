@@ -83,113 +83,53 @@ class handlePixivHotList {
 
     }
     async originQuery(url, useCash) {
+        //过滤参数
+        function changeData(item) {
+            let cashItem = {};
+            let needList = ['illust_id', 'title', 'originUrl', 'url', 'illust_page_count', 'rank', 'tags'];
+            needList.map((key)=>{
+                cashItem[key] = item[key]
+            });
+            return cashItem
+        }
+        //制作下载列表,同步多线程下载
+        function makeDownList(item, info) {
+            if (info.cashDownList) {
+                info.cashDownList.push(item['originUrl'])
+            }
+            else {
+                info.cashDownList = []
+                info.cashDownList.push(item['originUrl'])
+            }
+            return item
+        }
 
-        let _promise = getPixivData.contrl(url);
+        let handleList = [changeData];
+        if (useCash) {
+            handleList.push(makeDownList);
+        }
+   
+        let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList);
         let result = null;
-
-        _promise.catch((err) => {
-            myErrHandle('break', err)
-        })
-
-        function myErrHandle(msg, err) {
-            console.log(msg, err)
+        if(!getResult){
+             console.log('pixivHotList 读取数据失败')
             result = {
                 status: 'error'
             }
         }
-        await _promise.then((res) => {
-            if (!res) {
-                myErrHandle('缓存不存在且读取出错,res is null', res)
-                return
+        result ={
+            key:getResult.date + '_p' + getResult.page,
+            mainHash:getResult.mode,
+            data:{
+                contents:getResult.contents;
             }
-            if (typeof res.error === "undefined") {
-
-                result = handleData(res);
-                //数据处理
-                async function handleData(inData) {
-                    if (typeof inData === 'string') {
-                        var inData = JSON.parse(inData);
-                    }
-                    // var handleList = [{
-                    //     teype:'nomal',
-                    //     method:changeData
-                    // },{
-                    //     type:'async',
-                    //     method:downControl
-                    // }];
-                    var handleList = [{
-                        teype: 'nomarl',
-                        method: changeData
-                    }];
-                    if (useCash) {
-                        handleList.push({
-                            type: 'nomarl',
-                            method: makeDownList
-                        })
-                    }
-
-                   let outData = {};
-                   
-                    outData.key = inData.date + '_p' + inData.page;
-
-                    //主哈希
-                    outData.mainHash = inData.mode;
-                    outData.data = {};
-
-                    let needList = ['illust_id', 'title', 'originUrl', 'url', 'illust_page_count', 'rank', 'tags'];
-
-                    let needItemList = [];
+        };
+        if(Array.isArray(getResult.cashDownList)){
+            result.cashDownList=getResult.cashDownList
+        }
 
 
-                    for (let i = 0; i < inData.contents.length; i++) {
 
-                        let item = inData.contents[i];
-                        let cashItem = {};
-                        for (let k = 0; k < handleList.length; k++) {
-                            var method = handleList[k].method;
-                            if (handleList[k].type === 'async') {
-                                await method(item, cashItem)
-                            } else {
-                                cashItem = method(item, cashItem)
-                            }
-                        }
-
-                        needItemList.push(cashItem);
-                    }
-                    outData.data.contents = needItemList;
-
-                    function changeData(item, cashItem) {
-                        for (let j = 0; j < needList.length; j++) {
-                            cashItem[needList[j]] = item[needList[j]];
-                        }
-                        return cashItem
-                    }
-                    //同步下载
-                    function downControl(item, cashItem) {
-                        return downloadImg(cashItem['originUrl'], 'client/cash').then((res) => {
-                            cashItem['originUrl'] = cashItem['url'];
-                            cashItem['url'] = '/cash' + res.fileName;
-                        });
-                    }
-                    //制作下载列表,同步多线程下载
-                    function makeDownList(item, cashItem) {
-                        if (outData.cashDownList) {
-                            outData.cashDownList.push(cashItem['originUrl'])
-                        } else {
-                            outData.cashDownList = []
-                            outData.cashDownList.push(cashItem['originUrl'])
-                        }
-
-                        return cashItem
-                    }
-                    return outData;
-                }
-            } else {
-                myErrHandle('缓存不存在且读取出错,res.error', res)
-
-            }
-
-        });
         return result
     }
     async saveQueryResult(queryResult) {
@@ -205,7 +145,6 @@ class handlePixivHotList {
         await downObj.overControl().then((downRes) => {
             var getIdReg = /\/([0-9]{8,})_/
             downRes.map((item, index) => {
-
                 var id = getIdReg.exec(item.fileName)[1];
                 fileNameMap[id] = item.fileName
             })
@@ -219,9 +158,9 @@ class handlePixivHotList {
 
             return item
         });
-
-		var cashSetItem = JSON.stringify(queryResult);
-        await redisCtl.HMSET(JSON.parse(cashSetItem));
+        delete queryResult.cashDownList;
+		let  setRedis = JSON.stringify(queryResult);
+        await redisCtl.HMSET(JSON.parse(setRedis));
         console.timeEnd('downImgList');
         return queryResult.data.contents;
     }
