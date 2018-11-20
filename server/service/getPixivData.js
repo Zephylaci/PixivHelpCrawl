@@ -70,6 +70,7 @@ class NornClass{
 //单次页面解析的模板 getPixivImgOriginal 用
 mainObj.MonomersClass = class extends NornClass{
     constructor() {
+        super()
     }
     async contrl(queryUrl) {
         let opt = {
@@ -101,13 +102,14 @@ mainObj.MonomersClass = class extends NornClass{
 //获取列表页用 handlePixivHotList 用
 mainObj.ConvenientClass = class extends NornClass{
     constructor() {
+        super()
     }
-    async contrl(queryUrl) {
+    async contrl(queryUrl,callbackArrConfig=[]) {
         let opt = {
             url: queryUrl
         }
         let result = null;
-        await this.queryContrl(opt).then((getResult,callbackArrConfig=[])=>{
+        await this.queryContrl(opt).then((getResult)=>{
             if (getResult.code === 200) {
                 let handleOpt = {
                     upUrl: queryUrl,
@@ -121,10 +123,10 @@ mainObj.ConvenientClass = class extends NornClass{
             }
             
             if(result){
-                console.log('MonomersClass queryOver', opt.url,'=>',result.urls.original);
+     
             }
             else{
-                console.log('MonomersClass queryOver err');
+                console.log('MonomersClass queryOver err',getResult);
             }
         });
         return result;
@@ -194,13 +196,12 @@ Norn.Scales = {
             ]
             callbackArr = callbackArr.concat(callbackArrConfig);
             var resArr = info.contents;
-            info.contents = resArr.map(item){
+            info.contents = resArr.map((item)=>{
                 callbackArr.forEach((step)=>{
                    item=step(item,info);
                 })
                 return item;
-            }
-
+            })
             return info
         } else {
             var info = Public.info;

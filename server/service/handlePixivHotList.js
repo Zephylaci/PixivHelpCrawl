@@ -121,9 +121,10 @@ class handlePixivHotList {
             key:getResult.date + '_p' + getResult.page,
             mainHash:getResult.mode,
             data:{
-                contents:getResult.contents;
+                contents:getResult.contents
             }
         };
+
         if(Array.isArray(getResult.cashDownList)){
             result.cashDownList=getResult.cashDownList
         }
