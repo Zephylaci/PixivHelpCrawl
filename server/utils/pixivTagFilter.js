@@ -5,7 +5,8 @@ const needFilter = new Set();
 function makeSet(){
     if(fs.existsSync('./config/filter')){
         let needFilterTagStr = fs.readFileSync('./config/filter','utf-8');
-        let needFilterTagArr = needFilterTagStr.split(',');
+        needFilterTagStr = needFilterTagStr.replace(/\n/g,',');
+        let needFilterTagArr = needFilterTagStr.split(',').filter((item)=>{return item});
         needFilterTagArr.forEach((item)=>{
             needFilter.add(item);
         });
@@ -46,7 +47,7 @@ function addTags(tagsArr){
     }
     
     try{
-        fs.appendFileSync('./config/filter',newTagsStr);
+        fs.appendFileSync('./config/filter','\n'+newTagsStr);
     }catch(e){
         console.log('filter append in file err:',err);
     }
