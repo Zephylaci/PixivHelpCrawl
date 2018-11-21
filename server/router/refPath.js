@@ -10,7 +10,8 @@ let pathAddress = {
     checkImg: servicePath + 'utils/checkImg.js',
     request: servicePath + 'utils/customRequest.js',
     imgFilter: servicePath + 'utils/imgFilter.js',
-
+    pixivTagFilter:servicePath + 'utils/pixivTagFilter.js',
+    
     downloadImg: servicePath + 'service/downloadImg.js',
     downloadThread: servicePath + 'service/downloadThread.js',
     pixivDownloadControl: servicePath + 'service/pixivDownloadControl.js',

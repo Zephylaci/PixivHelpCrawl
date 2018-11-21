@@ -6,6 +6,7 @@ const StringTool = requireMehod('StringTool');
 const getHtmlData = requireMehod('getHtmlData');
 const cheerio = requireMehod('cheerio');
 
+
 var Trial = Norn();
 const mainObj = {
     //通用的返回
@@ -104,7 +105,7 @@ mainObj.ConvenientClass = class extends NornClass{
     constructor() {
         super()
     }
-    async contrl(queryUrl,callbackArrConfig=[]) {
+    async contrl(queryUrl,callbackArrConfig=[],filterFun=null) {
         let opt = {
             url: queryUrl
         }
@@ -117,7 +118,7 @@ mainObj.ConvenientClass = class extends NornClass{
                 }
                 Object.assign(Norn.Scales.Public,handleOpt);
                 //需要过滤可以从这里传进去
-                result = Norn.Scales.Convenient(callbackArrConfig);
+                result = Norn.Scales.Convenient(callbackArrConfig,filterFun);
             }else {
                 result = getResult.data
             }
@@ -174,7 +175,7 @@ Norn.Scales = {
         $: '',
         info: ''
     },
-    Convenient: (callbackArrConfig=[]) => {
+    Convenient: (callbackArrConfig=[],filterFun=null) => {
          
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
@@ -195,13 +196,18 @@ Norn.Scales = {
                 }
             ]
             callbackArr = callbackArr.concat(callbackArrConfig);
-            var resArr = info.contents;
-            info.contents = resArr.map((item)=>{
+            let resArr = info.contents;
+            let afterArr = [];
+            resArr.forEach((item)=>{
+               if(filterFun&&filterFun(item)){
+                    return
+                }
                 callbackArr.forEach((step)=>{
                    item=step(item,info);
-                })
-                return item;
-            })
+                });
+                afterArr.push(item);
+            });
+            info.contents = afterArr;
             return info
         } else {
             var info = Public.info;

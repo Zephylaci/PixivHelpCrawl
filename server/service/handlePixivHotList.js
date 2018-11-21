@@ -3,6 +3,7 @@ const requireMehod = require(servicePath + 'router/refPath.js');
 
 const getPixivData = requireMehod('getPixivData')
 const downloadThread = requireMehod('downloadThread')
+const pixivTagFilter = requireMehod('pixivTagFilter');
 
 const redisCtl = requireMehod('redisCtl')
 
@@ -108,8 +109,7 @@ class handlePixivHotList {
         if (useCash) {
             handleList.push(makeDownList);
         }
-   
-        let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList);
+        let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList,pixivTagFilter);
         let result = null;
         if(!getResult){
              console.log('pixivHotList 读取数据失败')

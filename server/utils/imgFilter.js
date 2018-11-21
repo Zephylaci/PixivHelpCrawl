@@ -2,7 +2,7 @@
 *  数据过滤 v 0.1
 *  功能：1、过滤不需要的数据条数
 *       2、过滤不需要的数据项目
-*     
+*  目前没有用到   
 * 传入：Object,
 *  filterType: 过滤类型（String）
 *  sourceData: Object或Array
