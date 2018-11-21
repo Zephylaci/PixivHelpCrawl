@@ -3,6 +3,8 @@
 const getPixivHotList = require('../api/PixivCrawler/getPixivHotList.js');
 // const autoSerach = require('../api/ixivCrawler/autoSerach.js');
 const downloadControl = require('../api/PixivCrawler/pixivDownloadControl.js');
+const addFilter = require('../api/PixivCrawler/addFilter.js');
+
 const randomImg = require('../api/ImgControler/randomImg.js');
 const proxyImg = require('../api/ImgControler/proxyImg.js');
 
@@ -16,6 +18,10 @@ var routerConfig = {
         getPixivHotList:{
             type:'post',
             contrl:getPixivHotList.contrl
+        },
+        addFilter:{
+            type:'post',
+            contrl:addFilter.contrl
         },
         // autoSerach:{
         //     type:'post',

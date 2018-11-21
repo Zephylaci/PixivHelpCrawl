@@ -32,5 +32,30 @@ function judgeItem (item){
     }
     return false;
 }
-
-module.exports=judgeItem;
+function addTags(tagsArr){
+    let addTags = [];
+    tagsArr.forEach((tag)=>{
+       if(!isExiseInFilterList(tag)){
+           addTags.push(tag);
+       } 
+    });
+    var newTagsStr = addTags.toString();
+    if(addTags.length<=0){
+        console.log('没有需要添加的tag',newTagsStr);
+        return
+    }
+    
+    try{
+        fs.appendFileSync('./config/filter',newTagsStr);
+    }catch(e){
+        console.log('filter append in file err:',err);
+    }
+    console.log('filter append in file:',newTagsStr);
+    addTags.forEach((item)=>{
+        needFilter.add(item);
+    });
+}
+module.exports= {
+    judgeItem,
+    addTags
+};

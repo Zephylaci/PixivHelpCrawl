@@ -109,7 +109,7 @@ class handlePixivHotList {
         if (useCash) {
             handleList.push(makeDownList);
         }
-        let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList,pixivTagFilter);
+        let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList,pixivTagFilter.judgeItem);
         let result = null;
         if(!getResult){
              console.log('pixivHotList 读取数据失败')

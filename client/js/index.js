@@ -30,7 +30,65 @@ var dailyListObject = {
         $('#showContent').on('click', '.img-item', function () {
             $(this).find('.mdui-card').toggleClass('active');
         });
+        
+        var filterDialogDom = `<div class="mdui-dialog" >
+                            <div class="mdui-dialog-content">
+                                <p>是否将该图片从预览结果中去除，并将选中的tag添加进过滤器中？
+                                </p>
+                                <ul class="mdui-list">
+                                    <li >
+                                        <label class="mdui-checkbox">
+                                            <input type="checkbox"/>
+                                            <i class="mdui-checkbox-icon"></i>
+                                            a 
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="mdui-dialog-actions">
+                                <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消
+                                </button>
+                                <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定
+                                </button>
+                            </div>
+                         </div>`
+          var filterDialog = new mdui.Dialog(filterDialogDom);
+          filterDialog.$dialog[0].addEventListener('confirm.mdui.dialog', function () {
+                //弹窗的确认回调
+                var checkedArr = $(this).find('.mdui-list input:checked');
+                var tags = [];
+                checkedArr.map((index,dom)=>{
+                    var tag = $(dom).data('tag');
+                    tags.push(tag);
+                });
+              var upData = { tags: tags };
+              if(tags.length!==0){
+                  $.postData(upData, '/api/addFilter');
+              }
+             // filterDialog.nowHandle[0].outerHTML="";
+              var content = $('.item-list');
+              content.masonry('remove',filterDialog.nowHandle).masonry('layout');
+           });
 
+        $('#showContent').on('click', '.hover-show[data-event=ruleout]', function () {
+            var domContent = $(this).parents('.img-item');
+            var tagsArr = domContent.data('tags').split(',');
+            var liDom = '';
+            tagsArr.forEach((tag)=>{
+            
+                liDom+=`<li >
+                            <label class="mdui-checkbox">
+                            <input type="checkbox"  data-tag="${tag}"/>
+                            <i class="mdui-checkbox-icon"></i>
+                            ${tag}
+                            </label>
+                        </li>`
+            })
+            $(filterDialog.$dialog[0]).find('.mdui-list').html(liDom);
+            filterDialog.open();
+            filterDialog.nowHandle = domContent;
+            return false;
+        });
         $('body').on('click', '#cloudDownloadSelect', function () {
             var list = [];
             var checkList = $('#showContent .active');
@@ -65,11 +123,13 @@ var dailyListObject = {
 
         $("#queryDate").val(new Date(new Date() - 86400000).toLocaleDateString())
         $("#queryDate").flatpickr();
-
+         
         $('#dailyControl').on('click', '#getType>span', function () {
             $('#dailyControl').find('#getType>span').removeClass('active');
             $(this).addClass('active');
         });
+        
+
         $('#dailyControl').on('click', '#searchImg', function () {
             var type = $('#getType span.active').data('type');
             if (!type) {
@@ -116,7 +176,7 @@ var dailyListObject = {
     },
     createShowHtml: function ({
         showData,
-        showItem = ['url', 'title', 'illust_id'],
+        showItem = ['url', 'title', 'illust_id','tags'],
         startNum = 0,
         endNum = 12
     }) {
@@ -138,9 +198,12 @@ var dailyListObject = {
                     }
                 }
 
-                var itemHtml = `<div class="img-item">
+                var itemHtml = `<div class="img-item" data-tags="${strItems[3]}">
                                             <div class="mdui-card" data-id="${strItems[2]}">
                                                 <div class="mdui-card-media">
+                                                    <div class="mdui-card-menu hover-show" data-event="ruleout">
+                                                        <span class="mdui-btn mdui-btn-icon mdui-text-color-white"><i class="mdui-icon material-icons">close</i></span>
+                                                    </div>
                                                     <img src="${strItems[0]}">
                                                 </div>
                                                 <div class="mdui-card-actions normal-infoItem">
@@ -155,7 +218,7 @@ var dailyListObject = {
         var content = `<div class="item-list">${itemListHtml}</div>`;
         return content;
     },
-    showList: function (start, end, showItem = ['url', 'title', 'illust_id']) {
+    showList: function (start, end, showItem = ['url', 'title', 'illust_id','tags']) {
         var $container = $('.item-list');
         var have = Number($container.find('.img-item').length);
         var common = dailyListObject.common;

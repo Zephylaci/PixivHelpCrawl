@@ -88,3 +88,12 @@
 .mdui-card.active{
     border: 3px solid #448aff;
 }
+
+.hover-show{
+    visibility:hidden;
+}
+.mdui-card-media:hover .hover-show{
+   visibility:unset;
+}
+
+
