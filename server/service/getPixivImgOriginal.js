@@ -18,7 +18,7 @@ const webPath = PathConfig.webPath;
 async function handleUpitem(queryItem) {
     let imgId = queryItem;
     let result = {
-        imgId: imgId
+        imgId: imgId,
     };
     if (await isExist(imgId)) {
         console.log('getPixivImgOriginal:', imgId, '数据库及本地均存在，无需查询');
@@ -47,9 +47,9 @@ async function handleUpitem(queryItem) {
     }
     //下载，及获得保存信息
     await downloadImg(result.downUrl).then((dres) => {
+        result.state = dres.state;
         result.fileName = dres.fileName;
-        result.imgPath = dres.imgPath;
-        result.state = 'downOver';
+        result.imgPath = dres.imgPath; 
     });
     //保存下载后的信息至数据库
     if (result.state === 'downOver') {
@@ -61,7 +61,10 @@ async function handleUpitem(queryItem) {
             userName: queryObj.userName,
             tags: queryObj.tags,
             userId: queryObj.userId,
-        }, 'YunTest');
+        }, 'PiGetPixiv').catch((err) => {
+            console.log(err);
+            result.state = 'saveInfoErr'
+        });
     }
 
     return result

@@ -1,0 +1,70 @@
+<div class="mdui-container">
+    <div class="mdui-card control-content dosearch-control" >
+        <div class="mdui-card-actions control-list">
+            <div  class="input-content list-item mdui-float-left">
+                <input class="mdui-textfield-input" type="text" data-watchId="strKey" placeholder="strKey">
+            </div>
+            <div  class="input-content list-item mdui-float-left">
+                <input class="mdui-textfield-input" type="number" step="100" data-watchId="bookmarkCountLimit" placeholder="bookmarkCountLimit">
+            </div>
+            <div  class="input-content smaill list-item mdui-float-left">
+                <input class="mdui-textfield-input" type="number" step="1" data-watchId="startPage" placeholder="startPage">
+            </div>
+            <label  class="input-content smaill list-item mdui-float-left">
+                <input class="mdui-textfield-input" type="number" step="1" data-watchId="endPage" placeholder="endPage">
+            </label>
+            <label  class="mdui-checkbox list-item mdui-float-left">
+                <input type="checkbox" data-watchId="isSafe" />
+                <i class="mdui-checkbox-icon"></i>
+                安全模式
+            </label>
+            <span id="makePlane" class="list-item mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">创建搜索计划</span>
+        </div>
+        <div class="mdui-card-actions control-list" id="stateContent">
+            <div class="process-info  mdui-float-left list-item" id="planeList">
+                <span>无搜索计划</span>
+<!--       select-content     <select class="mdui-select " >
+                    <option value="-1"></option>
+                </select>-->
+            </div>
+            <div class="mdui-float-left list-item process-info" >
+			    关键字:<span data-watchId="strKey">无</span>
+            </div>
+            <div class="mdui-float-left list-item process-info" >
+			    状态:<span data-watchId="state">无</span>
+            </div>
+            <div class="mdui-float-left list-item process-info" >
+			    数量:<span data-watchId="count">0</span>
+            </div>
+            <div class="mdui-float-left list-item process-info" >
+			    预览图是否缓存:<span data-watchId="isCashOVer">否</span>
+            </div>
+            <div class="mdui-float-right">
+                <span id="cashPreview" class="list-item mdui-btn mdui-btn-raised mdui-color-teal ">缓存预览图</span>
+                <span id="showPlane" class="list-item mdui-btn mdui-btn-raised mdui-color-teal ">展示</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--展示栏-->
+<div class="showContent" id="showContent">
+<!-- <div class="loadingContent" >
+<div class="mdui-spinner mdui-spinner-colorful"></div>
+</div>
+-->
+    <!-- <div class="item-list">
+<div class="img-item">
+<div class="mdui-card">
+<div class="mdui-card-media">
+<img src="https://upload-images.jianshu.io/upload_images/3923332-82d752d172258fd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+</div>
+<div class="mdui-card-actions normal-infoItem">
+<span class="mdui-ripple text-title">${strItems[1]}</span>
+<span class="mdui-ripple text-id">id:${strItems[2]}</span>
+</div>
+</div>
+</div>
+</div> -->
+</div>
+

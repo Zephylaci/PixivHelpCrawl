@@ -115,7 +115,7 @@ mainObj.ConvenientClass = class extends NornClass{
                 let handleOpt = {
                     upUrl: queryUrl,
                     info: getResult.data,
-                }
+                }       
                 Object.assign(Norn.Scales.Public,handleOpt);
                 //需要过滤可以从这里传进去
                 result = Norn.Scales.Convenient(callbackArrConfig,filterFun);
@@ -128,6 +128,42 @@ mainObj.ConvenientClass = class extends NornClass{
             }
             else{
                 console.log('MonomersClass queryOver err',getResult);
+            }
+        });
+        return result;
+    }
+}
+//搜索 pixivSearch用
+mainObj.InsightClass = class extends NornClass{
+    constructor() {
+        super()
+    }
+    async contrl(queryUrl) {
+        let opt = {
+            url: queryUrl
+        }
+        let result = null;
+        await this.queryContrl(opt).then((getResult)=>{
+            if (getResult.code === 200) {
+                let handleOpt = {
+                    upUrl: queryUrl,
+                    $: cheerio.load(getResult.data, {
+                        decodeEntities: false
+                    })
+                }
+
+                Object.assign(Norn.Scales.Public,handleOpt);
+                //需要过滤可以从这里传进去
+                result = Norn.Scales.Insight();
+            }else {
+                result = getResult.data
+            }
+
+            if(result){
+
+            }
+            else{
+                console.log('InsightClass queryOver err',getResult);
             }
         });
         return result;
@@ -169,6 +205,7 @@ function Norn() {
 * Monomers:单体 针对单id返回页
 * Convenient:不需要 不需要处理，针对json返回
 */
+
 Norn.Scales = {
     Public: {
         upUrl: '',
@@ -191,7 +228,7 @@ Norn.Scales = {
                     let url = item.url;
                     let proxyUrl = '/api/proxyImg?url=' + StringTool.strToHexCharCode(url);
                     item.originUrl = url;
-                    item.url = proxyUrl;
+                    item.url = proxyUrl; 
                     return item;
                 }
             ]

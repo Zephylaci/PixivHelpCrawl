@@ -1,7 +1,7 @@
 // 路由设置
 // var getPixivData = require('../api/PixivCrawler/getPixivData.js');
 const getPixivHotList = require('../api/PixivCrawler/getPixivHotList.js');
-// const autoSerach = require('../api/ixivCrawler/autoSerach.js');
+const customSearch = require('../api/PixivCrawler/customSearch.js');
 const downloadControl = require('../api/PixivCrawler/pixivDownloadControl.js');
 const addFilter = require('../api/PixivCrawler/addFilter.js');
 
@@ -22,6 +22,18 @@ var routerConfig = {
         addFilter:{
             type:'post',
             contrl:addFilter.contrl
+        },
+        makeSeachPlan:{
+            type:'post',
+            contrl:customSearch.makePlan
+        },
+        getPlanState:{
+            type:'post',
+            contrl:customSearch.getState
+        },
+        getPlanDetail:{
+            type:'post',
+            contrl:customSearch.getDetail
         },
         // autoSerach:{
         //     type:'post',

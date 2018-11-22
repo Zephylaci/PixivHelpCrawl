@@ -15,7 +15,6 @@
     var routerConfig = window.COMMON.routerConfig;
 
     function pageHandle(callback = function () {
-        console.log(this); //this指向新对象
 
         this.checkOver = true
     }) {
@@ -48,16 +47,21 @@
             }, 'sync', () => {
                 this.InsertMethod({
                     js: mainJs
-                })
+                },'async',callback)
             });
             return
 
         }
-
+        
         //js
         var scriptContent = document.getElementsByTagName("body").item(0);
-        var i = 0, last = js.length - 1;;
+        var i = 0, last = js.length - 1;
+        this.last = last;
+
         function makeScript(i, overFun) {
+            if(typeof js[i] !=='string'){
+                return;
+            }
             var jsScript = document.createElement("script");
             jsScript.setAttribute("type", "text/javascript");
             jsScript.onload = jsScript.onreadystatechange = function () { //Attach handlers for all browsers
@@ -69,21 +73,19 @@
             jsScript.setAttribute("src", js[i]);
             scriptContent.appendChild(jsScript);
         }
-
+        this.asyncLoadJs = (i)=>{
+            if (i !== this.last&&this.last!=-1) {
+                makeScript(++i,this.asyncLoadJs);
+            } else if (i===this.last&&typeof (callback) == "function") {
+                callback();
+                delete i;
+            }
+        }
         if (jsInsertType === 'async') {
             //串行
-            makeScript(i, (i) => {
-                if (i !== last) {
-                    
-                    makeScript(++i);
-                } else if (typeof (callback) == "function") {
-                    callback();
-                    delete i;
-                }
-            });
+            makeScript(i,this.asyncLoadJs);
         } else if (jsInsertType === 'sync') {
             //并行
-            
             for (i = i, l = js.length; i < l; i++) {
                 makeScript(i, (i) => {
                     if (i === last && typeof (callback) == "function") {
@@ -111,15 +113,33 @@
 
 
     }
-
-
-
     var mainPage = new pageHandle();
     //暴露出去的
+    mainPage.InsertMethod(routerConfig.COOMON,'sync',function(){
+        mainPage.InsertMethod(routerConfig.doSearch,'async',function(){
+            doSearchObject.init();
+        });
+    });
     window.COMMON.mainPage = mainPage;
     window.COMMON.pageHandle= pageHandle;
-    //第一次加载
-    mainPage.InsertMethod(routerConfig.dailyList);
+
     //https://www.jb51.net/article/91132.htm
+    //侧边栏点击事件
+    document.getElementById('dailyList').onclick=function(){
+        if(window.COMMON.now==='dailyList'){
+            return false;
+        }
+        mainPage.InsertMethod(routerConfig.dailyList,'async',function(){
+            dailyListObject.init();
+        });
+    }
+    document.getElementById('doSearch').onclick=function(){
+        if(window.COMMON.now==='doSearch'){
+            return false;
+        }
+        mainPage.InsertMethod(routerConfig.doSearch,'async',function(){
+            doSearchObject.init();
+        });
+    }
 }(window))
 

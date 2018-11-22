@@ -18,7 +18,8 @@ let pathAddress = {
     getHtmlData: servicePath + 'service/getHtmlData.js',
     getPixivData: servicePath + 'service/getPixivData.js',
     handlePixivHotList: servicePath + 'service/handlePixivHotList.js',
-
+    pixivSearch: servicePath + 'service/pixivSearch.js',
+   
 
     cp: 'child_process',
     

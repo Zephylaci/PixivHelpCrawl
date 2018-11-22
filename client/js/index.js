@@ -1,4 +1,4 @@
-var dailyListObject = {
+var handleShowContent = {
     common: {
         result: {
             contents: [] //前端分页用得数组
@@ -7,30 +7,25 @@ var dailyListObject = {
             timer: null,
             over: true,
             wait: 3000
-        }
+        },
+    },
+    init:function(){
+        handleShowContent.common.result = [];
+        handleShowContent.closureOver;
+        handleShowContent.DomEventBind();
+    },
+    initList:function(listArr){
+        var creatHtml = handleShowContent.createShowHtml({
+            showData: listArr
+        });
+        handleShowContent.addToShowContent(creatHtml);
+        handleShowContent.common.result.contents = listArr;
+        handleShowContent.activeLoad();
     },
     DomEventBind: function () {
-        var inst = new mdui.Drawer('#main-drawer');
-        $('#mainDrawerControl').click(function () {
-            inst.toggle();
-            var list = $('.img-item');
-            var length = list.length
-            if (length != 0) {
-                var content = $('.item-list');
-                content.masonry('destroy');
-                content.html('');
-                $.loadingConturl.appendLoading('.item-list');
-                setTimeout(function () {
-                    $.loadingConturl.removeLoading('.item-list');
-                    dailyListObject.showList(0, length - 1);
-                }, 800)
-            }
-        });
-
         $('#showContent').on('click', '.img-item', function () {
             $(this).find('.mdui-card').toggleClass('active');
         });
-        
         var filterDialogDom = `<div class="mdui-dialog" >
                             <div class="mdui-dialog-content">
                                 <p>是否将该图片从预览结果中去除，并将选中的tag添加进过滤器中？
@@ -52,31 +47,31 @@ var dailyListObject = {
                                 </button>
                             </div>
                          </div>`
-          var filterDialog = new mdui.Dialog(filterDialogDom);
-          filterDialog.$dialog[0].addEventListener('confirm.mdui.dialog', function () {
-                //弹窗的确认回调
-                var checkedArr = $(this).find('.mdui-list input:checked');
-                var tags = [];
-                checkedArr.map((index,dom)=>{
-                    var tag = $(dom).data('tag');
-                    tags.push(tag);
-                });
-              var upData = { tags: tags };
-              if(tags.length!==0){
-                  $.postData(upData, '/api/addFilter');
-              }
-             // filterDialog.nowHandle[0].outerHTML="";
-              var content = $('.item-list');
-              content.masonry('remove',filterDialog.nowHandle).masonry('layout');
-           });
+        var filterDialog = new mdui.Dialog(filterDialogDom);
+        filterDialog.$dialog[0].addEventListener('confirm.mdui.dialog', function () {
+            //弹窗的确认回调
+            var checkedArr = $(this).find('.mdui-list input:checked');
+            var tags = [];
+            checkedArr.map((index, dom) => {
+                var tag = $(dom).data('tag');
+                tags.push(tag);
+            });
+            var upData = { tags: tags };
+            if (tags.length !== 0) {
+                $.postData(upData, '/api/addFilter');
+            }
+            // filterDialog.nowHandle[0].outerHTML="";
+            var content = $('.item-list');
+            content.masonry('remove', filterDialog.nowHandle).masonry('layout');
+        });
 
         $('#showContent').on('click', '.hover-show[data-event=ruleout]', function () {
             var domContent = $(this).parents('.img-item');
             var tagsArr = domContent.data('tags').split(',');
             var liDom = '';
-            tagsArr.forEach((tag)=>{
-            
-                liDom+=`<li >
+            tagsArr.forEach((tag) => {
+
+                liDom += `<li >
                             <label class="mdui-checkbox">
                             <input type="checkbox"  data-tag="${tag}"/>
                             <i class="mdui-checkbox-icon"></i>
@@ -89,91 +84,8 @@ var dailyListObject = {
             filterDialog.nowHandle = domContent;
             return false;
         });
-        $('body').on('click', '#cloudDownloadSelect', function () {
-            var list = [];
-            var checkList = $('#showContent .active');
-            for (var i = 0; i < checkList.length; i++) {
-                var dom = $(checkList[i]);
-                var imgId = dom.data('id');
-                list.push(imgId);
-                dom.removeClass('active');
-            }
-            var downList = JSON.stringify(list);
-            var upData = { downList: downList };
-
-            $.postData(upData, '/api/download').success((data) => {
-                alert(data.content);
-            });
-        });
-
-        $('body').on('click', '#cloudDownloadAll', function () {
-            var list = [];
-            var dataList = dailyListObject.common.result.contents;
-            for (var i = 0, l = dataList.length; i < l; i++) {
-                var item = dataList[i];
-                list.push(item.illust_id);
-            }
-            var downList = JSON.stringify(list);
-            var upData = { downList: downList };
-
-            $.postData(upData, '/api/download').success((data) => {
-                alert(data.content);
-            });
-        });
-
-        $("#queryDate").val(new Date(new Date() - 86400000).toLocaleDateString())
-        $("#queryDate").flatpickr();
-         
-        $('#dailyControl').on('click', '#getType>span', function () {
-            $('#dailyControl').find('#getType>span').removeClass('active');
-            $(this).addClass('active');
-        });
-        
-
-        $('#dailyControl').on('click', '#searchImg', function () {
-            var type = $('#getType span.active').data('type');
-            if (!type) {
-                mdui.snackbar({
-                    message: '请选择榜单类型',
-                    position: 'top'
-                });
-                return
-            }
-            $('#showContent').html('');
-            $.loadingConturl.appendLoading();
-            var date = $('#queryDate').val();
-            var filter = $('input[name=filter]:checked').val();
-            var useCash = $('input[name=useCash]:checked').val();
-            var startPage = $('#startPage').val();
-            var endPage = $('#endPage').val();
-
-
-            var upData = {
-                filter: filter,
-                useCash: useCash,
-                type: type,
-                date: date,
-                startPage: startPage,
-                endPage: endPage
-            };
-            for (key in upData) {
-                if (typeof upData[key] === 'undefinde') {
-                    upData[key] = false;
-                }
-            }
-
-            $.postData(upData, '/api/getPixivHotList').success(function (res) {
-                var creatHtml = dailyListObject.createShowHtml({
-                    showData: res.contents
-                });
-                dailyListObject.addToShowContent(creatHtml);
-                dailyListObject.common.result.contents = res.contents;
-                dailyListObject.activeLoad();
-
-            });
-
-        });
     },
+    
     createShowHtml: function ({
         showData,
         showItem = ['url', 'title', 'illust_id','tags'],
@@ -219,10 +131,11 @@ var dailyListObject = {
         return content;
     },
     showList: function (start, end, showItem = ['url', 'title', 'illust_id','tags']) {
+        console.log('in');
         var $container = $('.item-list');
         var have = Number($container.find('.img-item').length);
-        var common = dailyListObject.common;
-        var closureObj = dailyListObject.common.closure;
+        var common = handleShowContent.common;
+        var closureObj = handleShowContent.common.closure;
         var opt = {
             showData: common.result.contents,
             showItem: showItem,
@@ -242,33 +155,35 @@ var dailyListObject = {
             } else {
                 $container.parent().append('<div id="loaderEnd">加载完成</div>');
                 closureObj.over = true;
-                dailyListObject.closureOver();
+                handleShowContent.closureOver();
                 $(window).scroll(function () { });
             }
 
             return;
         }
 
-        var htmlString = dailyListObject.createShowHtml(opt);
-        dailyListObject.appendToShowContent(htmlString);
+        var htmlString = handleShowContent.createShowHtml(opt);
+        handleShowContent.appendToShowContent(htmlString);
     },
     activeLoad: function (showItem) {
 
         if ($('#loaderEnd')[0]) {
             $('#loaderEnd').remove();
         }
-        var closureObj = dailyListObject.common.closure;
+
+        var closureObj = handleShowContent.common.closure;
         $(window).scroll(function () {
+            
             var scrollTop = $(this).scrollTop();
             var scrollHeight = $(document).height();
             var windowHeight = $(this).height();
-            if (scrollTop + windowHeight == scrollHeight) {
+            if (scrollTop + windowHeight >= scrollHeight) {
                 if (closureObj.timer != null || closureObj.over === false) {
                     return
                 }
                 closureObj.over = false
-                dailyListObject.closureSet();
-                dailyListObject.showList();
+                handleShowContent.closureSet();
+                handleShowContent.showList();
 
             }
         })
@@ -276,7 +191,7 @@ var dailyListObject = {
     addToShowContent: function (htmlString, content = '.item-list') {
         var listContentDom = $(content);
         var listDom = $(htmlString);
-        var closureObj = dailyListObject.common.closure;
+        var closureObj = handleShowContent.common.closure;
 
         if (listContentDom[0]) {
             listContentDom.remove();
@@ -296,7 +211,7 @@ var dailyListObject = {
                 isFitWidth: true     // 自适应宽度
             });
             closureObj.over = true;
-            dailyListObject.closureOver();
+            handleShowContent.closureOver();
             $.loadingConturl.removeLoading();
         });
 
@@ -304,7 +219,7 @@ var dailyListObject = {
     appendToShowContent: function appendToShowContent(htmlString, content = '.item-list') {
         var listContentDom = $(content);
         var listDom = $(htmlString);
-        var closureObj = dailyListObject.common.closure;
+        var closureObj = handleShowContent.common.closure;
 
         $.loadingConturl.appendLoading();
         listDom.find('.img-item').css('display', 'none');
@@ -326,29 +241,23 @@ var dailyListObject = {
             }
 
             closureObj.over = true
-            dailyListObject.closureOver();
+            handleShowContent.closureOver();
 
         });
     },
     closureSet: function () {
-        var closureObj = dailyListObject.common.closure;
+        var closureObj = handleShowContent.common.closure;
         if (closureObj.timer === null) {
             closureObj.timer = setTimeout(() => {
-                dailyListObject.closureOver();
+                handleShowContent.closureOver();
             }, closureObj.wait)
         }
     },
     closureOver: function () {
-        var closureObj = dailyListObject.common.closure;
+        var closureObj = handleShowContent.common.closure;
         if (closureObj.timer !== null) {
             clearTimeout(closureObj.timer);
             closureObj.timer = null;
         }
     }
 }
-
-$(function () {
-    dailyListObject.DomEventBind();
-});
-
-

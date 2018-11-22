@@ -102,6 +102,7 @@ class downLoadClass {
         pipe.on('finish', () => {
             if (checkImg(imgPath)) {
                 console.log('downLoadImg:文件 ' + fileName + '下载完成！下载次数：' + Option.runNum);
+                Option.downState = 'downOver'
                 downObj.downOver(Option);
             } else {
                 console.log('downLoadImg:文件 ' + fileName + '下载出错,文件不完全');

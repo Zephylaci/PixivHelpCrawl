@@ -17,7 +17,8 @@
 .main-drawer ul li i{
     margin-right:15px;
 }
-.dailyControl{
+
+.control-content{
     margin-top:20px;
 }
 .daily-type{
@@ -95,5 +96,22 @@
 .mdui-card-media:hover .hover-show{
    visibility:unset;
 }
+/* dosearch */
+.dosearch-control{
+   overflow:inherit;
+}
+.dosearch-control .list-item{
+    margin-left:15px;
+}
+.dosearch-control .list-item.smaill{
+    width:90px;
+}
+.dosearch-control .list-item.process-info{
+    height: 36px;
+    text-align: center;
+    line-height: 36px;
+    padding-left: 15px;
+}
+
 
 
