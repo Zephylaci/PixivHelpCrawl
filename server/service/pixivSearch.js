@@ -7,12 +7,14 @@ const StringTool = requireMehod('StringTool');
 
 class searchProcess {
     constructor({
+        strKey="",
         baseUrl = 'https://www.pixiv.net/search.php?s_mode=s_tag&mode=MODE &word=STRKEY&p=${page};',
         startPage=1,
         endPage=2,
         bookmarkCountLimit=100,
     }){
         this.common={
+            strKey,
             baseUrl,
             startPage,
             endPage,
@@ -61,7 +63,6 @@ class searchProcess {
         
         let queryList = [];
         for(let i = common.startPage,l=common.endPage;i<=l;i++){
-            let page = i;
             let queryUrl = common.baseUrl.replace('${page}',i);
             queryList.push(queryUrl);
         }
@@ -109,10 +110,10 @@ class searchProcess {
             } = item;
             
             if(bookmarkCount>=bookmarkCountLimit){
-            
+                //适配参数，与获取热榜的一致
                 let item = {
-                    illustId,
-                    illustTitle,
+                    illust_id:illustId,
+                    title:illustTitle,
                     url,
                     tags,
                     bookmarkCount
@@ -158,10 +159,11 @@ function makePlan({
         if(isSafe){
             mode = '&mode=safe'
         }
-        let baseUrl = 'https://www.pixiv.net/search.php?s_mode=s_tag'+mode+'&word='+strKey+'&p=${page}';
-        let planKey = new Date().getTime()+'_'+Math.floor(Math.random()*9+1);
-        
+        let baseUrl = 'https://www.pixiv.net/search.php?s_mode=s_tag'+mode+'&word='+ encodeURI(strKey)+'&p=${page}';
+        //let planKey = now.getHours()+'-'+now.getMinutes()+'-'+now.getSeconds()+`_${startPage}-${endPage}`;
+        let planKey = new Date().toLocaleTimeString()+`_${startPage}-${endPage}`;
         let searchPlan = new searchProcess({
+            strKey,
             baseUrl,
             startPage,
             endPage,
@@ -177,26 +179,35 @@ function makePlan({
 
 }
 function getStateByKey(planKey){
-    var searchPlan = planStore[planKey];
+    let searchPlan = planStore[planKey];
     if(!searchPlan){
         return null
     }
-    var state = searchPlan.common.state;
-    var count = searchPlan.result.items.length;
+    let {state,strKey} = searchPlan.common;
+    let count = searchPlan.result.items.length;
     return {
+        strKey,
         state,
         count
     }
 }
 function getDetail(planKey){
-    var searchPlan = planStore[planKey];
+    let searchPlan = planStore[planKey];
     if(!searchPlan){
         return null
     }
     return searchPlan.result.items
 }
+function getList(){
+    let planKeyArr = [];
+    for(let key in planStore){
+        planKeyArr.push(key);
+    }
+    return planKeyArr;
+}
 module.exports = {
     makePlan,
     getStateByKey,
-    getDetail
+    getDetail,
+    getList
 }

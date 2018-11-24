@@ -18,7 +18,7 @@ const main = {
             endPage=2,
             bookmarkCountLimit=100,
         } = ctx.request.body;
-        strKey = encodeURI(strKey);
+        
         if(startPage>endPage){
             endPage = startPage
         }
@@ -33,6 +33,11 @@ const main = {
         
     },
     getList:(ctx,next)=>{
+        ctx.body = {
+            code: 200,
+            contents: '为啥没有返回值..'
+        }
+        ctx.body.contents = pixivSearch.getList();
     },
     getState:(ctx,next)=>{
         ctx.body = {

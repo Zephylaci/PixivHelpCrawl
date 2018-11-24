@@ -10,6 +10,7 @@ var dailyListObject = {
         if(mainContent){
             $('#main-content').html(mainContent);
             dailyListObject.DomEventBind();
+            handleShowContent.init();
             return 
         }
         var routerConfig = window.COMMON.routerConfig;
@@ -21,6 +22,7 @@ var dailyListObject = {
         });
     },
     DomEventBind: function () {
+        window.COMMON.now = 'dailyList';
         var inst = new mdui.Drawer('#main-drawer');
         $('#mainDrawerControl').click(function () {
             inst.toggle();
@@ -120,8 +122,5 @@ var dailyListObject = {
     
 }
 
-$(function () {
-    dailyListObject.init();    
-});
 
 

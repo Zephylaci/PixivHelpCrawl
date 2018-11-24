@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "dev":"nodemon app.js",
     "crawl": "node server/pixivLogin.js",
     "server": "node server/www"
   },
@@ -28,5 +29,8 @@
     "mysql": "^2.16.0",
     "redis": "^2.8.0",
     "request": "^2.87.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.6"
   }
 }

@@ -6,7 +6,8 @@ var doSearchObject = {
             count:'0',
             isCashOVer:'否'
         },
-        planeList:new Map(),
+        watchTimer:null,
+        planList:new Map(),
         component:{
             mainContent:null,
         }
@@ -15,7 +16,8 @@ var doSearchObject = {
         var mainContent = doSearchObject.common.component.mainContent
         if(mainContent){
             $('#main-content').html(mainContent);
-            dailyListObject.DomEventBind();
+            doSearchObject.DomEventBind();
+            handleShowContent.init();
             return 
         }
         var routerConfig = window.COMMON.routerConfig;
@@ -23,10 +25,48 @@ var doSearchObject = {
             doSearchObject.common.component.mainContent = html;
             $('#main-content').html(html);
             doSearchObject.DomEventBind();
+            doSearchObject.bindDate();
             handleShowContent.init();
+
         });
     },
+    bindDate:function(){
+            //数据绑定
+            var watchStateData = doSearchObject.common.stateShow;
+            for(var key in watchStateData){
+                watchStateData['_'+key]=watchStateData[key];
+                bindStateData(key);
+            }
+            function bindStateData(key){
+                Object.defineProperty(watchStateData,key,{
+                    get:function () { 
+                        return watchStateData['_'+key];
+                    },
+                    set:function (val) { 
+                        watchStateData['_'+key]=val;
+                        $('#stateContent span[data-watchId='+key+']').text(val);
+                    },
+                    enumerable:true,
+                    configurable:true
+                });
+            }
+            var listData = doSearchObject.common.planList;
+            refMethod(['set','delete'],listData)
+            function refMethod(methodArr,refObj){
+                methodArr.forEach((key)=>{
+                    bindKey(key)
+                });
+                function bindKey(key){
+                    refObj['_'+key]=refObj[key];
+                    refObj[key]=function(){
+                        this['_'+key](...arguments);
+                        doSearchObject.handleList();
+                    }
+                }
+            }
+    },
     DomEventBind:function(){
+        window.COMMON.now = 'doSearch';
         $('#makePlane').click(function(){
              var upData = {
                  strKey:"",
@@ -64,13 +104,13 @@ var doSearchObject = {
             $.postData(upData, '/api/makeSeachPlan').success(function (res) {
                 if(res.code==200){
                     var resData  = res.contents;
-                    var listData = doSearchObject.common.planeList;
-                    listData.set(resData.planKey,{strKey:upData.strKey,state:'before'});
+                    var listData = doSearchObject.common.planList;
+                    listData.set(resData.planKey,{strKey:'未知',state:'before'});
                 }
             });
         });
         $('#showPlane').click(function(){
-            var nowKey = $('#planeList select').val();
+            var nowKey = $('#planList select').val();
             //TODO 验证是否完成
             $.loadingConturl.appendLoading();
             $.postData({planKey:nowKey},'/api/getPlanDetail').success(function(res){
@@ -81,45 +121,23 @@ var doSearchObject = {
             
     
         })
-        //数据绑定
-        var watchStateData = doSearchObject.common.stateShow;
-        for(var key in watchStateData){
-            watchStateData['_'+key]=watchStateData[key];
-            bindStateData(key);
-        }
-        function bindStateData(key){
-            Object.defineProperty(watchStateData,key,{
-                get:function () { 
-                    return watchStateData['_'+key];
-                },
-                set:function (val) { 
-                    watchStateData['_'+key]=val;
-                    $('#stateContent span[data-watchId='+key+']').text(val);
-                },
-                enumerable:true,
-                configurable:true
-            });
-        }
-        var listData = doSearchObject.common.planeList;
-        refMethod(['set','delete'],listData)
-        function refMethod(methodArr,refObj){
-            methodArr.forEach((key)=>{
-                bindKey(key)
-            });
-            function bindKey(key){
-                refObj['_'+key]=refObj[key];
-                refObj[key]=function(){
-                    this['_'+key](...arguments);
-                    doSearchObject.handleList();
-                }
-            }
-            
-        }
+
+        //获取值
+        $.get('/api/getPlanList').success(function(res){
+           if(res.code===200){
+               var keyArr = res.contents;
+               var planList = doSearchObject.common.planList
+               console.log(keyArr);
+               keyArr.forEach(function(item,index){
+                    planList.set(item,{strKey:'未知',state:'before'})
+               });
+           }
+        })
 
     },
     handleList:function(){
-        var planListData = doSearchObject.common.planeList;
-        var content =  $('#planeList');
+        var planListData = doSearchObject.common.planList;
+        var content =  $('#planList');
         if(planListData.size===0){
             content.html('<span>无搜索计划</span>');
             changeClass('info');
@@ -135,6 +153,7 @@ var doSearchObject = {
                  ${optionHtml}       
               </select>`;
               content.html(selectHtml);
+              bindSelectDom();
         }else{
            var optionList=content.find('option');
            if(optionList.length===planListData.size()){
@@ -171,11 +190,17 @@ var doSearchObject = {
                 }
             }
         }
+        function bindSelectDom(){
+            content.find('select').change(function(){
+                doSearchObject.checkPlanState();
+            })
+        }
     },
     checkPlanState:function(){
-        var nowKey = $('#planeList select').val();
+        var nowKey = $('#planList select').val();
         var common = doSearchObject.common;
-        var planListData = common.planeList;
+        var planListData = common.planList;
+        var watchTimer = common.watchTimer;
 
         var nowData = planListData.get(nowKey);
         var {
@@ -197,6 +222,10 @@ var doSearchObject = {
             watchKey(nowKey);
         }
         function watchKey(planKey){
+            if(watchTimer!==null){
+                clearTimeout(watchTimer);
+                watchTimer=null;
+            }
             $.postData({planKey},'/api/getPlanState').success(function(res){
                 if(res.code===200){
                     var resData =res.contents;
@@ -204,7 +233,7 @@ var doSearchObject = {
                         common.stateShow[key] = resData[key];
                     }
                     if(resData.state !=='over'){
-                        setTimeout(function(){
+                        watchTimer=setTimeout(function(){
                             watchKey(planKey);
                         },2500);
                     } 

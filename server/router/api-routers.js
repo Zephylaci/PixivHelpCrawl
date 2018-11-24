@@ -35,6 +35,10 @@ var routerConfig = {
             type:'post',
             contrl:customSearch.getDetail
         },
+        getPlanList:{
+            type:'get',
+            contrl:customSearch.getList
+        },
         // autoSerach:{
         //     type:'post',
         //     contrl:autoSerach.contrl

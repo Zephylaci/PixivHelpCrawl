@@ -59,7 +59,18 @@
         this.last = last;
 
         function makeScript(i, overFun) {
-            if(typeof js[i] !=='string'){
+            var scriptSrc = js[i];
+            if(typeof scriptSrc !=='string'){
+                if (typeof overFun === 'function') {
+                    overFun(i);
+                }
+                return;
+            }
+
+            if(document.querySelector(`script[src="${scriptSrc}"]`)){
+                if (typeof overFun === 'function') {
+                    overFun(i);
+                }
                 return;
             }
             var jsScript = document.createElement("script");
@@ -70,13 +81,13 @@
                     overFun(i);
                 }
             }
-            jsScript.setAttribute("src", js[i]);
+            jsScript.setAttribute("src",scriptSrc);
             scriptContent.appendChild(jsScript);
         }
         this.asyncLoadJs = (i)=>{
             if (i !== this.last&&this.last!=-1) {
                 makeScript(++i,this.asyncLoadJs);
-            } else if (i===this.last&&typeof (callback) == "function") {
+            } else if (i===this.last&&typeof (callback) == "function"||this.last==-1) {
                 callback();
                 delete i;
             }
@@ -101,9 +112,16 @@
 
         var cssContent = document.getElementsByTagName("head").item(0);
         function makeCssLink(i) {
+            var cssSrc = css[i]
+            if(typeof cssSrc !=='string'){
+                return;
+            }
+            if(document.querySelector(`link[href="${cssSrc}"]`)){
+                return;
+            }
             cssLink = document.createElement("link");
             cssLink.setAttribute("rel", "stylesheet");
-            cssLink.setAttribute("href", css[i]);
+            cssLink.setAttribute("href",cssSrc );
             cssContent.appendChild(cssLink);
         }
         //css 并行载入
@@ -116,8 +134,8 @@
     var mainPage = new pageHandle();
     //暴露出去的
     mainPage.InsertMethod(routerConfig.COOMON,'sync',function(){
-        mainPage.InsertMethod(routerConfig.doSearch,'async',function(){
-            doSearchObject.init();
+        mainPage.InsertMethod(routerConfig.dailyList,'async',function(){
+            dailyListObject.init();
         });
     });
     window.COMMON.mainPage = mainPage;

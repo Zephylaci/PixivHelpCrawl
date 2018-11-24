@@ -88,7 +88,7 @@ var handleShowContent = {
     
     createShowHtml: function ({
         showData,
-        showItem = ['url', 'title', 'illust_id','tags'],
+        showItem = ['url', 'title', 'illust_id','tags','bookmarkCount'],
         startNum = 0,
         endNum = 12
     }) {
@@ -109,7 +109,10 @@ var handleShowContent = {
                         strItems.push('无数据');
                     }
                 }
-
+                var info = `<span class="mdui-ripple text-id">id:${strItems[2]}</span>`
+                if(strItems[4]!=='无数据'){
+                    info =  `<span class="mdui-ripple text-id">收藏数:${strItems[4]}</span>`
+                }
                 var itemHtml = `<div class="img-item" data-tags="${strItems[3]}">
                                             <div class="mdui-card" data-id="${strItems[2]}">
                                                 <div class="mdui-card-media">
@@ -120,7 +123,7 @@ var handleShowContent = {
                                                 </div>
                                                 <div class="mdui-card-actions normal-infoItem">
                                                     <span class="mdui-ripple text-title">${strItems[1]}</span>
-                                                    <span class="mdui-ripple text-id">id:${strItems[2]}</span>
+                                                    ${info};
                                                 </div>
                                             </div>
                                         </div>`;
@@ -130,8 +133,7 @@ var handleShowContent = {
         var content = `<div class="item-list">${itemListHtml}</div>`;
         return content;
     },
-    showList: function (start, end, showItem = ['url', 'title', 'illust_id','tags']) {
-        console.log('in');
+    showList: function (start, end, showItem = ['url', 'title', 'illust_id','tags','bookmarkCount']) {
         var $container = $('.item-list');
         var have = Number($container.find('.img-item').length);
         var common = handleShowContent.common;
