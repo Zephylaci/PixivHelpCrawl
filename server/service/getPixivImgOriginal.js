@@ -51,6 +51,7 @@ async function handleUpitem(queryItem) {
         result.fileName = dres.fileName;
         result.imgPath = dres.imgPath; 
     });
+
     //保存下载后的信息至数据库
     if (result.state === 'downOver') {
         //这里的await其实可以去掉
@@ -71,6 +72,7 @@ async function handleUpitem(queryItem) {
 }
 async function isExist(imgId) {
     let imgPath = await pixivDownloadModel.searchPath(imgId);
+    console.log(imgPath);
     if (imgPath === false) {
         return false;
     }

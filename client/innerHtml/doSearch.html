@@ -18,6 +18,11 @@
                 <i class="mdui-checkbox-icon"></i>
                 安全模式
             </label>
+            <label  class="mdui-checkbox list-item mdui-float-left">
+                <input type="checkbox" data-watchId="cashPreview" />
+                <i class="mdui-checkbox-icon"></i>
+                自动缓存预览图
+            </label>
             <span id="makePlane" class="list-item mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">创建搜索计划</span>
         </div>
         <div class="mdui-card-actions control-list" id="stateContent">
@@ -37,11 +42,20 @@
 			    数量:<span data-watchId="count">0</span>
             </div>
             <div class="mdui-float-left list-item process-info" >
-			    预览图是否缓存:<span data-watchId="isCashOVer">否</span>
+			    预览图是否缓存:<span data-watchId="isCashOver">doNot</span>
             </div>
-            <span id="deletePlane" class="list-item mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">删除</span>
-            <span id="cashPreview" class="list-item mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">缓存预览图</span>
-            <span id="showPlane" class="list-item mdui-btn mdui-btn-raised mdui-color-teal mdui-float-right">展示</span>
+            <div class="mdui-float-right">
+                <span id="deletePlane" class="list-item mdui-btn mdui-btn-raised mdui-color-teal ">删除</span>
+                <span id="cashPreview" class="list-item mdui-btn mdui-btn-raised mdui-color-teal ">缓存预览图</span>
+            </div>
+        </div>
+        <div class="mdui-card-actions control-list" >
+            <div class="mdui-float-right">
+                <span id="deletePlaneList" class="list-item mdui-btn mdui-btn-raised mdui-color-teal">删除所有计划</span>
+                <span id="cloudDownloadAll" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal ">云端下载加载项</span>
+                <span id="cloudDownloadSelect" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal ">云端下载选中项</span>
+                <span id="showPlane" class="list-item mdui-btn mdui-btn-raised mdui-color-teal ">展示</span>
+            </div>
         </div>
     </div>
 </div>

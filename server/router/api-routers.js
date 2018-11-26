@@ -39,6 +39,14 @@ var routerConfig = {
             type:'get',
             contrl:customSearch.getList
         },
+        delPlanItem:{
+            type:'post',
+            contrl:customSearch.delItem
+        },
+        doCash:{
+            type:'post',
+            contrl:customSearch.createPreviewCash
+        },
         // autoSerach:{
         //     type:'post',
         //     contrl:autoSerach.contrl

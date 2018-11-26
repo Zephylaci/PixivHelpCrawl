@@ -92,6 +92,7 @@ async function searchPath(imgId) {
     }
     let result = false;
     let judgeImgExistSql = mySqlCtl.makeSqlString.getSearchSqlString(searchSqlOpt);
+
     await mySqlCtl.order(judgeImgExistSql).then((res) => {
         if (res.length !== 0) {
             result = res;

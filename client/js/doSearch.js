@@ -4,7 +4,7 @@ var doSearchObject = {
             strKey:'无',
             state:'无',
             count:'0',
-            isCashOVer:'否'
+            isCashOver:'否'
         },
         watchTimer:null,
         planList:new Map(),
@@ -51,7 +51,7 @@ var doSearchObject = {
                 });
             }
             var listData = doSearchObject.common.planList;
-            refMethod(['set','delete'],listData)
+            refMethod(['set','delete','clear'],listData)
             function refMethod(methodArr,refObj){
                 methodArr.forEach((key)=>{
                     bindKey(key)
@@ -71,6 +71,7 @@ var doSearchObject = {
              var upData = {
                  strKey:"",
                  isSafe:false,
+                 cashPreview:false,
                  startPage:1,
                  endPage:1,
                  bookmarkCountLimit:100,
@@ -118,8 +119,31 @@ var doSearchObject = {
                     handleShowContent.initList(res.contents);
                 }
             })
-            
-    
+        })
+        $('#deletePlane').click(function(){
+            var nowKey = $('#planList select').val(); 
+            $.postData({planKey:nowKey},'/api/delPlanItem').success(function(res){
+                if(res.code=200){
+                    mdui.snackbar({
+                        message: res.contents,
+                        position: 'top'
+                    });
+                    var planList = doSearchObject.common.planList;
+                    planList.delete(nowKey);
+                }
+            })
+        });
+        $('#cashPreview').click(function(){
+            var nowKey = $('#planList select').val();
+            $.postData({planKey:nowKey},'/api/doCash').success(function(res){
+                if(res.code=200){
+                    mdui.snackbar({
+                        message: res.contents,
+                        position: 'top'
+                    });
+                    doSearchObject.checkPlanState();
+                }
+            })
         })
 
         //获取值
@@ -127,7 +151,6 @@ var doSearchObject = {
            if(res.code===200){
                var keyArr = res.contents;
                var planList = doSearchObject.common.planList
-               console.log(keyArr);
                keyArr.forEach(function(item,index){
                     planList.set(item,{strKey:'未知',state:'before'})
                });
@@ -138,9 +161,11 @@ var doSearchObject = {
     handleList:function(){
         var planListData = doSearchObject.common.planList;
         var content =  $('#planList');
+        doSearchObject.clearTimer();
         if(planListData.size===0){
             content.html('<span>无搜索计划</span>');
             changeClass('info');
+            doSearchObject.checkPlanState();
             return;
         }
         if(!content.hasClass('select-content')){
@@ -200,20 +225,29 @@ var doSearchObject = {
         var nowKey = $('#planList select').val();
         var common = doSearchObject.common;
         var planListData = common.planList;
-        var watchTimer = common.watchTimer;
+
+        if(!nowKey){
+            var stateShow =common.stateShow;
+            stateShow.strKey='无';
+            stateShow.state='无';
+            stateShow.count='0';
+            stateShow.isCashOver='doNot';
+            return
+        }
+
 
         var nowData = planListData.get(nowKey);
         var {
             strKey='无',
             state='无',
             count='0',
-            isCashOVer='否'
+            isCashOver='doNot'
         }=nowData;
         var nowState = {
             strKey,
             state,
             count,
-            isCashOVer
+            isCashOver
         }
         for(var key in common.stateShow){
             common.stateShow[key] = nowState[key];
@@ -222,10 +256,7 @@ var doSearchObject = {
             watchKey(nowKey);
         }
         function watchKey(planKey){
-            if(watchTimer!==null){
-                clearTimeout(watchTimer);
-                watchTimer=null;
-            }
+            doSearchObject.clearTimer();
             $.postData({planKey},'/api/getPlanState').success(function(res){
                 if(res.code===200){
                     var resData =res.contents;
@@ -233,12 +264,19 @@ var doSearchObject = {
                         common.stateShow[key] = resData[key];
                     }
                     if(resData.state !=='over'){
-                        watchTimer=setTimeout(function(){
+                        doSearchObject.common.watchTimer=setTimeout(function(){
                             watchKey(planKey);
                         },2500);
-                    } 
+                    }
                 }
             })
+        }
+    },
+    clearTimer(){
+        var watchTimer = doSearchObject.common.watchTimer;
+        if(watchTimer!==null){
+            clearTimeout(watchTimer);
+            watchTimer=null;
         }
     }
 

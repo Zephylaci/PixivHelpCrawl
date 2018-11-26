@@ -101,8 +101,7 @@ class downLoadClass {
         });
         pipe.on('finish', () => {
             if (checkImg(imgPath)) {
-                console.log('downLoadImg:文件 ' + fileName + '下载完成！下载次数：' + Option.runNum);
-                Option.downState = 'downOver'
+                console.log('downLoadImg:文件 ' + fileName + '下载完成！下载次数：' + Option.runNum);  
                 downObj.downOver(Option);
             } else {
                 console.log('downLoadImg:文件 ' + fileName + '下载出错,文件不完全');
@@ -119,7 +118,7 @@ class downLoadClass {
         });
     }
     downOver(Option) {
-        Option.state = 'sucess'
+        Option.state = 'downOver'
         Option.mainDownloadEnd(Option);
     }
     tryAgain(Option) {

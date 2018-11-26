@@ -1,3 +1,42 @@
+var downloadControl = {
+    downSelect:function(){
+        var list = [];
+        var checkList = $('#showContent .active');
+        for (var i = 0; i < checkList.length; i++) {
+            var dom = $(checkList[i]);
+            var imgId = dom.data('id');
+            list.push(imgId);
+            dom.removeClass('active');
+        }
+        var downList = JSON.stringify(list);
+        var upData = { downList: downList };
+        
+        downloadControl.downRequest(upData);
+    },
+    downAll:function(){
+        mdui.confirm('是否确定一次性下载所有加载项？（包括不可见部分）',function(){
+            var list = [];
+            var dataList = handleShowContent.common.result.contents;
+            for (var i = 0, l = dataList.length; i < l; i++) {
+                var item = dataList[i];
+                list.push(item.illust_id);
+            }
+            var downList = JSON.stringify(list);
+            var upData = { downList: downList };
+
+            downloadControl.downRequest(upData);
+        });
+    },
+    //upData内为'illust_id'
+    downRequest:function(upData=[]){
+        $.postData(upData, '/api/download').success((data) => {
+            mdui.snackbar({
+                message: data.content,
+                position: 'top'
+            });
+        });
+    }    
+}
 var handleShowContent = {
     common: {
         result: {
@@ -8,10 +47,11 @@ var handleShowContent = {
             over: true,
             wait: 3000
         },
+        firstInit:true
     },
     init:function(){
-        handleShowContent.common.result = [];
-        handleShowContent.closureOver;
+        handleShowContent.common.result.contents= [];
+        handleShowContent.closureOver();
         handleShowContent.DomEventBind();
     },
     initList:function(listArr){
@@ -23,6 +63,30 @@ var handleShowContent = {
         handleShowContent.activeLoad();
     },
     DomEventBind: function () {
+        //下载相关参数
+        $('#cloudDownloadSelect').click(downloadControl.downSelect);
+        $('#cloudDownloadAll').click(downloadControl.downAll);
+        
+        if(handleShowContent.common.firstInit===true){
+            var inst = new mdui.Drawer('#main-drawer');
+            $('#mainDrawerControl').click(function () {
+                inst.toggle();
+                var list = $('.img-item');
+                var length = list.length
+                if (length != 0) {
+                    var content = $('.item-list');
+                    content.masonry('destroy');
+                    content.html('');
+                    $.loadingConturl.appendLoading('.item-list');
+                    setTimeout(function () {
+                        $.loadingConturl.removeLoading('.item-list');
+                        handleShowContent.showList(0, length - 1);
+                    }, 800)
+                }
+            });
+            handleShowContent.common.firstIni = false;
+        }
+
         $('#showContent').on('click', '.img-item', function () {
             $(this).find('.mdui-card').toggleClass('active');
         });

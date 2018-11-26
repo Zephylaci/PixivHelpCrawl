@@ -3,6 +3,7 @@ const manPath = '../../';
 const requireMehod = require(servicePath + 'router/refPath.js');
 const getPixivData = requireMehod('getPixivData');
 const publicClass = require('./publicClass/concurrentHandle.js');
+const downloadThread = requireMehod('downloadThread')
 const StringTool = requireMehod('StringTool');
 
 class searchProcess {
@@ -12,6 +13,7 @@ class searchProcess {
         startPage=1,
         endPage=2,
         bookmarkCountLimit=100,
+        cashPreview = 'false', 
     }){
         this.common={
             strKey,
@@ -19,6 +21,7 @@ class searchProcess {
             startPage,
             endPage,
             bookmarkCountLimit,
+            previewState:cashPreview===true?'do':'doNot',
             state:'before',  // brefore running over
         }
         this.contrlMethod={
@@ -80,7 +83,7 @@ class searchProcess {
     }
     breakQuery(){
         let process = this;
-        console.log('pixivSearch 读取到无信息页，队列清零')
+        console.log('pixivSearch 读取到无信息页，或主动中断,队列清零')
         process.queryProcess.common.linkList = [];
     }
     async oneSetp(queryItem){
@@ -128,8 +131,7 @@ class searchProcess {
         
         return queryResult.items.length;
     }
-    
-    queryOver(resArr){
+    async queryOver(resArr){
         let process = this;
         let common = process.common;
         
@@ -137,12 +139,34 @@ class searchProcess {
         resultItems = resultItems.sort((first,Second)=>{
             return Second.bookmarkCount - first.bookmarkCount 
         });
-
+        if(common.previewState==='do'){
+            common.state = 'cashPreview';
+            await process.cashPreviewMethod();
+            common.previewState = 'over';
+        }
         common.state = 'over';
         delete process.queryProcess;
         
         console.log(process.common.baseUrl,'over');
                     
+    }
+    async cashPreviewMethod(){
+        var path = 'client/cash';
+        let process = this;
+
+        var downList = process.result.items.map((item)=>{
+            return item.originUrl;
+        });
+        if(downList.length===0){
+            console.log('没有需要缓存的预览图')
+            return
+        }
+        var downObj = new downloadThread({
+            path: path
+        })
+        downObj.downList(downList);
+        let resHandle = downloadThread.extend.cashImgHandleSet(process.result.items);
+        await downObj.overControl().then(resHandle);
     }
     
 }
@@ -151,12 +175,14 @@ const planStore={};
 function makePlan({
             strKey="",
             isSafe=false,
+            cashPreview=false,    
             startPage=1,
             endPage=2,
             bookmarkCountLimit=100,
         }){
+        
         let mode = '';
-        if(isSafe){
+        if(isSafe===true){
             mode = '&mode=safe'
         }
         let baseUrl = 'https://www.pixiv.net/search.php?s_mode=s_tag'+mode+'&word='+ encodeURI(strKey)+'&p=${page}';
@@ -168,6 +194,7 @@ function makePlan({
             startPage,
             endPage,
             bookmarkCountLimit,
+            cashPreview,
         });
 
         searchPlan.control();
@@ -185,10 +212,12 @@ function getStateByKey(planKey){
     }
     let {state,strKey} = searchPlan.common;
     let count = searchPlan.result.items.length;
+    let isCashOver = searchPlan.common.previewState;
     return {
         strKey,
         state,
-        count
+        count,
+        isCashOver,
     }
 }
 function getDetail(planKey){
@@ -205,9 +234,48 @@ function getList(){
     }
     return planKeyArr;
 }
+function delItem(planKey){
+    if(!planStore[planKey]){
+        return 'not exist'
+    }
+    if(deleteStep(planKey)){
+        return 'delete sucess'
+    }
+    return 'delete fail'
+}
+function deleteStep(planKey){
+    if(planStore[planKey].common.state!=='over'){
+        planStore[planKey].breakQuery();
+        planStore[planKey].common.previewState='doNot';
+    }
+    planStore[planKey] = null;
+    return delete planStore[planKey]
+}
+function createPreviewCash(planKey){
+    let searchPlan = planStore[planKey];
+    if(!searchPlan){
+        return 'not exist'
+    }
+    let cashState = searchPlan.common.previewState;
+    if(cashState==='over'){
+        return 'cash over'
+    }
+    let processState = searchPlan.common.state;
+    searchPlan.common.previewState='do';
+    if(processState==='over'){
+        searchPlan.common.state = 'cashPreview';
+        searchPlan.cashPreviewMethod().then(()=>{
+            searchPlan.common.state = 'over';
+            searchPlan.common.previewState = 'over';
+        });   
+    }
+    return 'do cash';
+}
 module.exports = {
     makePlan,
     getStateByKey,
     getDetail,
-    getList
+    getList,
+    delItem,
+    createPreviewCash
 }

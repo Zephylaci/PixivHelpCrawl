@@ -23,54 +23,7 @@ var dailyListObject = {
     },
     DomEventBind: function () {
         window.COMMON.now = 'dailyList';
-        var inst = new mdui.Drawer('#main-drawer');
-        $('#mainDrawerControl').click(function () {
-            inst.toggle();
-            var list = $('.img-item');
-            var length = list.length
-            if (length != 0) {
-                var content = $('.item-list');
-                content.masonry('destroy');
-                content.html('');
-                $.loadingConturl.appendLoading('.item-list');
-                setTimeout(function () {
-                    $.loadingConturl.removeLoading('.item-list');
-                    handleShowContent.showList(0, length - 1);
-                }, 800)
-            }
-        });
 
-        $('body').on('click', '#cloudDownloadSelect', function () {
-            var list = [];
-            var checkList = $('#showContent .active');
-            for (var i = 0; i < checkList.length; i++) {
-                var dom = $(checkList[i]);
-                var imgId = dom.data('id');
-                list.push(imgId);
-                dom.removeClass('active');
-            }
-            var downList = JSON.stringify(list);
-            var upData = { downList: downList };
-
-            $.postData(upData, '/api/download').success((data) => {
-                alert(data.content);
-            });
-        });
-
-        $('body').on('click', '#cloudDownloadAll', function () {
-            var list = [];
-            var dataList = dailyListObject.common.result.contents;
-            for (var i = 0, l = dataList.length; i < l; i++) {
-                var item = dataList[i];
-                list.push(item.illust_id);
-            }
-            var downList = JSON.stringify(list);
-            var upData = { downList: downList };
-
-            $.postData(upData, '/api/download').success((data) => {
-                alert(data.content);
-            });
-        });
 
         $("#queryDate").val(new Date(new Date() - 86400000).toLocaleDateString())
         $("#queryDate").flatpickr();

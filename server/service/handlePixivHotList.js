@@ -142,23 +142,8 @@ class handlePixivHotList {
             path: path
         })
         downObj.downList(downList);
-        var fileNameMap = {};
-        await downObj.overControl().then((downRes) => {
-            var getIdReg = /\/([0-9]{8,})_/
-            downRes.map((item, index) => {
-                var id = getIdReg.exec(item.fileName)[1];
-                fileNameMap[id] = item.fileName
-            })
-        });
-        queryResult.data.contents = queryResult.data.contents.map((item, index) => {
-            var id = item.illust_id;
-            if (fileNameMap[id]) {
-                item['originUrl'] = item['url'];
-                item['url'] = '/cash' + fileNameMap[id];
-            }
-
-            return item
-        });
+        let resHandle = downloadThread.extend.cashImgHandleSet(queryResult.data.contents);
+        await downObj.overControl().then(resHandle);
         delete queryResult.cashDownList;
 		let  setRedis = JSON.stringify(queryResult);
         await redisCtl.HMSET(JSON.parse(setRedis));

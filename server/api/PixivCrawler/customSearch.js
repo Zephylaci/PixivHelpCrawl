@@ -14,17 +14,23 @@ const main = {
         let {
             strKey="",
             isSafe=false,
+            cashPreview=false,
             startPage=1,
             endPage=2,
             bookmarkCountLimit=100,
         } = ctx.request.body;
-        
+
+        if(typeof isSafe==='string'){
+            isSafe=isSafe==='false'?false:true;
+            cashPreview=cashPreview==='false'?false:true;
+        }
         if(startPage>endPage){
             endPage = startPage
         }
         let state = pixivSearch.makePlan({
            strKey,
            isSafe,
+           cashPreview,
            startPage,
            endPage,
            bookmarkCountLimit
@@ -71,6 +77,38 @@ const main = {
         }else{
             ctx.body.code=201
         }
-    }
+    },
+    delItem:(ctx,next)=>{
+        ctx.body = {
+            code: 200,
+            contents: '为啥没有返回值..'
+        }
+        let {
+            planKey="",
+        } = ctx.request.body; 
+
+        let state = pixivSearch.delItem(planKey);
+        if(state){
+            ctx.body.contents =state 
+        }else{
+            ctx.body.code=201
+        }
+    },
+    createPreviewCash:(ctx,next)=>{
+        ctx.body = {
+            code: 200,
+            contents: '为啥没有返回值..'
+        }
+        let {
+            planKey="",
+        } = ctx.request.body; 
+
+        let state = pixivSearch.createPreviewCash(planKey);
+        if(state){
+            ctx.body.contents =state 
+        }else{
+            ctx.body.code=201
+        }
+    },
 }
 module.exports=main;
