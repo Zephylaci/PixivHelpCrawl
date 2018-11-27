@@ -6,6 +6,7 @@ var doSearchObject = {
             count:'0',
             isCashOver:'否'
         },
+        socket:null,
         watchTimer:null,
         planList:new Map(),
         component:{
@@ -24,6 +25,7 @@ var doSearchObject = {
         $.get(routerConfig.doSearch.inner).then((html)=>{
             doSearchObject.common.component.mainContent = html;
             $('#main-content').html(html);
+            doSearchObject.socketInit();
             doSearchObject.DomEventBind();
             doSearchObject.bindDate();
             handleShowContent.init();
@@ -64,6 +66,28 @@ var doSearchObject = {
                     }
                 }
             }
+
+    },
+    socketInit:function(){
+        var socket = new io.connect();
+        console.log('socket content',socket);
+        doSearchObject.common.socket = socket;
+        socket.on('addList',function(res){
+            var keyArr = res.contents;
+            var planList = doSearchObject.common.planList
+            keyArr.forEach(function(item,index){
+                planList.set(item.planKey,item.state)
+            });
+            if(res.change){
+                $('select.mdui-select').val(res.change);
+                $('select.mdui-select').change();
+            }
+        });
+        socket.on('changeState',function(res){
+            var resData = res.contents;
+            var planList = doSearchObject.common.planList;
+            planList.set(resData.planKey,resData.state);
+        })
     },
     DomEventBind:function(){
         window.COMMON.now = 'doSearch';
@@ -102,13 +126,8 @@ var doSearchObject = {
                  });
                 return
              }
-            $.postData(upData, '/api/makeSeachPlan').success(function (res) {
-                if(res.code==200){
-                    var resData  = res.contents;
-                    var listData = doSearchObject.common.planList;
-                    listData.set(resData.planKey,{strKey:'未知',state:'before'});
-                }
-            });
+            var socket = doSearchObject.common.socket;
+            socket.emit('doSearch',{method:'makeSeachPlan',data:upData});
         });
         $('#showPlane').click(function(){
             var nowKey = $('#planList select').val();
@@ -147,16 +166,9 @@ var doSearchObject = {
         })
 
         //获取值
-        $.get('/api/getPlanList').success(function(res){
-           if(res.code===200){
-               var keyArr = res.contents;
-               var planList = doSearchObject.common.planList
-               keyArr.forEach(function(item,index){
-                    planList.set(item,{strKey:'未知',state:'before'})
-               });
-           }
-        })
-
+        var socket = doSearchObject.common.socket;
+        socket.emit('doSearch',{method:'init'});
+    
     },
     handleList:function(){
         var planListData = doSearchObject.common.planList;
@@ -168,6 +180,7 @@ var doSearchObject = {
             doSearchObject.checkPlanState();
             return;
         }
+        
         if(!content.hasClass('select-content')){
              changeClass('select');
               var optionHtml = '';
@@ -181,32 +194,34 @@ var doSearchObject = {
               bindSelectDom();
         }else{
            var optionList=content.find('option');
-           if(optionList.length===planListData.size()){
+           if(optionList.length===planListData.size){
+                doSearchObject.checkPlanState();   
                return;
-           }     
-           optionList.forEach((item)=>{
+           }    
+           optionList.each((index,item)=>{
                var $item = $(item);
                var key = $(item).val();
                if(!planListData.has(key)){
                    $item.remove();
                }
            });
+           var selectContent = content.find('select');
            planListData.forEach((item,key,index)=>{
-              if(!content.find(`option[value=${key}]`)[0]){
-                  content.append(`<option value="${key}" >${key}</option>`)
+              if(!selectContent.find(`option[value="${key}"]`)[0]){
+                selectContent.append(`<option value="${key}" >${key}</option>`)
               } 
            });
         }
-         doSearchObject.checkPlanState();     
+        doSearchObject.checkPlanState();     
         function changeClass(classType){
-            if(classType='info'){
+            if(classType==='info'){
                 if(!content.hasClass('process-info')){
                     content.addClass('process-info')
                 }
                 if(content.hasClass('select-content')){
                     content.removeClass('select-content')
                 }
-            }else if(classType='select'){
+            }else if(classType==='select'){
                 if(!content.hasClass('select-content')){
                     content.addClass('select-content')
                 }
@@ -235,7 +250,6 @@ var doSearchObject = {
             return
         }
 
-
         var nowData = planListData.get(nowKey);
         var {
             strKey='无',
@@ -251,25 +265,6 @@ var doSearchObject = {
         }
         for(var key in common.stateShow){
             common.stateShow[key] = nowState[key];
-        }
-        if(nowData.state !== 'over'){
-            watchKey(nowKey);
-        }
-        function watchKey(planKey){
-            doSearchObject.clearTimer();
-            $.postData({planKey},'/api/getPlanState').success(function(res){
-                if(res.code===200){
-                    var resData =res.contents;
-                    for(var key in resData){
-                        common.stateShow[key] = resData[key];
-                    }
-                    if(resData.state !=='over'){
-                        doSearchObject.common.watchTimer=setTimeout(function(){
-                            watchKey(planKey);
-                        },2500);
-                    }
-                }
-            })
         }
     },
     clearTimer(){

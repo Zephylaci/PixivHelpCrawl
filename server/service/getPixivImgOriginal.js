@@ -72,12 +72,10 @@ async function handleUpitem(queryItem) {
 }
 async function isExist(imgId) {
     let imgPath = await pixivDownloadModel.searchPath(imgId);
-    console.log(imgPath);
     if (imgPath === false) {
         return false;
     }
     let imgSavePath = webPath + imgPath[0].imgPath;
-    console.log(imgSavePath);
     if (checkImg(imgSavePath)) {
         return true;
     }

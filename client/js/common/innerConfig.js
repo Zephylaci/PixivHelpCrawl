@@ -56,7 +56,7 @@
             inner:'innerHtml/doSearch.html', //引用的html地址
             path:'', //使用的url地址
             js:[
-               
+               "https://cdn.bootcss.com/socket.io/2.1.1/socket.io.js",
                 "./js/doSearch.js",
             ], //需要引用的独有js文件
             css:[

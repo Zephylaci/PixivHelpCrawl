@@ -197,13 +197,34 @@ function makePlan({
             cashPreview,
         });
 
-        searchPlan.control();
-        
-        planStore[planKey] = searchPlan;
-        return {
-            planKey
-        }
+       searchPlan.control();
+       planStore[planKey] =searchPlan;
 
+        return {
+            planKey,
+        }
+}
+function watchChange(planKey){
+   let searchPlan = planStore[planKey] ;
+    searchPlan.common['_state'] = searchPlan.common.state;
+    var watchObj = {
+        change:()=>{
+            console.log('change');
+            console.log(searchPlan.common.state);
+        }
+    }
+    Object.defineProperty(searchPlan.common,'state',{
+        get:function () { 
+            return searchPlan.common['_state'];
+        },
+        set:function (val) { 
+            searchPlan.common['_state']=val;
+            watchObj.change();
+        },
+        enumerable:true,
+        configurable:true
+    });
+    return watchObj
 }
 function getStateByKey(planKey){
     let searchPlan = planStore[planKey];
@@ -277,5 +298,6 @@ module.exports = {
     getDetail,
     getList,
     delItem,
-    createPreviewCash
+    createPreviewCash,
+    watchChange
 }

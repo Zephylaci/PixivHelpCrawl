@@ -13,6 +13,7 @@ const path = require('path');
 var mainConfig = require('../config/index.js')
 var pathConfig = mainConfig['pathConfig']
 var makeRouterList = require('./utils/makeRouterList.js');
+
 onerror(app)
 
 

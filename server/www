@@ -9,6 +9,9 @@
 var app = require('./koa-server.js');
 var debug = require('debug')('demo:server');
 var http = require('http');
+//socketIo
+var socketIo=require("socket.io");
+var socketHandle=require("./api/socketHandle.js");
 
 //const easyMonitor = require('easy-monitor'); easyMonitor('pixivHelp');
 
@@ -39,6 +42,7 @@ if (!fs.existsSync(env.pathConfig.downloadPath)) {
 
 var server = http.createServer(app.callback());
 
+
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -46,6 +50,10 @@ var server = http.createServer(app.callback());
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+//socketIo
+var io=new socketIo(server);
+//每个客户端socket连接时都会触发 connection 事件
+io.on("connection",socketHandle);
 
 /**
  * Normalize a port into a number, string, or false.
