@@ -23,10 +23,8 @@ var dailyListObject = {
     },
     DomEventBind: function () {
         window.COMMON.now = 'dailyList';
+        
 
-
-        $("#queryDate").val(new Date(new Date() - 86400000).toLocaleDateString())
-        $("#queryDate").flatpickr();
          
         $('#dailyControl').on('click', '#getType>span', function () {
             $('#dailyControl').find('#getType>span').removeClass('active');
@@ -71,6 +69,9 @@ var dailyListObject = {
             });
 
         });
+
+        $("#queryDate").val(new Date(new Date() - 86400000).toLocaleDateString())
+        $("#queryDate").flatpickr();
     },
     
 }

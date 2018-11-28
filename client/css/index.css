@@ -96,21 +96,32 @@
 .mdui-card-media:hover .hover-show{
    visibility:unset;
 }
-/* dosearch */
+/* dosearch //controlCrawler*/
 .dosearch-control{
    overflow:inherit;
 }
-.dosearch-control .list-item{
+.list-item{
     margin-left:15px;
 }
-.dosearch-control .list-item.smaill{
+
+.list-item.smaill{
     width:90px;
 }
-.dosearch-control .list-item.process-info{
+.list-item.process-info{
     height: 36px;
     text-align: center;
     line-height: 36px;
     padding-left: 15px;
+}
+.list-item.process-info span{
+    margin-left:8px;
+}
+/*controlCrawler*/
+.state-title{
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-left: 12px;
 }
 
 

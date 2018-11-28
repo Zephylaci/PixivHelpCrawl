@@ -6,7 +6,6 @@ var doSearchObject = {
             count:'0',
             isCashOver:'否'
         },
-        socket:null,
         watchTimer:null,
         planList:new Map(),
         component:{
@@ -25,9 +24,9 @@ var doSearchObject = {
         $.get(routerConfig.doSearch.inner).then((html)=>{
             doSearchObject.common.component.mainContent = html;
             $('#main-content').html(html);
+            doSearchObject.bindDate();
             doSearchObject.socketInit();
             doSearchObject.DomEventBind();
-            doSearchObject.bindDate();
             handleShowContent.init();
 
         });
@@ -69,10 +68,8 @@ var doSearchObject = {
 
     },
     socketInit:function(){
-        var socket = new io.connect();
-        console.log('socket content',socket);
-        doSearchObject.common.socket = socket;
-        socket.on('addList',function(res){
+        var socket = SOCKETLINK;
+        socket.on('doSearch-addList',function(res){
             var keyArr = res.contents;
             var planList = doSearchObject.common.planList
             keyArr.forEach(function(item,index){
@@ -83,7 +80,7 @@ var doSearchObject = {
                 $('select.mdui-select').change();
             }
         });
-        socket.on('changeState',function(res){
+        socket.on('doSearch-changeState',function(res){
             var resData = res.contents;
             var planList = doSearchObject.common.planList;
             planList.set(resData.planKey,resData.state);
@@ -126,7 +123,7 @@ var doSearchObject = {
                  });
                 return
              }
-            var socket = doSearchObject.common.socket;
+            var socket = SOCKETLINK;
             socket.emit('doSearch',{method:'makeSeachPlan',data:upData});
         });
         $('#showPlane').click(function(){
@@ -166,7 +163,7 @@ var doSearchObject = {
         })
 
         //获取值
-        var socket = doSearchObject.common.socket;
+        var socket = SOCKETLINK;
         socket.emit('doSearch',{method:'init'});
     
     },

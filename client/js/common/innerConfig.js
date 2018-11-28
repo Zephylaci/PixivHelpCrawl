@@ -8,6 +8,7 @@
             js:[ //注释掉是因为默认读到这应该已经有了
                 //  "https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.1/js/mdui.min.js", 
                 //  "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js", 
+                "https://cdn.bootcss.com/socket.io/2.1.1/socket.io.js",
                 "js/unit/imagesloaded.min.js",        
                 "./js/index.js",
             ], 
@@ -56,7 +57,6 @@
             inner:'innerHtml/doSearch.html', //引用的html地址
             path:'', //使用的url地址
             js:[
-               "https://cdn.bootcss.com/socket.io/2.1.1/socket.io.js",
                 "./js/doSearch.js",
             ], //需要引用的独有js文件
             css:[
@@ -64,6 +64,17 @@
             ], //需要引用的独有css文件
             needUnit:[],//需要的三方组件
         },
+        controlCrawler:{
+            inner:'innerHtml/controlCrawler.html', //引用的html地址
+            path:'', //使用的url地址
+            js:[
+                "./js/controlCrawler.js",
+            ], //需要引用的独有js文件
+            css:[
+
+            ], //需要引用的独有css文件
+            needUnit:["timePick"],//需要的三方组件
+        }
     }
     if(!window.COMMON){
         window.COMMON={};

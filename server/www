@@ -11,7 +11,7 @@ var debug = require('debug')('demo:server');
 var http = require('http');
 //socketIo
 var socketIo=require("socket.io");
-var socketHandle=require("./api/socketHandle.js");
+var socketHandle=require("./socket/socketHandle.js");
 
 //const easyMonitor = require('easy-monitor'); easyMonitor('pixivHelp');
 

@@ -1,5 +1,5 @@
-
 const pixivSearch = require('../service/pixivSearch.js');
+
 const methodMap = {
     init:({
         clientSocket={},
@@ -12,7 +12,7 @@ const methodMap = {
            item.state = pixivSearch.getStateByKey(planKey);
            result.push(item);
        });
-       clientSocket.local.emit('addList',{
+       clientSocket.local.emit('doSearch-addList',{
            contents:result
        })
     },
@@ -53,7 +53,7 @@ const methodMap = {
 
             }
         ];
-        clientSocket.local.emit('addList',{
+        clientSocket.local.emit('doSearch-addList',{
             contents:result,
             change:planKey
         });
@@ -64,27 +64,11 @@ const methodMap = {
                 planKey,
                 state:pixivSearch.getStateByKey(planKey)
             }
-            clientSocket.local.emit('changeState',{
+            clientSocket.local.emit('doSearch-changeState',{
                 contents:result
             });
             
         }
     }
 }
-//每次进入的回掉
-function handle (clientSocket){
-    console.log('socke content:',clientSocket.id);
-    clientSocket.on('disconnect', function(){
-        console.log('user disconnected',this.id);
-    });
-    clientSocket.on('doSearch',(req)=>{
-       let metod = methodMap[req.method];
-       metod({
-         clientSocket:this,
-         data:req.data
-       })
-       
-    });
-}
-
-module.exports = handle
+module.exports = methodMap

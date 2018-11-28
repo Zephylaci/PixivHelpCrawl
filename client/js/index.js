@@ -327,3 +327,8 @@ var handleShowContent = {
         }
     }
 }
+
+var SOCKETLINK = new io.connect();
+console.log('socket content',SOCKETLINK);
+
+

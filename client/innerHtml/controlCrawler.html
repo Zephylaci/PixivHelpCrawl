@@ -1,0 +1,33 @@
+<div class="mdui-container">
+    <div class="mdui-card control-content ">
+        <div class="state-title">预览图片缓存状态:</div>
+        <div class="mdui-card-actions control-list" id="PreViewState" >
+            <div class="mdui-float-left list-item process-info">
+                数量:<span data-watchid="count">0</span>
+            </div>
+            <div class="mdui-float-left list-item process-info">
+                总大小:<span data-watchid="totalSize">0</span>Mb
+            </div>
+            <div class="mdui-float-left list-item process-info">
+                最先创建的图片时间:<span data-watchid="firstCreat">0</span>
+            </div>
+        </div>
+        <div class="state-title">redis库缓存状态</div>
+        <div class="mdui-card-actions control-list" id="RedisState" >
+            <div class="mdui-float-left list-item process-info">
+                条数:<span data-watchid="count">0</span>
+            </div>
+        </div>
+        <div class="mdui-card-actions control-list"  >
+            <div  class="input-content  mdui-float-left normal-input">
+                <span>截至时间：</span>
+                <input id="delBeforeDate" class="mdui-textfield-input w100"/>
+            </div>
+            <div class="mdui-float-right">
+                <span id="delPreView" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal ">删除缓存的预览图片</span>
+                <span id="delRedisDate" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal ">删除缓存的榜单数据</span>
+                <span id="delUnUserRedisDate" style="margin-left:15px;" class="mdui-btn mdui-btn-raised mdui-color-teal ">删除没有被榜单数据引用的预览图片</span>
+            </div>
+        </div>
+    </div>
+</div>

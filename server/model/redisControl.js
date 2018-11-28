@@ -21,8 +21,11 @@ const method = {
                 if (err) {
                     reject();
                     console.log('redisControl:HMSET ERROR :', err);
+                    redisCtl.delayQuit();
+                    return 
                 }
                 function hmsetCallBack(err, replies) {
+                    redisCtl.delayQuit();
                     if (err) {
                         reject();
                         console.log(new Date().toLocaleTimeString(), 'hmset出错:', err);
@@ -30,7 +33,7 @@ const method = {
                     }
                     console.log(new Date().toLocaleTimeString(), 'hmset完成:', mainKey, key === mainKey ? "" : key);
                     resolve();
-                    redisCtl.delayQuit();
+                   
                 }
                 let dataContent = setItem.data;
                 if (replies === 0) {
@@ -68,8 +71,11 @@ const method = {
                 if (err) {
                     reject();
                     console.log('redisControl:HMSET ERROR :', err);
+                    redisCtl.delayQuit();
+                    return 
                 }
                 function hmsetCallBack(err, replies) {
+                    redisCtl.delayQuit();
                     if (err) {
                         reject();
                         console.log(new Date().toLocaleTimeString(), 'hmget出错:', err);
@@ -78,7 +84,7 @@ const method = {
                     console.log(new Date().toLocaleTimeString(), 'hmget完成:', mainKey, key);
                     resolve(replies);
 
-                    redisCtl.delayQuit();
+                    
                 }
                 if (replies === 1) {
 
@@ -89,6 +95,41 @@ const method = {
 
 
             });
+        });
+
+        return promise
+    },
+    HLEN:(HKEY)=>{
+        let ctl = getClient();
+        var promise = new Promise((resolve, reject) => {
+            ctl.hlen(HKEY, function (err, replies) {
+                redisCtl.delayQuit();
+                if (err) {
+                    resolve(0);
+                    console.log('redisControl:KEYS ERROR :', err);
+                    return
+                }
+                resolve(replies);
+            });
+
+        });
+
+        return promise
+    },
+    KEYS:()=>{
+        let ctl = getClient();
+        var promise = new Promise((resolve, reject) => {
+            ctl.keys("*", function (err, replies) {
+                 redisCtl.delayQuit();
+                if (err) {
+                    resolve([]);
+                    console.log('redisControl:KEYS ERROR :', err);
+                    return 
+                }
+                resolve(replies);
+               
+            });
+
         });
 
         return promise

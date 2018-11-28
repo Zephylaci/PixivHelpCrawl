@@ -6,6 +6,8 @@ const publicClass = require('./publicClass/concurrentHandle.js');
 const downloadThread = requireMehod('downloadThread')
 const StringTool = requireMehod('StringTool');
 
+const planStore={};
+
 class searchProcess {
     constructor({
         strKey="",
@@ -170,7 +172,7 @@ class searchProcess {
     }
     
 }
-const planStore={};
+
 
 function makePlan({
             strKey="",

@@ -143,7 +143,35 @@
 
     //https://www.jb51.net/article/91132.htm
     //侧边栏点击事件
-    document.getElementById('dailyList').onclick=function(){
+    var rotuerConfig = {
+        dailyList:function (){
+            dailyListObject.init();
+        },
+        doSearch:function (){
+            doSearchObject.init();
+        },
+        controlCrawler:function(){
+            controlCrawlerObject.init();
+        }
+    }
+    function makeJump(router){
+           for(var key in router){
+                var callback = router[key];
+                bindKey(key,callback)
+           }
+           function bindKey(key,callback){
+               var pageName = key;
+               document.getElementById(pageName).onclick=function(){
+                   if(window.COMMON.now===pageName){
+                       return false;
+                   }
+                   mainPage.InsertMethod(routerConfig[pageName],'async',callback);
+               }
+           }
+    }
+    makeJump(rotuerConfig);
+    
+/*    document.getElementById('dailyList').onclick=function(){
         if(window.COMMON.now==='dailyList'){
             return false;
         }
@@ -158,6 +186,6 @@
         mainPage.InsertMethod(routerConfig.doSearch,'async',function(){
             doSearchObject.init();
         });
-    }
+    }*/
 }(window))
 

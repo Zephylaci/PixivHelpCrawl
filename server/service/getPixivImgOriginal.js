@@ -40,6 +40,7 @@ async function handleUpitem(queryItem) {
             result.state='queryErr';
         }
     }).catch((err) => {
+        result.state='queryErr';
         console.log(err)
     });
     if(result.state==='queryErr'){
