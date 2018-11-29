@@ -116,6 +116,60 @@ const method = {
 
         return promise
     },
+    HDEL:({
+        hkey,
+        keys
+    })=>{
+        let ctl = getClient();
+        var promise = new Promise((resolve, reject) => {
+            ctl.hdel(hkey,keys,function (err, replies) {
+                redisCtl.delayQuit();
+                console.log(replies);
+                if (err) {
+                    resolve(0);
+                    console.log('redisControl:HDEL ERROR :', err);
+                    return
+                }
+                resolve(replies);
+            });
+
+        });
+
+        return promise
+    },
+    HKEYS:(HKEY)=>{
+        let ctl = getClient();
+        var promise = new Promise((resolve, reject) => {
+            ctl.hkeys(HKEY, function (err, replies) {
+                redisCtl.delayQuit();
+                if (err) {
+                    resolve(0);
+                    console.log('redisControl:HKEYS ERROR :', err);
+                    return
+                }
+                resolve(replies);
+            });
+
+        });
+
+        return promise
+    },
+    HVALS:(HKEY)=>{
+        let ctl = getClient();
+        var promise = new Promise((resolve, reject) => {
+            ctl.HVALS(HKEY, function (err, replies) {
+                redisCtl.delayQuit();
+                if (err) {
+                    resolve(0);
+                    console.log('redisControl:HVALS ERROR :', err);
+                    return
+                }
+                resolve(replies);
+            });
+
+        });
+        return promise
+    },
     KEYS:()=>{
         let ctl = getClient();
         var promise = new Promise((resolve, reject) => {

@@ -18,8 +18,6 @@ emitter.on('startCash', startCash);
 emitter.on('makePlan', makePlan);
 
 
-
-
 function startCash() {
     //开始缓存
     let plan = autoCash.plan;

@@ -111,23 +111,26 @@ var handleShowContent = {
                                 </button>
                             </div>
                          </div>`
-        var filterDialog = new mdui.Dialog(filterDialogDom);
-        filterDialog.$dialog[0].addEventListener('confirm.mdui.dialog', function () {
-            //弹窗的确认回调
-            var checkedArr = $(this).find('.mdui-list input:checked');
-            var tags = [];
-            checkedArr.map((index, dom) => {
-                var tag = $(dom).data('tag');
-                tags.push(tag);
-            });
-            var upData = { tags: tags };
-            if (tags.length !== 0) {
-                $.postData(upData, '/api/addFilter');
+       var filterDialog =  $.makeConfirm({
+            htmlStr:filterDialogDom,
+            confirm:function () {
+                //弹窗的确认回调
+                var checkedArr = $(this).find('.mdui-list input:checked');
+                var tags = [];
+                checkedArr.map((index, dom) => {
+                    var tag = $(dom).data('tag');
+                    tags.push(tag);
+                });
+                var upData = { tags: tags };
+                if (tags.length !== 0) {
+                    $.postData(upData, '/api/addFilter');
+                }
+                // filterDialog.nowHandle[0].outerHTML="";
+                var content = $('.item-list');
+                content.masonry('remove', filterDialog.nowHandle).masonry('layout');
             }
-            // filterDialog.nowHandle[0].outerHTML="";
-            var content = $('.item-list');
-            content.masonry('remove', filterDialog.nowHandle).masonry('layout');
         });
+
 
         $('#showContent').on('click', '.hover-show[data-event=ruleout]', function () {
             var domContent = $(this).parents('.img-item');

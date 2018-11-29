@@ -59,7 +59,121 @@ function getPreViewState({
    return result;
 }
 async function getRedisState(){
-     let keyList = await redisCtl.KEYS();
+    let result = {
+        totalCount:0,
+    }
+   await redisListHandle({
+       result,
+       handleFun:async ({result,key})=>{
+           let getCount = await redisCtl.HLEN(key);
+           result.totalCount+=getCount;
+       }
+   });
+
+    return {
+        totalCount:result.totalCount
+    }
+}
+async function makeViewDelList({
+    beforeTime=-Infinity,
+    checkUse=false,
+}){
+    let {fileList,handleListFun}=  fileListHandle();
+    let result = {
+        count:fileList.length,
+        delList:[]
+    };
+   
+    function makeDelList({
+        ctimeMs=0,
+        path,
+    },result){
+        if(ctimeMs<beforeTime){
+            result.delList.push(path)
+        }
+    }
+    var handleList = [makeDelList]
+    result = handleListFun({
+        result,
+        handleList
+    });
+    if(checkUse===true){
+        let redisResult = {
+            allCashItem:[]
+        }
+        await redisListHandle({
+            result:redisResult,
+            handleFun:async ({result,key})=>{
+                
+                let values = await redisCtl.HVALS(key);
+                values.forEach((itemStr)=>{
+                    let item = JSON.parse(itemStr);
+                    result.allCashItem = result.allCashItem.concat(item.contents);
+                });
+
+            }
+        });
+        console.time('test');
+        console.log(redisResult.allCashItem.length);
+        let delList = result.delList;
+        let imgMap = {};
+        redisResult.allCashItem.forEach((item)=>{
+            let needUrl = 'client'+item.url;
+             imgMap[needUrl] = true
+        })
+        delList = delList.filter((imgPath)=>{
+            return !imgMap[imgPath]
+        });
+
+        console.timeEnd('test');
+        result.delList = delList;
+    }
+
+    
+    return result
+
+}
+async function makeRedisDelList({
+    beforeTime=-Infinity
+}){
+    let result = {
+        delList:[],
+        delCount:0
+    }
+   await redisListHandle({
+       result,
+       handleFun:async ({result,key})=>{
+
+           let item = {
+               hkey:key,
+               keys:[],
+           }
+           let getList = await redisCtl.HKEYS(key);
+           getList.forEach((key)=>{
+               let dateStr = key.slice(0,4)+'-'+key.slice(4,6)+'-'+key.slice(6,8);
+
+               if(new Date(dateStr).getTime()<beforeTime){
+                  item.keys.push(key);
+                  
+               }
+           })
+
+           if(item.keys.length!==0){
+               result.delList.push(item);
+               result.delCount+=item.keys.length;
+           }
+
+       }
+   });
+
+    return result
+   
+}
+async function redisListHandle({
+    result={},
+    handleFun,
+}){
+    let keyList = await redisCtl.KEYS();
     if(keyList.length===0){
         return 0;
     }
@@ -72,45 +186,19 @@ async function getRedisState(){
         weekly_r18:true,
         male_r18:true,
     }
-    let totalCount = 0;
-    for(let key of keyList){
-        if(needKey[key]===true){
-            let getCount = await redisCtl.HLEN(key);
-            totalCount+=getCount;
+    
+    for(let key in needKey){
+  
+        if(keyList.indexOf(key)!==-1){
+
+            await handleFun({result,key});
+
         }  
     }
 
-    return {
-        totalCount
-    }
-}
-function makeViewDelList({
-    beforeTime=-Infinity
-}){
-    let {fileList,handleListFun}=  fileListHandle();
-    let result = {
-        count:fileList.length,
-        delCount:0,
-        delList:[]
-    };
-   
-    function makeDelList({
-        ctimeMs=0,
-        path,
-    },result){
-        if(ctimeMs<beforeTime){
-            result.delCount++;
-            result.delList.push(path)
-        }
-    }
-    var handleList = [makeDelList]
-    result = handleListFun({
-        result,
-        handleList
-    })
     return result
-
 }
+
 function fileListHandle() {
     let fileList = fs.readdirSync(cashPath, {
         encoding: 'utf8'
@@ -132,8 +220,23 @@ function fileListHandle() {
         }
     }
 }
+async function delViewForlist(delList){
+    delList.forEach((imgPath)=>{
+        fs.unlinkSync(imgPath);
+    })
+
+}
+
+async function delRedisDataForList(delList){
+    for(let item of delList){
+        await redisCtl.HDEL(item)
+    }
+}
 module.exports= {
     getPreViewState,
     getRedisState,
-    makeViewDelList
+    makeViewDelList,
+    makeRedisDelList,
+    delViewForlist,
+    delRedisDataForList,
 }

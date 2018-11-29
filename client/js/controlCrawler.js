@@ -59,7 +59,6 @@ var controlCrawlerObject = {
         var socket = SOCKETLINK;
         socket.on('controlCrawler-changePreViewState',function(res){
             var result = res.contents; //{count,PreViewState}
-            console.log(result);
             var preViewState = controlCrawlerObject.common.preViewState;
             for(var key in result){
                 preViewState[key] = result[key];
@@ -67,16 +66,61 @@ var controlCrawlerObject = {
         });
         socket.on('controlCrawler-changeRedisState',function(res){
             var result = res.contents; //{count}
-            console.log(result);
             var RedisState = controlCrawlerObject.common.RedisState;
             for(var key in result){
                 RedisState[key] = result[key];
             }
         });
-        socket.on('controlCrawler-delCheck',function(res){
+        socket.on('controlCrawler-delViewCheck',function(res){
             var result = res.contents;
-            console.log(result);
-        })
+            var filterDialogDom = `<div class="mdui-dialog" >
+                            <div class="mdui-dialog-content">
+                                <p>是否确定删除 ${result.beforeTime} 之前的 ${result.delCount} 张预览图？</p>
+                                <P>当前总预览图数量: ${result.conut}</p>
+                            </div>
+                            <div class="mdui-dialog-actions">
+                                <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消
+                                </button>
+                                <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定
+                                </button>
+                            </div>
+                         </div>`;
+            var filterDialog =  $.makeConfirm({
+                htmlStr:filterDialogDom,
+                confirm:function () {
+                      socket.emit('controlCrawler',{method:'delPlane',data:{planKey:result.planKey,type:'confirm'}})  
+                },
+                cancel:function(){
+                      socket.emit('controlCrawler',{method:'delPlane',data:{planKey:result.planKey,type:'cancel'}}) 
+                }
+            });
+            filterDialog.open();
+        });
+        socket.on('controlCrawler-delRedisCheck',function(res){
+            var result = res.contents;
+            var filterDialogDom = `<div class="mdui-dialog" >
+                            <div class="mdui-dialog-content">
+                                <p>是否确定删除 ${result.beforeTime} 之前的 ${result.delCount} 条 榜单缓存数据？</p>
+   
+                            </div>
+                            <div class="mdui-dialog-actions">
+                                <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消
+                                </button>
+                                <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定
+                                </button>
+                            </div>
+                         </div>`;
+            var filterDialog =  $.makeConfirm({
+                htmlStr:filterDialogDom,
+                confirm:function () {
+                      socket.emit('controlCrawler',{method:'delPlane',data:{planKey:result.planKey,type:'confirm'}})  
+                },
+                cancel:function(){
+                      socket.emit('controlCrawler',{method:'delPlane',data:{planKey:result.planKey,type:'cancel'}}) 
+                }
+            });
+            filterDialog.open();
+        });
     },
     DomEventBind:function(){
         window.COMMON.now = 'controlCrawler';
@@ -96,7 +140,38 @@ var controlCrawlerObject = {
                 position: 'top'
             });
         });
+        
+        $('#delRedisData').click(function(){
+             let date = $("#delBeforeDate").val();
+             socket.emit('controlCrawler',{
+                 method:'delRedisData',
+                 data:{
+                     beforeTime:date
+                 }}
+             );
+            mdui.snackbar({
+                message: '检查redis信息，并等待确认',
+                position: 'top'
+            });
+        });
+        
+        $('#delUnusePreView').click(function(){
+             let date = $("#delBeforeDate").val();
+             socket.emit('controlCrawler',{
+                 method:'delUnusePreView',
+                 data:{
+                     beforeTime:date
+                 }}
+             );
+            mdui.snackbar({
+                message: '检查图片信息，并等待确认',
+                position: 'top'
+            });
+        })
+        
+        
         $("#delBeforeDate").val(new Date(new Date() - (86400000*7)).toLocaleDateString());
         $("#delBeforeDate").flatpickr();
+        
     }
 }

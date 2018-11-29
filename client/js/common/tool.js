@@ -31,9 +31,22 @@
         }
         //直接挂到全局
         //window.loadingConturl=loadingConturl
-        //挂载到$ 上        
+        //挂载到$ 上
+        function makeConfirm({
+                htmlStr='',
+                confirm=function(){},
+                cancel=function(){}
+        }){
+            var filterDialogDom = htmlStr
+            var filterDialog = new mdui.Dialog(filterDialogDom);
+            filterDialog.$dialog[0].addEventListener('confirm.mdui.dialog',confirm);
+            filterDialog.$dialog[0].addEventListener('cancel.mdui.dialog',cancel);
+            return filterDialog
+
+        }
         $.extend({
-            loadingConturl:loadingConturl,
-            postData:postData,
+            loadingConturl,
+            postData,
+            makeConfirm,
         })
 }(window,$))
