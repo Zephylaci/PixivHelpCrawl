@@ -6,7 +6,6 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const KoaRouter = require('koa-router')()
 const apiRouter = require('./router/api-routers.js')
-const proxyRouter = require('./proxyApi/proxyControlAndRouters.js')
 const static = require('koa-static');
 const path = require('path');
 
@@ -35,22 +34,10 @@ app.use(async (ctx, next) => {
   const ms = new Date() - start
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 });
-//生成api路由相关配置
-var routerConfig = apiRouter;
-//代理精准替换
-if(mainConfig.proxyConfig.useProxy===true&&mainConfig.proxyConfig.accuratProxy===true){
-    for(key in proxyRouter){
-        if(routerConfig[key]){
-            routerConfig[key] = proxyRouter[key]
-        }
-    }
-}
-//代理覆盖
-else if(mainConfig.proxyConfig.useProxy===true&&mainConfig.proxyConfig.accuratProxy===false){
-    routerConfig = proxyRouter
-}
 
-KoaRouter.use('/api',makeRouterList(routerConfig).routes()); 
+
+
+KoaRouter.use('/api',makeRouterList(apiRouter).routes()); 
 
 app.use(KoaRouter.routes()); // 将api路由规则挂载到Koa上。
 // 读取前端文件

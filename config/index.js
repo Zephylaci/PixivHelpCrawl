@@ -40,17 +40,6 @@ var development_env ={
             path:'.cookie',                                                                                                                                                                                        
             cookies:null                                                                                                                                                                                           
         }                                                                                                                                                                                                    
-    }, 
-    proxyConfig:{
-        useProxy:false,
-        accuratProxy:false,
-        host:'',
-        accuratConfig:{
-            getPixivData:'',
-            proxyImg:'',
-            autoSerach:''
-        }
-        
     },
     linkProxy:{
         useLinkProxy:false,
