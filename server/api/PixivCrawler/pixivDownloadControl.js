@@ -1,14 +1,9 @@
 
 const servicePath = '../../';
-const manPath = '../../../';
-const requireMehod = require(servicePath + 'router/refPath.js');
 
 const getPixivImgOriginal = require(servicePath + 'service/getPixivImgOriginal.js');
 
 
-function resetCommon() {
-    mainObj.common.runStat = false;
-}
 
 var mainObj = {
     common: {

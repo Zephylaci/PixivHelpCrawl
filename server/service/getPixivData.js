@@ -8,52 +8,20 @@ const cheerio = requireMehod('cheerio');
 
 
 var Trial = Norn();
-const mainObj = {
-    //通用的返回
-    contrl: async (queryUrl) => {
-        let opt = {
-            url: queryUrl
-        }
-        let result = {};
 
-        let getHtmlPromise = getHtmlData.start(opt);
-        getHtmlPromise.then((getResult) => {
-            if (getResult.code === 200) {
-                let handleOpt = {
-                    upUrl: queryUrl,
-                    info: getResult.data,
-                }
 
-                result = Trial(handleOpt);
-            } else {
-                result = getResult.data
-            }
-        })
-        getHtmlPromise.catch((err) => {
-            result = err;
-        })
-        await getHtmlPromise
-
-        return result;
-
-    }
-}
-
-//所有定制 请求方法的共用部分
+//请求方法的共用部分
 class NornClass{
 	queryContrl(opt={
         url:''
     }){
 
-        let result = {};
         let promise = new Promise((resolve, reject) => {
             let getHtmlPromise = new getHtmlData.getPixivHtmlClass().start(opt);
             getHtmlPromise.then((getResult) => {
-               
                 resolve(getResult);
             });
             getHtmlPromise.catch((err) => {
-                result = err;
                 let fakeResult = {
                     code:500,
                     data:null
@@ -69,7 +37,7 @@ class NornClass{
 }
 
 //单次页面解析的模板 getPixivImgOriginal 用
-mainObj.MonomersClass = class extends NornClass{
+class MonomersClass extends NornClass {
     constructor() {
         super()
     }
@@ -78,7 +46,7 @@ mainObj.MonomersClass = class extends NornClass{
             url: queryUrl
         }
         let result = null;
-        await this.queryContrl(opt).then((getResult)=>{
+        await this.queryContrl(opt).then((getResult) => {
             if (getResult.code === 200) {
                 let handleOpt = {
                     upUrl: queryUrl,
@@ -89,10 +57,10 @@ mainObj.MonomersClass = class extends NornClass{
             else {
                 result = getResult.data
             }
-            if(result){
-                console.log('MonomersClass queryOver', opt.url,'=>',result.urls.original);
+            if (result) {
+                console.log('MonomersClass queryOver', opt.url, '=>', result.urls.original);
             }
-            else{
+            else {
                 console.log('MonomersClass queryOver err');
             }
         });
@@ -101,40 +69,40 @@ mainObj.MonomersClass = class extends NornClass{
 }
 
 //获取列表页用 handlePixivHotList 用
-mainObj.ConvenientClass = class extends NornClass{
+class ConvenientClass extends NornClass {
     constructor() {
         super()
     }
-    async contrl(queryUrl,callbackArrConfig=[],filterFun=null) {
+    async contrl(queryUrl, callbackArrConfig = [], filterFun = null) {
         let opt = {
             url: queryUrl
         }
         let result = null;
-        await this.queryContrl(opt).then((getResult)=>{
+        await this.queryContrl(opt).then((getResult) => {
             if (getResult.code === 200) {
                 let handleOpt = {
                     upUrl: queryUrl,
                     info: getResult.data,
-                }       
-                Object.assign(Norn.Scales.Public,handleOpt);
+                }
+                Object.assign(Norn.Scales.Public, handleOpt);
                 //需要过滤可以从这里传进去
-                result = Norn.Scales.Convenient(callbackArrConfig,filterFun);
-            }else {
+                result = Norn.Scales.Convenient(callbackArrConfig, filterFun);
+            } else {
                 result = getResult.data
             }
-            
-            if(result){
-     
+
+            if (result) {
+
             }
-            else{
-                console.log('MonomersClass queryOver err',getResult);
+            else {
+                console.log('MonomersClass queryOver err', getResult);
             }
         });
         return result;
     }
 }
 //搜索 pixivSearch用
-mainObj.InsightClass = class extends NornClass{
+class InsightClass extends NornClass {
     constructor() {
         super()
     }
@@ -143,7 +111,7 @@ mainObj.InsightClass = class extends NornClass{
             url: queryUrl
         }
         let result = null;
-        await this.queryContrl(opt).then((getResult)=>{
+        await this.queryContrl(opt).then((getResult) => {
             if (getResult.code === 200) {
                 let handleOpt = {
                     upUrl: queryUrl,
@@ -152,18 +120,18 @@ mainObj.InsightClass = class extends NornClass{
                     })
                 }
 
-                Object.assign(Norn.Scales.Public,handleOpt);
+                Object.assign(Norn.Scales.Public, handleOpt);
                 //需要过滤可以从这里传进去
                 result = Norn.Scales.Insight();
-            }else {
+            } else {
                 result = getResult.data
             }
 
-            if(result){
+            if (result) {
 
             }
-            else{
-                console.log('InsightClass queryOver err',getResult);
+            else {
+                console.log('InsightClass queryOver err', getResult);
             }
         });
         return result;
@@ -314,4 +282,8 @@ Norn.Scales = {
 
 
 
-module.exports = mainObj;
+module.exports = {
+    MonomersClass,
+    ConvenientClass,
+    InsightClass
+};

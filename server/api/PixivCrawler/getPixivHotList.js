@@ -15,7 +15,7 @@ const redisConfig = require('../../../config/index.js')['redisConfig'];
 var mainObj = {
 	contrl: async (ctx, next) => {
 		ctx.body = {
-			code: 200,
+			code: 199,
 			contents: '为啥没有返回值..'
 		}
 		//如果是autoCash调用
@@ -51,8 +51,12 @@ var mainObj = {
 
 		ctx.body.contents = resultArr;
 		if (resultArr.length === 0) {
+			ctx.body.code = 201;
 			ctx.body.contents = '缓存不存在且读取出错';
+		}else{
+			ctx.body.code = 200
 		}
+		return ctx
 	}
 }
 
