@@ -173,7 +173,6 @@ function makePlan() {
     let runDateArr = runDate.split(':');
     let now = new Date().getTime();
     let toDayRunDate = new Date().setHours(Number(runDateArr[0]), Number(runDateArr[1]), Number(runDateArr[2]));
-    console.log(now,runDate,runDate<now)
     if(toDayRunDate<now){
         startCash();
     }

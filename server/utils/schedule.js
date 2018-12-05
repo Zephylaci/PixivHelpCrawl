@@ -11,7 +11,7 @@ function setRunEveryDay({
     taskKey=new Date().getTime(),
 }){
     
-    let rule = 'second  minute  hour  * * *';
+    let rule = 'second minute hour * * *';
     let dateArr = dateStr.split(':');
     let markArr = ['hour','minute','second'];
     rule = replaceRule({
@@ -19,10 +19,10 @@ function setRunEveryDay({
         dateArr,
         rule
     });
-    console.log(rule);
-    let job = schedule.scheduleJob(rule, task);
-    runStack[taskKey] = job;
     
+    let job = schedule.scheduleJob(rule, task);
+    runStack.set(markArr,job);
+  
     return job
    
 
@@ -33,7 +33,7 @@ function replaceRule({
     rule='second  minute  hour  day month  dayofweek'
 }){
     markArr.forEach((key,index)=>{
-        let item = dateArr[index]||'*';
+        let item = dateArr[index]||'0';
         rule = rule.replace(key,item)
         
     })
