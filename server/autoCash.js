@@ -4,19 +4,10 @@ if (redisConfig.useCash === false || autoCash.enable === false) {
     return
 }
 
-
-const events = require('events');
+const scheduleHandle = require('./utils/schedule.js');
 const cp = require('child_process');
-let emitter = new events.EventEmitter();
-
-var timePlan = null; //定时器
-var cashOver = false;
 //程序入口
 makePlan();
-
-emitter.on('startCash', startCash);
-emitter.on('makePlan', makePlan);
-
 
 function startCash() {
     //开始缓存
@@ -83,8 +74,6 @@ function startCash() {
                         processMain.allCreate = [];
                         global.clearTimeout(checkOver);
                         checkOver = null;
-                        cashOver = true;
-                        emitter.emit("makePlan");
                         console.log('autoCash:process释放执行完成')
                     } else {
                         console.log('autoCash: 单次提交完成，开始下一次缓存');
@@ -180,29 +169,20 @@ function startCash() {
 
 
 function makePlan() {
-    if (timePlan != null) {
-        return;
-    }
-    let runDateConfig = autoCash.runDate.split(':');
+    let runDate = autoCash.runDate;
+    let runDateArr = runDate.split(':');
     let now = new Date().getTime();
-    let runDeate = new Date().setHours(Number(runDateConfig[0]), Number(runDateConfig[1]), Number(runDateConfig[2]));
-    let wait = runDeate - now;
-    console.log(new Date(), 'autoCash makePlan in wait:', wait)
-    if (wait < 0) {
-        if (cashOver === false) {
-            global.setTimeout(() => {
-                emitter.emit("startCash");
-            }, 2000);
-        }
-        wait += 86400000
+    let toDayRunDate = new Date().setHours(Number(runDateArr[0]), Number(runDateArr[1]), Number(runDateArr[2]));
+    console.log(now,runDate,runDate<now)
+    if(toDayRunDate<now){
+        startCash();
     }
-
-    timePlan = global.setTimeout(function () {
-        timePlan = null;
-        cashOver = false;
-        console.log(new Date(), 'autoCash start')
-        emitter.emit("startCash");
-    }, wait);
+    let jobs = scheduleHandle.setRunEveryDay({
+        dateStr:runDate,
+        task:startCash,
+        taskKey:'autoCash'
+    });
+    console.log('Make Plan Over jobs Name:',jobs.name)
 }
 
 
