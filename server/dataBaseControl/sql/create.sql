@@ -15,7 +15,7 @@ use imageAdmin;
 CREATE TABLE IF NOT EXISTS imgStorage (
 	`imgId` BIGINT PRIMARY KEY ,
 	`imgTitle` VARCHAR(60),
-	`imgName` VARCHAR(255) UNIQUE,
+	`imgName` VARCHAR(180) UNIQUE,
 	`imgPath` VARCHAR(255),
 	`imgTruePath` VARCHAR(255),
 	`imgOrigin` VARCHAR(255),

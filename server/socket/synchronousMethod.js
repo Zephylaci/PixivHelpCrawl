@@ -36,10 +36,17 @@ const methodMap = {
         clientSocket={},   
         data={
             fileName:'',
+            del:false,
         }
     })=>{
-        
-        //fileName 后处理 比如 删除
+        if(data.del===true){
+            let filePath = downPath+'/'+data.fileName
+           fs.unlink(filePath,(err)=>{
+            if(err){
+                console.log('del:',data.fileName,'err');
+            }
+           }); 
+        }
         methodMap.oneStep();
         
     },
