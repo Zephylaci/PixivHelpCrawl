@@ -73,7 +73,7 @@ async function handleUpitem(queryItem) {
 }
 async function isExist(imgId) {
     let seachResult = await pixivDownloadModel.searchPath(imgId);
-    if (imgPath === false) {
+    if (seachResult === false) {
         return false;
     }
     let {imgPath,imgOrigin} = seachResult[0];
