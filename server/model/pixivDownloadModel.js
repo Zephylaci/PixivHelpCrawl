@@ -86,7 +86,7 @@ async function searchPath(imgId) {
         return false;
     }
     let searchSqlOpt = {
-        getValue: ['imgPath'],
+        getValue: ['imgPath','imgOrigin'],
         tableName: 'imgStorage',
         key: `imgName like "%${imgId}%"`
     }

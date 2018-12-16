@@ -21,7 +21,7 @@ async function handleUpitem(queryItem) {
         imgId: imgId,
     };
     if (await isExist(imgId)) {
-        console.log('getPixivImgOriginal:', imgId, '数据库及本地均存在，无需查询');
+        console.log('getPixivImgOriginal:', imgId, '数据记录存在，本地或仓库文件存在，无需查询');
         result.state = 'isExist'
         return result;
     }
@@ -72,14 +72,21 @@ async function handleUpitem(queryItem) {
     return result
 }
 async function isExist(imgId) {
-    let imgPath = await pixivDownloadModel.searchPath(imgId);
+    let seachResult = await pixivDownloadModel.searchPath(imgId);
     if (imgPath === false) {
         return false;
     }
-    let imgSavePath = webPath + imgPath[0].imgPath;
-    if (checkImg(imgSavePath)) {
-        return true;
+    let {imgPath,imgOrigin} = seachResult[0];
+    if(imgOrigin==='pixivInStation'){
+        return true
     }
+    if(imgPath){
+        let imgSavePath = webPath + imgPath[0].imgPath;
+        if (checkImg(imgSavePath)) {
+            return true;
+        }
+    }
+
     return false;
 }
 getPixivImgOriginalClass.queryInit({
