@@ -26,7 +26,7 @@ console.log('listen prot: ' + env.port);
 var fs = require('fs');
 
 if (!fs.existsSync(env.pathConfig.downloadPath)) {
-    fs.mkdirSync(downObj.downToPath)
+    fs.mkdirSync(env.pathConfig.downloadPath)
 }
 
 /**

@@ -24,11 +24,13 @@ class getPixivHtmlClass {
             queryObj.err = reject;
         });
         state.catch((err) => {
-            console.log(err);
+            queryObj.end({
+                code: 500,
+                data: null
+            });
         })
         console.log('getHtmlData Msg:Link ' + url);
         queryObj.requestHtml(url).then(({response={statusCode:500},content=''}={}) => {
-
             if (response.statusCode == 200) {
                 console.log("getHtmlData Msg：requestHtml " + url + "读取结束");
                 queryObj.end({
@@ -39,6 +41,11 @@ class getPixivHtmlClass {
                 console.log("getHtmlData Msg：requestHtml " + url + "错误的返回信息");
                 console.log("getHtmlData Error：res :", res);
             }
+        }).catch((err)=>{
+            queryObj.end({
+                code: 500,
+                data: null
+            });
         })
         return state;
     }
@@ -64,9 +71,7 @@ class getPixivHtmlClass {
                 jar: j,
             }
         )
-        mainQuery.catch((err) => {
-            console.log(err);
-        })
+
         return mainQuery
     }
 }

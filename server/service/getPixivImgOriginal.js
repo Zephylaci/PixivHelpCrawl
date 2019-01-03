@@ -100,7 +100,6 @@ let getPixivImgOriginal = {
     */
     downList: function (queryList) {
         getPixivImgOriginalClass.queryStart(queryList);
-
         return getPixivImgOriginalClass.overControl();
     },
     addList:function(queryList){

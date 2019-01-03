@@ -39,8 +39,22 @@ var mainObj = {
 
 
 function queryStart(queryList) {
-    getPixivImgOriginal.downList(queryList).then((res) => {
-        mainObj.common.runStat = false;
+    getPixivImgOriginal.downList(queryList).then((result) => {
+        let errIdArr = [];
+        result.forEach(element => {
+            if(element.state.indexOf('Err')!==-1){
+                errIdArr.push(element.imgId);
+            }
+        });
+        if(errIdArr.length===0){
+            mainObj.common.runStat = false;
+        }else{
+            console.log('pixivDownloadControl 存在下载出错的图片！10S后重试!');
+            setTimeout(()=>{
+                queryStart(errIdArr); 
+            },1000)
+        }
+        
     });
 }
 

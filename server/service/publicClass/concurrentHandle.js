@@ -89,11 +89,12 @@ class concurrentHandleClass {
                         resolve(mainResult);
                     };
                 });
+                common.promise = promise
                 return promise;
             }
             return common.promise
         }
-        return true;
+        return common.runStat;
     }
     showState() {
         let queryObj = this;

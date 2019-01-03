@@ -1,9 +1,6 @@
 const request = require('request');
 
 const mainConfig = require('../../config');
-const pixivConfig = mainConfig.pixivConfig
-
-
 
 
 function customRequest(opt){
