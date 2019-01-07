@@ -1,7 +1,7 @@
 const request = require('request');
 
 const mainConfig = require('../../config');
-
+let {logger,loggerErr,loggerShow} = require('../utils/logger');
 
 function customRequest(opt){
     let url = opt.url;
@@ -55,8 +55,8 @@ function customRequest(opt){
         mainRequest = request(requestOpt,responseFun) 
        
         mainRequest.on('error',function(err){
-            console.log('link url:',url,' fail');
-            console.log('error:',err)
+            loggerShow.error('link url:',url,' fail');
+            loggerShow.error('error:',err)
             reject();
         });    
     });
@@ -65,8 +65,8 @@ function customRequest(opt){
         return mainRequest.pipe(stream);
     }
     promise.catch((err)=>{
-        console.log('link url:',url,' fail');
-        console.log('error:',err)
+        loggerShow.error('link url:',url,' fail');
+        loggerShow.error('error:',err)
     });
     return promise
 }

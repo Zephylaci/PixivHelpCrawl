@@ -113,8 +113,7 @@ async function makeViewDelList({
 
             }
         });
-        console.time('test');
-        console.log(redisResult.allCashItem.length);
+
         let delList = result.delList;
         let imgMap = {};
         redisResult.allCashItem.forEach((item)=>{
@@ -124,8 +123,6 @@ async function makeViewDelList({
         delList = delList.filter((imgPath)=>{
             return !imgMap[imgPath]
         });
-
-        console.timeEnd('test');
         result.delList = delList;
     }
 

@@ -6,21 +6,21 @@
  * Module dependencies.
  */
 
-var app = require('./koa-server.js');
-var debug = require('debug')('demo:server');
-var http = require('http');
-//socketIo
-var socketIo=require("socket.io");
-var socketHandle=require("./socket/socketHandle.js");
+const app = require('./koa-server.js');
+const debug = require('debug')('demo:server');
+const http = require('http');
+const {loggerShow} = require('./utils/logger');
 
-//const easyMonitor = require('easy-monitor'); easyMonitor('pixivHelp');
+//socketIo
+const socketIo=require("socket.io");
+const socketHandle=require("./socket/socketHandle.js");
 
 //引入配置文件
-var env = require('../config/');
+const env = require('../config/');
 // 将端口号设置为配置文件的端口号，默认值为3000,dev,test默认端口3001
-var port = normalizePort(env.port || '3000');
+const port = normalizePort(env.port || '3000');
 // 打印输出端口号
-console.log('listen prot: ' + env.port);
+loggerShow.info('listen prot: ' + env.port);
 
 //初始化相关目录
 var fs = require('fs');
@@ -29,16 +29,7 @@ if (!fs.existsSync(env.pathConfig.downloadPath)) {
     fs.mkdirSync(env.pathConfig.downloadPath)
 }
 
-/**
- * Get port from environment and store in Express.
- */
 
-//var port = normalizePort(process.env.PORT || '3000');
-// app.set('port', port);
-
-/**
- * Create HTTP server.
- */
 
 var server = http.createServer(app.callback());
 

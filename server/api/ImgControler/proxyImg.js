@@ -14,8 +14,6 @@ var mainObj={
         var Url = ctx.url;
         var key = parseUrl.parse(Url,true).query;
         var getUrl = StringTool.hexCharCodeToStr(key.url);
-        console.log(getUrl);
-
         var requresOpt = {
             url:getUrl,
             headers:pixivAbout.headers,

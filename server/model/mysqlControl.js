@@ -2,7 +2,7 @@
 const mysqlPoolCtl = require('../dataBaseControl/mysqlLink.js');
 const sqlStringTool = mysqlPoolCtl.getSqlStringMethod();
 let mysqlPool = null;
-
+let {loggerErr} = require('../utils/logger')
 function order(sql) {
     if (mysqlPool === null) {
         mysqlPool = mysqlPoolCtl.getMysqlPool();
@@ -17,9 +17,7 @@ function order(sql) {
         }
         mysqlPool.getConnection(function (err, connection) {
             if (err) {
-                console.log('mySql Err:Pool getConnection Error;')
-                console.log(err);
-                reject('sql Err');
+                loggerErr.error('mysqlControl : 获得线程出错',err);
                 return;
             }
             // 使用返回的链接
@@ -29,8 +27,7 @@ function order(sql) {
                 var sqlString = runList.shift();
                 connection.query(sqlString, function (error, results, fields) {
                     if (error) {
-                        console.log('mySql Err:Pool query Error;')
-                        console.log(error);
+                        loggerErr.error('mysqlControl : query 线程出错',err);
                         reject('sql Err');
                         return;
                     }

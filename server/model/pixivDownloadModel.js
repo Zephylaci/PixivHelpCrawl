@@ -7,7 +7,7 @@ const requireMehod = require(servicePath + 'router/refPath.js');
 
 const parsePath = requireMehod('parsePath');
 const mySqlCtl = requireMehod('mySqlCtl');
-
+let {logger,loggerShow} = require('../utils/logger')
 async function downImgInsertSql(downResult = {
     fileName: '',
     illustTitle: '',
@@ -17,12 +17,12 @@ async function downImgInsertSql(downResult = {
     tags: {},
 }, imgOriginFrom) {
     if (!mysqlInfo.useMysql) {
-        console.log('No Use Mysql');
+        loggerShow.warn('不使用mysql');
         return;
     }
     let imgName = downResult.fileName;
     if (await judgeIsExist(imgName)) {
-        console.log(`getPixivData : ${imgName} 数据库中已存在信息,不重复写入`);
+        loggerShow.info(`getPixivData: ${imgName} 数据库中已存在信息,不重复写入`);
         return;
     }
     let imgId = Date.now();
@@ -75,14 +75,14 @@ async function downImgInsertSql(downResult = {
 
     await mySqlCtl.order(sqlList)
         .then((res) => {
-            console.log(imgName, '相关信息数据库写入完成');
+            logger.info('pixivDownloadModel: ',imgName, '相关信息数据库写入完成');
         });
 
 }
 //根据 imgId 查找相对路径
 async function searchPath(imgId) {
     if (!mysqlInfo.useMysql) {
-        console.log('No Use Mysql');
+        loggerShow.warn('不使用mysql');
         return false;
     }
     let searchSqlOpt = {

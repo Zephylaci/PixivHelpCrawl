@@ -8,7 +8,7 @@ const scheduleHandle = require('./utils/schedule.js');
 const cp = require('child_process');
 //程序入口
 makePlan();
-
+const {loggerShow,logger} = require('./utils/logger');
 function startCash() {
     //开始缓存
     let plan = autoCash.plan;
@@ -16,7 +16,7 @@ function startCash() {
     let linkList = makeLinkList(plan, deep);
 
     let checkOver = global.setTimeout(function () {
-        console.log('autoCash：15分钟经过，缓存过程超时');
+        logger.warn('autoCash：15分钟经过，缓存过程超时');
         var existProcess = processMain.allCreate;
         var length = existProcess.length;
         for (var i = 0; i < length; i++) {
@@ -25,7 +25,7 @@ function startCash() {
                 process.kill();
             }
         }
-        console.log('autoCash：清空子线程30S后重新启动缓存过程');
+        logger.info('autoCash：清空子线程30S后重新启动缓存过程');
         global.setTimeout(function () {
             startCash();
         }, 30000)
@@ -59,7 +59,7 @@ function startCash() {
             } else {
                 if (processMain.runNum === 0) {
                     if (linkList.length === 0) {
-                        console.log(new Date(), 'autoCash:缓存完毕！');
+                        logger.info('autoCash: 缓存完毕！');
                         let processList = processMain.processList;
 
                         if (processList.length !== 0) {
@@ -67,16 +67,13 @@ function startCash() {
                             for (var i = 0; i < length; i++) {
                                 var childProcess = processList.shift();
                                 childProcess.disconnect();
-                                console.log('autoCash:释放 childe_process');
                             }
                         }
                         //清楚检查函数
                         processMain.allCreate = [];
                         global.clearTimeout(checkOver);
                         checkOver = null;
-                        console.log('autoCash:process释放执行完成')
                     } else {
-                        console.log('autoCash: 单次提交完成，开始下一次缓存');
                         linkList = linkList.shift();
                         processMain.runNum++;
                         processMain.limitNum = 3;
@@ -84,12 +81,12 @@ function startCash() {
                     }
                 }
             }
-            console.log('Start缓存过程状态：队列中：', processMain.linkList.length, '运行中:', processMain.runNum, '限制数：', processMain.limitNum);
+            loggerShow.info('autoCash：单次缓存状态 队列中：', processMain.linkList.length, '运行中:', processMain.runNum, '限制数：', processMain.limitNum);
 
         },
         oneStep: function () {
             var getConfig = processMain.linkList.shift();
-            console.log(`autoCash: ${JSON.stringify(getConfig)} 缓存开始`);
+            logger.info(`autoCash: ${JSON.stringify(getConfig)} 缓存开始`);
 
             var downChild = processMain.makeprocess();
 
@@ -99,16 +96,14 @@ function startCash() {
             let processList = processMain.processList
             if (processList.length === 0) {
                 var downChild = cp.fork('./server/service/process/cashChild.js', {
-                    //silent:true
+                    silent:true
                 });
 
 
                 processMain.allCreate.push(downChild);
 
                 downChild.on('message', (getConfig) => {
-                    console.log(`autoCash process: ${JSON.stringify(getConfig)} 缓存过程结束`);
                     processMain.runNum--;
-                    console.log('END缓存过程状态：', '队列中：', processMain.linkList.length, '运行中:', processMain.runNum)
                     if (processMain.linkList.length === 0 && processMain.runNum === 0) {
                         downChild.disconnect();
                     } else {
@@ -121,11 +116,11 @@ function startCash() {
                     processMain.controlStep();
                 });
                 downChild.on('close', (code) => {
-                    console.log('autoCash process:', 'downChild子进程close，剩余空闲process:', processMain.processList.length);
+                    loggerShow.info('autoCash process:', 'downChild子进程close，剩余空闲process:', processMain.processList.length);
                 });
 
                 downChild.on('disconnect', () => {
-                    console.log('autoCash:', 'downChild子进程disconnect，剩余空闲process:', processMain.processList.length);
+                    loggerShow.info('autoCash:', 'downChild子进程disconnect，剩余空闲process:', processMain.processList.length);
                 });
                 return downChild;
             } else {
@@ -181,7 +176,7 @@ function makePlan() {
         task:startCash,
         taskKey:'autoCash'
     });
-    console.log('Make Plan Over jobs Name:',jobs.name)
+    logger.info('autoCash: 创建定时任务完成:',jobs.name)
 }
 
 

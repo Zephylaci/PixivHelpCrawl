@@ -1,9 +1,9 @@
 const env = require('../../config/index.js')['redisConfig'];
 const redis = require('redis');
 //var redisStore = require('koa-redis');
-
 //var options = {client: client,db:1};
 //var store = redisStore(options);
+let {loggerErr,loggerShow} = require('../utils/logger')
 var main = {
   client: null,
   autoClose: null,
@@ -17,13 +17,13 @@ var main = {
   delayQuit: () => {
     if (main.autoClose === null) {
       main.autoClose = setTimeout(() => {
-        if (main.client.ready === true) {
+        loggerErr.warn('redisLink: redis连接 超时');
+        if (main.client.ready === true) {       
           main.end();
           var state = main.client.ready;
-          console.log(new Date().toLocaleTimeString(), 'redis连接关闭连接，当前连接状态:', state);
         } else {
           var state = main.client;
-          console.log(new Date().toLocaleTimeString(), '未预料的关闭请求:', state);
+          loggerErr.warn('redisLink:  redis连接 未预料的关闭请求:', state);
         }
 
         if (main.autoClose != null) {
@@ -45,15 +45,15 @@ var main = {
       }
       main.client = redis.createClient(linkOpt);
       main.client.on("error", function (err) {
-        console.log("Error :" + err);
+        loggerErr.error("redisLink: Error" + err);
       });
-      console.log(new Date().toLocaleTimeString(), 'redis连接');
+      loggerShow.info("redisLink: redis连接");
       if (main.autoClose !== null) {
         global.clearTimeout(main.autoClose);
         main.autoClose = null;
       }
     } else {
-      console.log(new Date().toLocaleTimeString(), 'redis 连接保持');
+      loggerShow.info("redisLink: redis连接 保持");
     }
   },
   end: function () {
@@ -61,9 +61,10 @@ var main = {
       main.client.quit();
       global.clearTimeout(main.autoClose);
       main.autoClose = null;
-      console.log(new Date().toLocaleTimeString(), 'redis连接主动关闭');
+      loggerShow.info("redisLink: redis连接 主动关闭");
     } else {
-      console.log(new Date().toLocaleTimeString(), 'redis连接 已经关闭:');
+      loggerShow.warn("redisLink: redis连接 已经关闭");
+      
     }
   }
 

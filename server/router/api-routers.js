@@ -11,10 +11,6 @@ const proxyImg = require('../api/ImgControler/proxyImg.js');
 
 
 var routerConfig = {
-        // getPixivData:{
-        //     type:'post',
-        //     contrl:getPixivData.contrl
-        // },
         getPixivHotList:{
             type:'post',
             contrl:getPixivHotList.contrl
@@ -47,10 +43,6 @@ var routerConfig = {
             type:'post',
             contrl:customSearch.createPreviewCash
         },
-        // autoSerach:{
-        //     type:'post',
-        //     contrl:autoSerach.contrl
-        // },
         download:{
             type:'post',
             contrl:downloadControl.contrl

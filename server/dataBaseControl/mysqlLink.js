@@ -28,16 +28,16 @@ var mainObj={
 	init:()=>{
 		var mysqlPool = mysql.createPool(poolConfig)
 		mysqlPool.on('acquire', function (connection) {
-			console.log('mySqlMain msg:Connection %d acquired', connection.threadId);
+			//console.log('mySqlMain msg:Connection %d acquired', connection.threadId);
 		});
 		mysqlPool.on('connection', function (connection) {
-		    console.log('mySqlMain msg:new connection');
+		   // console.log('mySqlMain msg:new connection');
 		});
 		mysqlPool.on('enqueue', function () {
-			console.log('mySqlMain msg:Waiting for available connection slot');
+			//console.log('mySqlMain msg:Waiting for available connection slot');
 		});
 		mysqlPool.on('release', function (connection) {
-			console.log('mySqlMain msg:Connection %d released', connection.threadId);
+			//console.log('mySqlMain msg:Connection %d released', connection.threadId);
 		});
 		mainObj.mysqlPool  = mysqlPool;
 		return mysqlPool

@@ -1,7 +1,7 @@
 const doSearchMethod = require('./doSearchMethod.js');
 const controlCrawlerMethod = require('./controlCrawlerMethod.js');
 const synchronousMethod = require('./synchronousMethod.js')
-
+const {loggerShow} = require('../utils/logger');
 
 const handleConfig=[
     {
@@ -22,9 +22,9 @@ const handleConfig=[
 ]
 //每次进入的回掉
 function handle (clientSocket){
-    console.log('socke content:',clientSocket.id);
+    loggerShow.info('socke content:',clientSocket.id);
     clientSocket.on('disconnect', function(){
-        console.log('user disconnected',this.id);
+        loggerShow.info('user disconnected',this.id);
     });
     maekSocketEvent({
         clientSocket,

@@ -1,6 +1,6 @@
 const redisCtl = require('../dataBaseControl/redisLink.js');
 
-
+let {logger,loggerErr,loggerShow} = require('../utils/logger')
 
 function getClient() {
     return redisCtl.deal();
@@ -13,14 +13,14 @@ const method = {
 
         let ctl = getClient();
         if (!mainKey) {
-            console.log('redisControl:HMSET ERROR 请传入主键');
+            loggerShow.warn('redisControl: HMSET ERROR 请传入主键');
             return
         }
         var promise = new Promise((resolve, reject) => {
             ctl.exists(mainKey, function (err, replies) {
                 if (err) {
                     reject();
-                    console.log('redisControl:HMSET ERROR :', err);
+                    loggerErr.error('redisControl: HMSET ERROR :', err);
                     redisCtl.delayQuit();
                     return 
                 }
@@ -28,10 +28,10 @@ const method = {
                     redisCtl.delayQuit();
                     if (err) {
                         reject();
-                        console.log(new Date().toLocaleTimeString(), 'hmset出错:', err);
+                        loggerErr.error('redisControl: hmset出错:', err);
                         return;
                     }
-                    console.log(new Date().toLocaleTimeString(), 'hmset完成:', mainKey, key === mainKey ? "" : key);
+                    logger.info('redisControl: hmset完成:', mainKey, key === mainKey ? "" : key);
                     resolve();
                    
                 }
@@ -70,7 +70,7 @@ const method = {
             ctl.exists(mainKey, function (err, replies) {
                 if (err) {
                     reject();
-                    console.log('redisControl:HMSET ERROR :', err);
+                    loggerErr.error('redisControl:HMSET ERROR :', err);
                     redisCtl.delayQuit();
                     return 
                 }
@@ -78,10 +78,9 @@ const method = {
                     redisCtl.delayQuit();
                     if (err) {
                         reject();
-                        console.log(new Date().toLocaleTimeString(), 'hmget出错:', err);
+                        loggerErr.error('redisControl: hmget出错:', err);
                         return;
                     }
-                    console.log(new Date().toLocaleTimeString(), 'hmget完成:', mainKey, key);
                     resolve(replies);
 
                     
@@ -106,7 +105,7 @@ const method = {
                 redisCtl.delayQuit();
                 if (err) {
                     resolve(0);
-                    console.log('redisControl:KEYS ERROR :', err);
+                    loggerErr.error('redisControl: KEYS ERROR :', err);
                     return
                 }
                 resolve(replies);
@@ -124,10 +123,9 @@ const method = {
         var promise = new Promise((resolve, reject) => {
             ctl.hdel(hkey,keys,function (err, replies) {
                 redisCtl.delayQuit();
-                console.log(replies);
                 if (err) {
                     resolve(0);
-                    console.log('redisControl:HDEL ERROR :', err);
+                    loggerErr.error('redisControl: HDEL ERROR :', err);
                     return
                 }
                 resolve(replies);
@@ -144,7 +142,7 @@ const method = {
                 redisCtl.delayQuit();
                 if (err) {
                     resolve(0);
-                    console.log('redisControl:HKEYS ERROR :', err);
+                    loggerErr.error('redisControl: HKEYS ERROR :', err);
                     return
                 }
                 resolve(replies);
@@ -161,7 +159,7 @@ const method = {
                 redisCtl.delayQuit();
                 if (err) {
                     resolve(0);
-                    console.log('redisControl:HVALS ERROR :', err);
+                    loggerErr.error('redisControl: HVALS ERROR :', err);
                     return
                 }
                 resolve(replies);
@@ -177,7 +175,7 @@ const method = {
                  redisCtl.delayQuit();
                 if (err) {
                     resolve([]);
-                    console.log('redisControl:KEYS ERROR :', err);
+                    loggerErr.error('redisControl: KEYS ERROR :', err);
                     return 
                 }
                 resolve(replies);

@@ -6,7 +6,7 @@ const downloadThread = requireMehod('downloadThread')
 const pixivTagFilter = requireMehod('pixivTagFilter');
 
 const redisCtl = requireMehod('redisCtl')
-
+let {logger,loggerErr,loggerShow} = require('../utils/logger');
 
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
 class handlePixivHotList {
@@ -112,7 +112,7 @@ class handlePixivHotList {
         let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList,pixivTagFilter.judgeItem);
         let result = null;
         if(!getResult){
-             console.log('pixivHotList 读取数据失败')
+            loggerErr.error('pixivHotList: 读取数据失败')
             result = {
                 status: 'error'
             }

@@ -7,6 +7,7 @@ const getHtmlData = requireMehod('getHtmlData');
 const cheerio = requireMehod('cheerio');
 
 
+let {logger,loggerErr,loggerShow} = require('../utils/logger')
 var Trial = Norn();
 
 
@@ -58,10 +59,10 @@ class MonomersClass extends NornClass {
                 result = getResult.data
             }
             if (result) {
-                console.log('MonomersClass queryOver', opt.url, '=>', result.urls.original);
+                loggerShow.info('MonomersClass queryOver', opt.url, '=>', result.urls.original);
             }
             else {
-                console.log('MonomersClass queryOver err');
+                loggerShow.error('MonomersClass queryOver err');
             }
         });
         return result;
@@ -95,7 +96,7 @@ class ConvenientClass extends NornClass {
 
             }
             else {
-                console.log('MonomersClass queryOver err', getResult);
+                loggerShow.error('MonomersClass queryOver err', getResult);
             }
         });
         return result;
@@ -131,7 +132,7 @@ class InsightClass extends NornClass {
 
             }
             else {
-                console.log('InsightClass queryOver err', getResult);
+                loggerShow.error('InsightClass queryOver err', getResult);
             }
         });
         return result;
@@ -238,7 +239,7 @@ Norn.Scales = {
                     eval(strobj);
                 }
                 catch(e){
-                    console.log(e);
+                    loggerErr.error('Monomers: error',e);
                    return null; 
                 }
                

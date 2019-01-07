@@ -17,7 +17,6 @@ function childFun(opt) {
     }).catch((err) => {
         console.log('cashChild：进入重试流程，等待时间，', wait / 1000, 's');
         if (tryGet < 5) {
-            console.log(parames);
             setTimeout(() => {
                 childFun(parames)
             }, wait)

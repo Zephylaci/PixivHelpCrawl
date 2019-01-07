@@ -1,18 +1,19 @@
-var pixivAbout = require('../config/')['pixivConfig']
+const pixivAbout = require('../config/')['pixivConfig']
 
 
-var fs = require('fs');
-var events = require('events');
-var emitter = new events.EventEmitter();
-var request = require('./utils/customRequest.js');
-var cheerio = require('cheerio');
+const fs = require('fs');
+const events = require('events');
+const emitter = new events.EventEmitter();
+const request = require('./utils/customRequest.js');
+const cheerio = require('cheerio');
+const {loggerShow,loggerErr} = require('./utils/logger');
 
-var main={
+const main={
     start:function(){
         if(main.state===false&&main.loginIng===false){
             login(pixivAbout.form);
         }else{
-            console.log("Login：登陆完成或者正在登陆中");
+            loggerShow.info("Login：登陆完成或者正在登陆中");
         }
         return emitter;
     },
@@ -30,9 +31,9 @@ if(main.state===false){
 function login(form){
     main.loginIng = true;
     //如果存在cookie文件则直接读取，不存在则登陆写入
+    loggerShow.info('Login:模拟登陆获取Cookie流程 开始')
     fs.exists(pixivAbout.cookieAbout.path,function(exists){
       if(exists){
-        console.log("Login：读取cookie文件");
         fs.readFile(pixivAbout.cookieAbout.path,"utf-8",function(err,data){
           if(err){
             throw err;
@@ -45,24 +46,20 @@ function login(form){
       }
       //模拟登陆并写入cookie文件
       else{
-            console.log("Login：获取Cookie文件开始");
             //获取post_key
             request({
                 url:'https://accounts.pixiv.net/login?lang=zh&source=pc&view_type=page&ref=wwwtop_accounts_index'
             }).then((opt)=>{
                 let data = opt.content;
                 let response = opt.response;
-                console.log('Login：postKey读取成功')
                 var matches = data.match(/postKey":"([^"]*)"/);
                 if(matches){
                   var postKey = matches[1];
-                  console.log('Login:postKey:',postKey);
                   form.post_key = postKey;
                   //执行登录操作
-                  console.log('Login：模拟登陆开始');
                   doLogin(form, response.headers["set-cookie"].join());
                 }else{
-                    console.log('Login：postKey格式错误')
+                    loggerErr.warn('Login：postKey格式错误')
                 }
     
             });
@@ -76,11 +73,8 @@ function login(form){
  * cookie 进入登录页面时的默认cookie
  */
 function doLogin(form, cookie) {
-  const https = require("https");
   const querystring = require("querystring");
   
-  
-
   var postData = querystring.stringify(form);
 
   var headers = {
@@ -112,23 +106,21 @@ function doLogin(form, cookie) {
                 var cookies = headers["set-cookie"] || [];
                 fs.writeFile(pixivAbout.cookieAbout.path, cookies.join(), function (err) {
                 if (err) {
+                  loggerErr.error('Login:写入cookie失败',err)
                   throw err;
-                }
-                else {          
-                  console.log('Login:获取并写入cookie成功')
                 }
               });
                 
                
             }else{
-               console.log('Login:模拟登陆失败',decodeURI(data.message) );
+                loggerErr.error('Login:模拟登陆失败',decodeURI(data.message) );
             }
         }
     
-    }).catch((opt)=>{
-        console.log(opt);
+    }).catch((err)=>{
+        loggerErr.error('Login:模拟登陆失败',err);
     })
-
+// const https = require("https");
 //  var options = {
 //    host: "accounts.pixiv.net",
 //    path: "/api/login?lang=zh",
@@ -182,7 +174,7 @@ emitter.on("getCookieOver",function(){
     var cookies = pixivAbout.cookieAbout.cookies;
  
     main.state = true;
-    console.log('Login:模拟登陆获取Cookie流程结束');
+    loggerShow.info('Login:模拟登陆获取Cookie流程 结束');
     return;
     var url = 'https://www.pixiv.net/ranking.php?format=json&mode=daily&p=1';
     var j = request.jar(); 

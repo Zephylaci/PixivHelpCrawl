@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+const {loggerShow,loggerErr,logger} = require('../utils/logger');
 //过滤器
 const needFilter = new Set();
 function makeSet(){
@@ -11,7 +11,7 @@ function makeSet(){
             needFilter.add(item);
         });
     }else{
-        console.log('tagFilter no config');
+        loggerShow.warn('Filter: 没有读取到规则配置');
     }
 
 
@@ -42,16 +42,16 @@ function addTags(tagsArr){
     });
     var newTagsStr = addTags.toString();
     if(addTags.length<=0){
-        console.log('没有需要添加的tag',newTagsStr);
+        loggerShow.warn('Filter: 没有需要添加的tag',newTagsStr);
         return
     }
     
     try{
         fs.appendFileSync('./config/filter','\n'+newTagsStr);
     }catch(e){
-        console.log('filter append in file err:',err);
+        loggerErr.error('Filter: 写入规则文件失败 err:',err);
     }
-    console.log('filter append in file:',newTagsStr);
+    logger.info('Filter: 写入过滤规则:',newTagsStr);
     addTags.forEach((item)=>{
         needFilter.add(item);
     });

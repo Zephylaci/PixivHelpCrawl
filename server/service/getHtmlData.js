@@ -6,7 +6,7 @@ const requireMehod = require(servicePath + 'router/refPath.js');
 const request = requireMehod('request');
 const fs = requireMehod('fs');
 
-
+let {logger,loggerErr,loggerShow} = require('../utils/logger')
 const pixivAbout = require(manPath + 'config')['pixivConfig'];
 
 class getPixivHtmlClass {
@@ -15,7 +15,7 @@ class getPixivHtmlClass {
     start(opt) {
         var url = opt.url;
         if (!url) {
-            console.error('getHtmlData Error：需要参数Url');
+            loggerErr.error('getHtmlData Error：需要参数Url');
             return;
         }
         let queryObj = this;
@@ -29,17 +29,17 @@ class getPixivHtmlClass {
                 data: null
             });
         })
-        console.log('getHtmlData Msg:Link ' + url);
+        loggerShow.info('getHtmlData Msg:Link ' + url);
         queryObj.requestHtml(url).then(({response={statusCode:500},content=''}={}) => {
             if (response.statusCode == 200) {
-                console.log("getHtmlData Msg：requestHtml " + url + "读取结束");
+                loggerShow.info("getHtmlData Msg：requestHtml " + url + "读取结束");
                 queryObj.end({
                     code: 200,
                     data: content
                 });
             } else {
-                console.log("getHtmlData Msg：requestHtml " + url + "错误的返回信息");
-                console.log("getHtmlData Error：res :", res);
+                loggerShow.error("getHtmlData Msg：requestHtml " + url + "错误的返回信息");
+                loggerErr.error("getHtmlData Error：res :", res);
             }
         }).catch((err)=>{
             queryObj.end({

@@ -5,7 +5,7 @@ const getPixivData = requireMehod('getPixivData');
 const publicClass = require('./publicClass/concurrentHandle.js');
 const downloadThread = requireMehod('downloadThread')
 const StringTool = requireMehod('StringTool');
-
+let {logger,loggerErr,loggerShow} = require('../utils/logger');
 const planStore={};
 
 class searchProcess {
@@ -85,7 +85,7 @@ class searchProcess {
     }
     breakQuery(){
         let process = this;
-        console.log('pixivSearch 读取到无信息页，或主动中断,队列清零')
+        logger.info('pixivSearch: 读取到无信息页，或主动中断,队列清零')
         process.queryProcess.common.linkList = [];
     }
     async oneSetp(queryItem){
@@ -149,7 +149,7 @@ class searchProcess {
         common.state = 'over';
         delete process.queryProcess;
         
-        console.log(process.common.baseUrl,'over');
+        loggerShow.info(process.common.baseUrl,'over');
                     
     }
     async cashPreviewMethod(){
@@ -160,7 +160,7 @@ class searchProcess {
             return item.originUrl;
         });
         if(downList.length===0){
-            console.log('没有需要缓存的预览图')
+            loggerShow.info('没有需要缓存的预览图')
             return
         }
         var downObj = new downloadThread({
@@ -211,8 +211,8 @@ function watchChange(planKey){
     searchPlan.common['_state'] = searchPlan.common.state;
     var watchObj = {
         change:()=>{
-            console.log('change');
-            console.log(searchPlan.common.state);
+            // console.log('change');
+            // console.log(searchPlan.common.state);
         }
     }
     Object.defineProperty(searchPlan.common,'state',{

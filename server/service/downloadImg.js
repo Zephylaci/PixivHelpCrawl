@@ -1,5 +1,5 @@
 /**
-*  下载模块 v 0.2
+*  下载模块 v 0.3
 *  功能：根据url下载文件到指定文件夹 
 *        
 **/
@@ -17,6 +17,7 @@ const checkImg = requireMehod('checkImg');
 
 const pathCash = {}
 pathCash[pathConfig.downloadPath] = true;
+let {logger,loggerErr,loggerShow} = require('../utils/logger')
 
 function downLoadMethod(url, upPath = pathConfig.downloadPath) {
     const newDownObj = new downLoadClass({
@@ -53,7 +54,7 @@ class downLoadClass {
             fs.mkdirSync(downObj.downToPath)
             pathCash[downObj.downToPath] = true;
         }
-
+        loggerShow.info('downLoadImg:文件 ' + fileName + ' 下载开始.')
         let promise = new Promise((resolve, reject) => {
 
             let Option = {
@@ -65,7 +66,7 @@ class downLoadClass {
                 runNum: 1,
             }
             if (checkImg(imgPath)) {
-                console.log('downLoadImg:文件 ' + fileName + ' 存在且已经下载完全.');
+                loggerShow.info('downLoadImg:文件 ' + fileName + ' 存在且已经下载完全.')
                 downObj.downOver(Option);
             } else {
                 downObj.downMethod(Option);
@@ -91,24 +92,24 @@ class downLoadClass {
         let stream = fs.createWriteStream(Option.imgPath);
         let downRequest = request(requresOpt);
         downRequest.catch(() => {
-            console.log('downLoadImg:文件 ' + fileName + '下载失败，发生错误');
+            loggerErr.warn('downLoadImg:文件 ' + fileName + '下载失败，发生错误');
             downObj.tryAgain(Option);
         });
         let pipe = downRequest.pipe(stream);
         pipe.on('error', e => {
-            console.log('downLoadImg:文件 ' + fileName + '下载失败，发生错误：', e);
+            loggerErr.error('downLoadImg:文件 ' + fileName + '下载失败，发生错误：', e);
             downObj.tryAgain(Option);
         });
         pipe.on('finish', () => {
             if (checkImg(imgPath)) {
-                console.log('downLoadImg:文件 ' + fileName + '下载完成！下载次数：' + Option.runNum);  
+                
                 downObj.downOver(Option);
             } else {
-                console.log('downLoadImg:文件 ' + fileName + '下载出错,文件不完全');
+                loggerErr.warn('downLoadImg:文件 ' + fileName + '下载出错,文件不完全');
                 if (Option.runNum === 1) {
                     downObj.tryAgain(Option);
                 } else {
-                    console.log('downLoadImg:文件 ' + fileName + '下载完成,但是可能文件不完全!下载次数:' + Option.runNum);
+                    loggerErr.error('downLoadImg:文件 ' + fileName + '下载完成,但是可能文件不完全!下载次数:' + Option.runNum);
                     Option.downState = 'incomplete'
                     Option.mainDownloadEnd(Option);
                 }
@@ -118,6 +119,7 @@ class downLoadClass {
         });
     }
     downOver(Option) {
+        loggerShow.info('downLoadImg:文件 ' + fileName + '下载完成！下载次数：' + Option.runNum)
         Option.state = 'downOver'
         Option.mainDownloadEnd(Option);
     }
@@ -126,21 +128,21 @@ class downLoadClass {
         let tryConfig = downObj.tryAgainConfig;
         Option.wait = tryConfig.wait;
         Option.waitTimer = null;
-        console.log('downLoadImg：进入重试流程，等待时间，', Option.wait / 1000, 's');
+        loggerShow.warn('downLoadImg：进入重试流程，等待时间，', Option.wait / 1000, 's');
 
         if (Option.runNum <= tryConfig.tryNum) {
             if (Option.waitTimer === null) {
                 Option.waitTimer = global.setTimeout(() => {
                     Option.runNum++;
-                    console.log('downLoadImg:文件 ' + Option.fileName + '尝试第：' + Option.runNum + '次重下');
+                    loggerShow.info('downLoadImg:文件 ' + Option.fileName + '尝试第：' + Option.runNum + '次重下');
                     Option.wait = Option.wait + Option.wait;
                     downObj.downMethod(Option);
                 }, Option.wait);
             } else {
-                console.log('downLoadImg:文件 ' + Option.fileName + '已经创建等待任务');
+                loggerShow.error('downLoadImg:文件 ' + Option.fileName + '已经创建等待任务');
             }
         } else {
-            console.log('downLoadImg:文件下载失败，已尝试：' + Option.runNum + '次重下');
+            loggerErr.error('downLoadImg:文件下载失败，已尝试：' + Option.runNum + '次重下');
             Option.downState = 'faill'
             Option.mainDownloadEnd(Option);
         }

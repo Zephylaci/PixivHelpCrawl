@@ -11,7 +11,7 @@
 *  callback（可选） 
 **/
 var fs = require('fs');
-
+let {logger,loggerErr,loggerShow} = require('../utils/logger')
 function Astraea(opt){
     var filterType = opt.filterType;
     var defJudgeTag = [];
@@ -36,11 +36,9 @@ Astraea.Scales={
     
     },
     Convenient:(opt)=>{
-        var needContainsData = [];
         var sourceData = opt.sourceData;
         var sourceArry = sourceData.contents;
-        
-        var needDataKey = opt.needDataKey;
+    
         var judgeTag = opt.judgeTag;
         
         if(Object.prototype.toString.call(sourceArry) === "[object Array]"){
@@ -48,7 +46,7 @@ Astraea.Scales={
             opt.resultData = sourceArry.filter(Astraea.Scales.Judge);
             return opt;
         }else{
-            console.log('Astraea:Convenient传入数据类型不正确！')
+            loggerErr.error('Astraea:Convenient传入数据类型不正确！')
             return opt.sourceData;
         }
     },

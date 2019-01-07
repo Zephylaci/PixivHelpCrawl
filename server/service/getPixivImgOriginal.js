@@ -21,7 +21,6 @@ async function handleUpitem(queryItem) {
         imgId: imgId,
     };
     if (await isExist(imgId)) {
-        console.log('getPixivImgOriginal:', imgId, '数据记录存在，本地或仓库文件存在，无需查询');
         result.state = 'isExist'
         return result;
     }
@@ -41,7 +40,6 @@ async function handleUpitem(queryItem) {
         }
     }).catch((err) => {
         result.state='queryErr';
-        console.log(err)
     });
     if(result.state==='queryErr'){
         return result;
@@ -64,7 +62,6 @@ async function handleUpitem(queryItem) {
             tags: queryObj.tags,
             userId: queryObj.userId,
         }, 'PiGetPixiv').catch((err) => {
-            console.log(err);
             result.state = 'saveInfoErr'
         });
     }

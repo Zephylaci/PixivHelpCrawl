@@ -1,6 +1,8 @@
 /* 针对同时多次处理 的抽象
 *  提供，依赖child_process和不依赖的两种实现方式
 */
+let {logger,loggerErr,loggerShow} = require('../../utils/logger');
+
 class concurrentHandleClass {
     constructor(limitRunNum = 5) {
         this.common = {
@@ -58,11 +60,10 @@ class concurrentHandleClass {
         if (common.runStat === 'before') {
             common.runStat = 'queryIng'
             common.linkList = listArr
-            console.log(queryObj.privateAttr.queryName, '查询开始');
+            loggerShow.info(queryObj.privateAttr.queryName, '查询开始');
             queryObj.controlStep();
 
         } else {
-            //console.log(queryObj.privateAttr.queryName,'错误的开始时机');  
             throw queryObj.privateAttr.queryName, '错误的开始时机';
         }
     }
@@ -71,7 +72,7 @@ class concurrentHandleClass {
         let queryObj = this;
         let common = queryObj.common;
         common.waitList = common.waitList.concat(listArr);
-        console.log(queryObj.privateAttr.queryName, ':添加等待队列:', listArr);
+        loggerShow.info(queryObj.privateAttr.queryName, ':添加等待队列:', listArr);
     }
     /**
      *  获得当前类的promise对象
@@ -84,8 +85,8 @@ class concurrentHandleClass {
                 var promise = new Promise((resolve, reject) => {
                     common.queryOver = (mainResult) => {
                         //后处理
-                        console.log(queryObj.privateAttr.queryName, '结果:');
-                        console.log(mainResult);
+                        logger.info(queryObj.privateAttr.queryName, '结果:');
+                        logger.info(mainResult);
                         resolve(mainResult);
                     };
                 });
@@ -99,7 +100,7 @@ class concurrentHandleClass {
     showState() {
         let queryObj = this;
         let common = queryObj.common;
-        console.log(common)
+        loggershow.info(common)
         return JSON.stringify(common)
     }
     /**
@@ -148,8 +149,6 @@ class concurrentHandleClass {
                         common.linkList = common.waitList;
                         common.waitList = [];
                         common.limitRunNum = queryObj.DEFALUT.limitRunNum;
-
-                        console.log(queryObj.privateAttr.queryName, '开始下载追加内容');
                         queryObj.controlStep();
                         return
                     }
@@ -157,12 +156,12 @@ class concurrentHandleClass {
                     if (typeof common.queryOver === 'function') {
                         common.queryOver(common.mainResult);
                     }
-                    console.log(queryObj.privateAttr.queryName, ' 运行结束');
+                    loggershow.info(queryObj.privateAttr.queryName, ' 运行结束');
                     queryObj.resetCommon();
                 }
             }
         }
-        console.log(queryObj.privateAttr.queryName, '：队列中:', common.linkList.length, '运行中:', common.runNum, '限制数:', common.limitRunNum);
+        loggershow.info(queryObj.privateAttr.queryName, '：队列中:', common.linkList.length, '运行中:', common.runNum, '限制数:', common.limitRunNum);
     }
     /**
      *  单次操作
@@ -172,8 +171,6 @@ class concurrentHandleClass {
         let common = queryObj.common;
         var queryItem = common.linkList.shift();
         var id = common.idNum
-
-        console.log(queryObj.privateAttr.queryName, ':内部Id：', id, 'item:', queryItem, '开始');
 
         var queryChild = queryObj.makeprocess(id);
         var opt = {
@@ -235,8 +232,6 @@ class Process {
         let queryObj = this.queryObj;
         let common = queryObj.common;
         let processList = common.processList;
-        console.log(queryObj.privateAttr.queryName, ':内部Id：', id, '过程结束');
-
         common.mainResult.push(queryResult)
         common.runNum--;
         if (common.linkList.length === 0 && common.runNum === 0) {
@@ -252,7 +247,7 @@ class Process {
     }
     disconnect() {
         let queryObj = this.queryObj;
-        console.log(queryObj.privateAttr.queryName, 'process:', this.id, 'will disconnect');
+        loggershow.info(queryObj.privateAttr.queryName, 'process:', this.id, 'will disconnect');
         delete this.queryObj
     }
 }
