@@ -1,5 +1,6 @@
 const redisConfig = require('../config/index.js')['redisConfig'];
 const autoCash = redisConfig['autoCash'];
+const {loggerShow,logger} = require('./utils/logger');
 if (redisConfig.useCash === false || autoCash.enable === false) {
     return
 }
@@ -8,7 +9,7 @@ const scheduleHandle = require('./utils/schedule.js');
 const cp = require('child_process');
 //程序入口
 makePlan();
-const {loggerShow,logger} = require('./utils/logger');
+
 function startCash() {
     //开始缓存
     let plan = autoCash.plan;
@@ -86,8 +87,6 @@ function startCash() {
         },
         oneStep: function () {
             var getConfig = processMain.linkList.shift();
-            logger.info(`autoCash: ${JSON.stringify(getConfig)} 缓存开始`);
-
             var downChild = processMain.makeprocess();
 
             downChild.send(getConfig);
@@ -130,7 +129,7 @@ function startCash() {
     }
 
     processMain.controlStep();
-
+    logger.info(`autoCash: 缓存开始`);
     function makeLinkList(plan, deep) {
         var linkList = [];
 

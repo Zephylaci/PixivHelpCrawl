@@ -3,7 +3,7 @@
 const servicePath = '../';
 const manPath = '../../';
 const requireMehod = require(servicePath + 'router/refPath.js');
-
+let {logger,loggerErr,loggerShow} = require('../utils/logger');
 const pixivDownloadModel = requireMehod('pixivDownloadModel');
 const getPixivData = requireMehod('getPixivData');
 const checkImg = requireMehod('checkImg');
@@ -78,7 +78,7 @@ async function isExist(imgId) {
         return true
     }
     if(imgPath){
-        let imgSavePath = webPath + imgPath[0].imgPath;
+        let imgSavePath = webPath + imgPath;
         if (checkImg(imgSavePath)) {
             return true;
         }

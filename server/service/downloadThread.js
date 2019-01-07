@@ -143,7 +143,7 @@ class makeDownLoadObj {
         let processList = common.processList
         if (processList.length === 0) {
             var downChild = cp.fork('./server/service/process/downloadChild.js', {
-                silent: true
+                silent:true
             });
 
             downChild.on('message', (parames) => {

@@ -119,7 +119,7 @@ class downLoadClass {
         });
     }
     downOver(Option) {
-        loggerShow.info('downLoadImg:文件 ' + fileName + '下载完成！下载次数：' + Option.runNum)
+        loggerShow.info('downLoadImg:文件 ' + Option.fileName + '下载完成！下载次数：' + Option.runNum)
         Option.state = 'downOver'
         Option.mainDownloadEnd(Option);
     }

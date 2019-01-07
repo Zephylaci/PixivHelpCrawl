@@ -61,6 +61,8 @@ class concurrentHandleClass {
             common.runStat = 'queryIng'
             common.linkList = listArr
             loggerShow.info(queryObj.privateAttr.queryName, '查询开始');
+            //日志函数传递
+            queryObj.loggerShow = loggerShow;
             queryObj.controlStep();
 
         } else {
@@ -100,7 +102,7 @@ class concurrentHandleClass {
     showState() {
         let queryObj = this;
         let common = queryObj.common;
-        loggershow.info(common)
+        loggerShow.info(common)
         return JSON.stringify(common)
     }
     /**
@@ -118,7 +120,6 @@ class concurrentHandleClass {
         let queryObj = this;
         let common = queryObj.common;
         let linkList = common.linkList;
-
 
         if (linkList.length < common.limitRunNum) {
             common.limitRunNum = linkList.length;
@@ -156,12 +157,12 @@ class concurrentHandleClass {
                     if (typeof common.queryOver === 'function') {
                         common.queryOver(common.mainResult);
                     }
-                    loggershow.info(queryObj.privateAttr.queryName, ' 运行结束');
+                    loggerShow.info(queryObj.privateAttr.queryName, ' 运行结束');
                     queryObj.resetCommon();
                 }
             }
         }
-        loggershow.info(queryObj.privateAttr.queryName, '：队列中:', common.linkList.length, '运行中:', common.runNum, '限制数:', common.limitRunNum);
+        loggerShow.info(queryObj.privateAttr.queryName, '：队列中:', common.linkList.length, '运行中:', common.runNum, '限制数:', common.limitRunNum);
     }
     /**
      *  单次操作
@@ -247,7 +248,7 @@ class Process {
     }
     disconnect() {
         let queryObj = this.queryObj;
-        loggershow.info(queryObj.privateAttr.queryName, 'process:', this.id, 'will disconnect');
+        loggerShow.info(queryObj.privateAttr.queryName, 'process:', this.id, 'will disconnect');
         delete this.queryObj
     }
 }

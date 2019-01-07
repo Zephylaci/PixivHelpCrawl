@@ -3,6 +3,7 @@ quickPush.sh
 quickDev.sh
 *.swp
 node_modules/
+logs/
 .cookie
 client/download/
 client/cash/

@@ -1,7 +1,7 @@
 const downloadImg = require('../downloadImg.js');
 var tryGet = 1;
 var wait = 5000;
-
+let {logger,loggerErr,loggerShow} = require('../../utils/logger')
 process.on('message', (opt) => {
     childFun(opt)
 });
@@ -15,18 +15,19 @@ function childFun(opt) {
         opt.imgPath = dres.imgPath;
         process.send(opt);
     }).catch((err) => {
-        console.log('cashChild：进入重试流程，等待时间，', wait / 1000, 's');
+        loggerErr.error('cashChild: error',err);
+        loggerShow.info('cashChild：进入重试流程，等待时间，', wait / 1000, 's');
         if (tryGet < 5) {
             setTimeout(() => {
-                childFun(parames)
+                childFun(opt)
             }, wait)
             tryGet++
             wait += wait;
         } else {
             tryGet = 1;
 
-            parames.downState = 'faill';
-            process.send(parames);
+            opt.downState = 'faill';
+            process.send(opt);
         }
 
     });
