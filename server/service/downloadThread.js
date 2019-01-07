@@ -1,6 +1,6 @@
 
 const cp = require('child_process');
-
+let {logger,loggerErr,loggerShow} = require('../utils/logger')
 
 class makeDownLoadObj {
     constructor({ path = 'client/cash', limitRunNum = 5 }) {
@@ -38,10 +38,11 @@ class makeDownLoadObj {
             common.runStat = true
             common.linkList = listArr
             downLoadObj.controlStep();
-            console.log('downloadThread:下载开始')
+
+            logger.info('downloadThread:队列开始: \n', listArr)
         } else {
             common.waitList = common.waitList.concat(listArr);
-            console.log('downloadThread:添加等待队列:', listArr)
+            logger.info('downloadThread:添加等待队列:', listArr)
         }
     }
     overControl() {
@@ -61,7 +62,6 @@ class makeDownLoadObj {
     showState() {
         let downLoadObj = this;
         let common = downLoadObj.common;
-        console.log(common)
         return JSON.stringify(common)
     }
     resetCommon() {
@@ -93,7 +93,7 @@ class makeDownLoadObj {
         } else {
             if (common.runNum === 0) {
                 if (linkList.length === 0) {
-                    console.log('downloadThread:当前列表下载完毕！');
+                    loggerShow.info('downloadThread:队列下载完毕！');
                     //这里检查 waitList是否为空，不为空则重启继续
                     //暂时放放
 
@@ -103,7 +103,6 @@ class makeDownLoadObj {
                         for (var i = 0; i < length; i++) {
                             var childProcess = processList.shift();
                             childProcess.disconnect();
-                            console.log('autoCash:释放 childe_process');
                         }
                     }
                     if (typeof common.downOver === 'function') {
@@ -114,7 +113,7 @@ class makeDownLoadObj {
                 }
             }
         }
-        console.log('downloadThread 下载对象：队列中：', common.linkList.length, '运行中:', common.runNum, '限制数：', common.limitRunNum);
+        loggerShow.info('downloadThread 下载对象：队列中：', common.linkList.length, '运行中:', common.runNum, '限制数：', common.limitRunNum);
 
     }
 
@@ -123,8 +122,6 @@ class makeDownLoadObj {
         let common = downLoadObj.common;
         var url = common.linkList.shift();
         var id = common.idNum
-
-        console.log('downloadThread:内部Id：', id, 'url:', url, '下载开始');
 
         var downChild = downLoadObj.makeprocess(id);
 
@@ -147,8 +144,6 @@ class makeDownLoadObj {
             });
 
             downChild.on('message', (parames) => {
-                console.log('downloadThread:内部Id：', parames.id, 'url:', parames.url, '下载结束');
-
                 common.downRes.push(parames)
                 common.runNum--;
                 if (common.linkList.length === 0 && common.runNum === 0) {
@@ -163,11 +158,11 @@ class makeDownLoadObj {
                 downLoadObj.controlStep();
             });
             downChild.on('close', (code) => {
-                console.log('downloadThread:', 'downChild子进程close，剩余空闲process:', processList.length);
+                loggerShow.info('downloadThread:', 'downChild子进程close，剩余空闲process:', processList.length);
             });
 
             downChild.on('disconnect', () => {
-                console.log('downloadThread:', 'downChild子进程disconnect，剩余空闲process:', processList.length);
+                loggerShow.info('downloadThread:', 'downChild子进程disconnect，剩余空闲process:', processList.length);
             });
             return downChild;
         } else {

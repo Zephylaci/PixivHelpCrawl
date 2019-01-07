@@ -63,12 +63,13 @@ class downLoadClass {
                 url: url,
                 fileName: fileName,
                 imgPath: imgPath,
-                runNum: 1,
+                runNum: 0,
             }
             if (checkImg(imgPath)) {
                 loggerShow.info('downLoadImg:文件 ' + fileName + ' 存在且已经下载完全.')
                 downObj.downOver(Option);
             } else {
+                Option.runNum=1;
                 downObj.downMethod(Option);
             }
 

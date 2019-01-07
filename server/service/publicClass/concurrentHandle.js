@@ -60,9 +60,8 @@ class concurrentHandleClass {
         if (common.runStat === 'before') {
             common.runStat = 'queryIng'
             common.linkList = listArr
-            loggerShow.info(queryObj.privateAttr.queryName, '查询开始');
-            //日志函数传递
-            queryObj.loggerShow = loggerShow;
+            loggerShow.info(queryObj.privateAttr.queryName, '运行开始');
+            logger.info(queryObj.privateAttr.queryName, '输入: \n',listArr);
             queryObj.controlStep();
 
         } else {
@@ -87,8 +86,7 @@ class concurrentHandleClass {
                 var promise = new Promise((resolve, reject) => {
                     common.queryOver = (mainResult) => {
                         //后处理
-                        logger.info(queryObj.privateAttr.queryName, '结果:');
-                        logger.info(mainResult);
+                        logger.info(queryObj.privateAttr.queryName, '输出: \n',mainResult);
                         resolve(mainResult);
                     };
                 });

@@ -24,8 +24,9 @@ module.exports = {
     appenders: {
         stdout: {//控制台输出
             type: 'console',
-            pattern: 'req-yyyy-MM-dd.log',
-            alwaysIncludePattern: true
+        },
+        console:{
+            type:'console'
         },
         response: {//请求日志
             type: 'dateFile',
@@ -41,8 +42,9 @@ module.exports = {
         }
     },
     categories: {
-        default: { appenders: ['stdout', 'response'], level: 'debug' },//appenders:采用的appender,取appenders项,level:设置级别
-        error: { appenders: ['stdout', 'error'], level: 'error' }
+        default: { appenders: ['console','response'], level: 'debug' },
+        stdout: { appenders: ['stdout'], level: 'debug' },//appenders:采用的appender,取appenders项,level:设置级别
+        error: { appenders: ['console','error'], level: 'error' }
     },
     "baseLogPath": baseLogPath                  //logs根目录
 }
