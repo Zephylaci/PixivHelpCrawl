@@ -38,10 +38,11 @@ class handlePixivHotList {
         for (let i = COMMON.startPage; i <= COMMON.endPage; i++) {
             var queryUrl = BaseUrl.replace('${page}', i);
             var queryResult = await this.originQuery(queryUrl, useCash);
-            resultArr = resultArr.concat(queryResult.data.contents);
+            if(queryResult.retStat===1){
+                resultArr = resultArr.concat(queryResult.data.contents);
+            }
         }
-        //TODO 错误处理，及错误抛出
-        //正常结束
+
         return resultArr;
 
     }
@@ -73,8 +74,11 @@ class handlePixivHotList {
                 }
             });
             if (_cashResult === null) {
+                _cashResult = [];
                 var queryResult = await this.originQuery(queryUrl, useCash);
-                _cashResult = await this.saveQueryResult(queryResult);
+                if(queryResult.retStat===1){
+                    _cashResult = await this.saveQueryResult(queryResult);
+                } 
             }
            resultArr = resultArr.concat(_cashResult);
         }
@@ -112,12 +116,14 @@ class handlePixivHotList {
         let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList,pixivTagFilter.judgeItem);
         let result = null;
         if(!getResult){
-            loggerErr.error('pixivHotList: 读取数据失败')
+            loggerErr.error(`pixivHotList: 读取数据失败 ${url}`)
             result = {
-                status: 'error'
+                retStat: 0
             }
+            return result
         }
         result ={
+            retStat:1,
             key:getResult.date + '_p' + getResult.page,
             mainHash:getResult.mode,
             data:{

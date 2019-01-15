@@ -39,10 +39,10 @@ class makeDownLoadObj {
             common.linkList = listArr
             downLoadObj.controlStep();
 
-            logger.info('downloadThread:队列开始: \n', listArr)
+            logger.info('downloadThread:队列开始: ', listArr.length)
         } else {
             common.waitList = common.waitList.concat(listArr);
-            logger.info('downloadThread:添加等待队列:', listArr)
+            logger.info('downloadThread:添加等待队列:', listArr.length)
         }
     }
     overControl() {
@@ -74,8 +74,6 @@ class makeDownLoadObj {
         let downLoadObj = this;
         let common = downLoadObj.common;
         let linkList = common.linkList;
-
-
         if (linkList.length < common.limitRunNum) {
             common.limitRunNum = linkList.length;
             if (linkList.length > 0) {

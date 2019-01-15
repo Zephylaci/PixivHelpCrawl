@@ -20,7 +20,6 @@ const responseLogPath = baseLogPath + responsePath + "/" + responseFileName;
 // const responseLogPath = path.resolve(__dirname, "../logs/response/response");
 
 module.exports = {
-    replaceConsole: true,
     appenders: {
         stdout: {//控制台输出
             type: 'console',
@@ -43,8 +42,7 @@ module.exports = {
     },
     categories: {
         default: { appenders: ['console','response'], level: 'debug' },
-        stdout: { appenders: ['stdout'], level: 'debug' },//appenders:采用的appender,取appenders项,level:设置级别
-        error: { appenders: ['console','error'], level: 'error' }
-    },
-    "baseLogPath": baseLogPath                  //logs根目录
+        stdout: { appenders: ['stdout'], level: 'debug' },//appenders:采用的appender,取appenders项,level:设置级别 
+        error: { appenders: ['console','error'], level: 'warn' }
+    }
 }

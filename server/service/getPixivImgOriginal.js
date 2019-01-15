@@ -3,7 +3,6 @@
 const servicePath = '../';
 const manPath = '../../';
 const requireMehod = require(servicePath + 'router/refPath.js');
-let {logger,loggerErr,loggerShow} = require('../utils/logger');
 const pixivDownloadModel = requireMehod('pixivDownloadModel');
 const getPixivData = requireMehod('getPixivData');
 const checkImg = requireMehod('checkImg');

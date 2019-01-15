@@ -3,7 +3,7 @@ const servicePath = '../../';
 
 const getPixivImgOriginal = require(servicePath + 'service/getPixivImgOriginal.js');
 
-const {loggerShow} = require('../../utils/logger');
+const {logger,loggerShow} = require('../../utils/logger');
 var mainObj = {
     common: {
         runStat: false,
@@ -47,7 +47,8 @@ function queryStart(queryList) {
         if(errIdArr.length===0){
             mainObj.common.runStat = false;
         }else{
-            loggerShow.warn('pixivDownloadControl 存在下载出错的图片！10S后重试!');
+            logger.warn('失败：',errIdArr.length);
+            logger.warn('pixivDownloadControl 存在下载出错的图片！10S后重试!');
             setTimeout(()=>{
                 queryStart(errIdArr); 
             },1000)

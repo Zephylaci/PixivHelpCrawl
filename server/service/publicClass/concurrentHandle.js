@@ -61,7 +61,7 @@ class concurrentHandleClass {
             common.runStat = 'queryIng'
             common.linkList = listArr
             loggerShow.info(queryObj.privateAttr.queryName, '运行开始');
-            logger.info(queryObj.privateAttr.queryName, '输入: \n',listArr);
+            logger.info(queryObj.privateAttr.queryName, '输入: ',listArr.length);
             queryObj.controlStep();
 
         } else {
@@ -73,7 +73,7 @@ class concurrentHandleClass {
         let queryObj = this;
         let common = queryObj.common;
         common.waitList = common.waitList.concat(listArr);
-        loggerShow.info(queryObj.privateAttr.queryName, ':添加等待队列:', listArr);
+        loggerShow.info(queryObj.privateAttr.queryName, ':添加等待队列:', listArr.length);
     }
     /**
      *  获得当前类的promise对象
@@ -86,7 +86,7 @@ class concurrentHandleClass {
                 var promise = new Promise((resolve, reject) => {
                     common.queryOver = (mainResult) => {
                         //后处理
-                        logger.info(queryObj.privateAttr.queryName, '输出: \n',mainResult);
+                        logger.info(queryObj.privateAttr.queryName, '输出: ',mainResult.length);
                         resolve(mainResult);
                     };
                 });
