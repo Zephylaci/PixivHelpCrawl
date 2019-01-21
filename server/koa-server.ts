@@ -4,11 +4,11 @@ import * as json from 'koa-json'
 import * as onerror from 'koa-onerror'
 import * as bodyparser from 'koa-bodyparser'
 import * as KoaRouterBase from'koa-router'
-import * as apiRouter from './router/api-routers.js'
+import * as apiRouter from './router/api-routers'
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
 
-var mainConfig = require('../config/index.js')
+var mainConfig = require('../config/index')
 var pathConfig = mainConfig['pathConfig']
 var makeRouterList = require('./utils/makeRouterList');
 

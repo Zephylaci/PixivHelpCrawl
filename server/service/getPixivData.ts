@@ -1,5 +1,7 @@
 
-
+/**
+ *  TODO 重构
+ */
 import { requireMehod } from "../router/refPath";
  const StringTool = requireMehod('StringTool');
 
@@ -23,11 +25,13 @@ class NornClass{
                 resolve(getResult);
             });
             getHtmlPromise.catch((err) => {
+                logger.error(err);
                 let fakeResult = {
                     code:500,
-                    data:null
+                    data:null,
+                    opt
                 }
-                resolve(fakeResult,opt)
+                resolve(fakeResult)
             })
 
         });
@@ -47,7 +51,7 @@ class MonomersClass extends NornClass {
             url: queryUrl
         }
         let result = null;
-        await this.queryContrl(opt).then((getResult) => {
+        await this.queryContrl(opt).then((getResult:any) => {
             if (getResult.code === 200) {
                 let handleOpt = {
                     upUrl: queryUrl,
@@ -81,7 +85,7 @@ class ConvenientClass extends NornClass {
             url: queryUrl
         }
         let result = null;
-        await this.queryContrl(opt).then((getResult) => {
+        await this.queryContrl(opt).then((getResult:any) => {
             if (getResult.code === 200) {
                 let handleOpt = {
                     upUrl: queryUrl,
@@ -114,7 +118,7 @@ class InsightClass extends NornClass {
             url: queryUrl
         }
         let result = null;
-        await this.queryContrl(opt).then((getResult) => {
+        await this.queryContrl(opt).then((getResult:any) => {
             if (getResult.code === 200) {
                 let handleOpt = {
                     upUrl: queryUrl,
@@ -187,7 +191,7 @@ Norn.Scales = {
          
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
-        var info = Public.info;
+        var info:any = Public.info;
         if (upUrl.indexOf('format=json') != -1) {
             if (typeof info === "string") {
                 //兼容
@@ -210,7 +214,7 @@ Norn.Scales = {
                if(filterFun&&filterFun(item)){
                     return
                 }
-                callbackArr.forEach((step)=>{
+                callbackArr.forEach((step:any)=>{
                    item=step(item,info);
                 });
                 afterArr.push(item);
@@ -218,7 +222,7 @@ Norn.Scales = {
             info.contents = afterArr;
             return info
         } else {
-            var info = Public.info;
+            var info:any = Public.info;
             Public.$ = cheerio.load(info, {
                 decodeEntities: false
             });
@@ -228,7 +232,7 @@ Norn.Scales = {
     Monomers: () => {
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
-        var $ = Public.$;
+        var $:any = Public.$;
         if (upUrl.indexOf('illust_id') != -1) {
             var result = $('head').html();
             var cashInfo = null;
@@ -265,7 +269,7 @@ Norn.Scales = {
     Insight: () => {
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
-        var $ = Public.$
+        var $:any = Public.$
 
         if (upUrl.indexOf('search.php') != -1) {
             return $('#js-mount-point-search-result-list').data();
@@ -275,7 +279,7 @@ Norn.Scales = {
     },
     Ordinary: () => {
         var Public = Norn.Scales.Public;
-        var $ = Public.$;
+        var $:any = Public.$;
         var css = $('link');
         var result = $('#wrapper');
         result.find('script').remove();

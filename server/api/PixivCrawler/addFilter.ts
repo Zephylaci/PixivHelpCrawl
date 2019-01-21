@@ -1,7 +1,7 @@
 
 import { requireMehod } from "../../router/refPath";
 const handlePixivHotList = requireMehod('pixivTagFilter');
-const main={
+const mainObj={
     contrl:async (ctx,next)=>{
         ctx.body = {
             code: 200,
@@ -15,4 +15,4 @@ const main={
     }
 }
 
-module.exports = main
+export default mainObj

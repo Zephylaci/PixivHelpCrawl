@@ -1,4 +1,4 @@
-import * as downloadImg from '../downloadImg.js';
+import {downloadImg} from '../downloadImg';
 var tryGet = 1;
 var wait = 5000;
 let {logger,loggerErr,loggerShow} = require('../../utils/logger')
@@ -9,8 +9,8 @@ process.on('message', (url) => {
 var path = 'client/cash';
 function childFun(url) {
     var downUrl = url;
-    var opt = {};
-    downloadImg(downUrl, path).then((dres) => {
+    var opt:any = {};
+    downloadImg(downUrl, path).then((dres:any) => {
         tryGet = 1;
         
         opt.fileName = dres.fileName;

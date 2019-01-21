@@ -1,11 +1,11 @@
-import  controlCash from '../service/controlCash.js';
+import  controlCash from '../service/controlCash';
 let delPlanStore={};
 
 const methodMap = {
     init:({
         clientSocket,
     })=>{
-       let result = controlCash.getPreViewState({
+       let result:any = controlCash.getPreViewState({
            needState:['count','totalSize','firstCreat']
        });
         if(result.totalSize !==0){

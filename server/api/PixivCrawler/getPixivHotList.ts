@@ -6,7 +6,7 @@
 import { requireMehod } from "../../router/refPath";
 const handlePixivHotList = requireMehod('handlePixivHotList');
 
-import { redisConfig} from '../../../config/index.js';
+import { redisConfig} from '../../../config/index';
 
 
 
@@ -60,4 +60,4 @@ var mainObj = {
 
 
 
-module.exports = mainObj;
+export default mainObj

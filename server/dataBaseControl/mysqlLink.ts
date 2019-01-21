@@ -1,5 +1,5 @@
 import * as mysql  from 'mysql';
-import {mysqlConfig as mysqlInfo} from '../../config/index.js';
+import {mysqlConfig as mysqlInfo} from '../../config/index';
 
 
 /*
@@ -60,4 +60,4 @@ var mainObj={
 
 
 
-module.exports = mainObj;
+export default mainObj;

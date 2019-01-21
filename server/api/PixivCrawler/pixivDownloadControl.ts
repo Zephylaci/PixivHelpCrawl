@@ -1,4 +1,4 @@
-import * as getPixivImgOriginal from '../../service/getPixivImgOriginal';
+import {getPixivImgOriginal} from '../../service/getPixivImgOriginal';
 
 import {logger,loggerShow} from '../../utils/logger';
 var mainObj = {
@@ -55,4 +55,4 @@ function queryStart(queryList) {
     });
 }
 
-module.exports = mainObj;
+export default mainObj

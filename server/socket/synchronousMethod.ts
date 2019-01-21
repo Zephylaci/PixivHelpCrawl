@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as socketStream from 'socket.io-stream';
-import {pathConfig } from '../../config/index.js';
+import {pathConfig } from '../../config/index';
 import * as crypto from 'crypto';
 import * as Stream from 'stream';
 const downPath = pathConfig.downloadPath

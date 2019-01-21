@@ -1,4 +1,4 @@
-import * as redisCtl from '../dataBaseControl/redisLink.js';
+import redisCtl from '../dataBaseControl/redisLink';
 
 let {logger,loggerErr,loggerShow} = require('../utils/logger')
 
@@ -43,7 +43,7 @@ const method = {
                         });
                         delete dataContent['contents'];
                     } else {
-                        for (indexKey in dataContent) {
+                        for (let indexKey in dataContent) {
                             let item = dataContent[indexKey];
                             if (typeof item === 'object') {
                                 dataContent[indexKey] = JSON.stringify(dataContent[indexKey]);

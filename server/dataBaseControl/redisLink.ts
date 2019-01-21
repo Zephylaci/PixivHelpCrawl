@@ -1,4 +1,4 @@
-import {redisConfig as env} from '../../config/index.js';
+import {redisConfig as env} from '../../config/index';
 import * as redis from 'redis';
 //var redisStore = require('koa-redis');
 //var options = {client: client,db:1};
@@ -8,7 +8,7 @@ var main = {
   client: null,
   autoClose: null,
   wait: 120000, //两分钟没有请求自动断开
-  deal: (params) => {
+  deal: () => {
     global.clearTimeout(main.autoClose);
     main.autoClose = null;
     main.checkLink();
@@ -69,4 +69,4 @@ var main = {
 }
 
 
-module.exports = main;
+export default main;

@@ -105,7 +105,7 @@ export class concurrentHandleClass {
     overControl() {
         let queryObj = this;
         let common = queryObj.common;
-        if (common.runStat) {
+        if (common.runStat === 'queryIng') {
             if (common.promise === null) {
                 var promise = new Promise((resolve, reject) => {
                     common.queryOver = (mainResult) => {
@@ -260,7 +260,7 @@ class Process {
         }else{
             try{
                 let process = fork(privateAttr.processPath,[],{
-                    silent:true
+                   silent:true
                 });
                 process.on('message',this.queryOver.bind(this));
                 process.on('close',()=>{

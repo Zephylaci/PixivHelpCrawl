@@ -1,10 +1,11 @@
-import {redisConfig} from '../config/index.js';
+import {redisConfig} from '../config/index';
 const autoCash = redisConfig['autoCash'];
 
 import {loggerShow,logger, loggerErr} from './utils/logger';
 import {setRunEveryDay} from './utils/schedule';
 import * as cp from 'child_process';
 import { concurrentHandleClass } from './service/publicClass/concurrentHandle';
+import { join } from 'path';
 
 if (redisConfig.useCash === false || autoCash.enable === false) {
     
@@ -15,23 +16,22 @@ if (redisConfig.useCash === false || autoCash.enable === false) {
 
 
 
-
 function startCash() {
     //开始缓存
     let plan = autoCash.plan;
     let deep = autoCash.deep;
     let linkList = makeLinkList(plan, deep);
-
+    
     let cashProcessHandle = new concurrentHandleClass({
         queryName:'autoCash',
-        processPath:'./server/service/process/cashChild.js'
+        processPath:join(__dirname,'/service/process/cashChild')
     },2)
     cashProcessHandle.queryStart(linkList).overControl().then((res)=>{
         logger.info(`autoCash: 缓存结束`);
     }).catch((err)=>{
         loggerErr.error(err);
     });
-     
+ 
     logger.info(`autoCash: 缓存开始`);
     function makeLinkList(plan, deep) {
         var linkList = [];

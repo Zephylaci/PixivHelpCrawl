@@ -20,4 +20,4 @@ var mainObj={
       }
   } 
 
-  module.exports=mainObj
+  export default mainObj

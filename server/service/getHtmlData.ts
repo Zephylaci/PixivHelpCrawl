@@ -18,7 +18,7 @@ class getPixivHtmlClass {
             loggerErr.error('getHtmlData Error：需要参数Url');
             return;
         }
-        let queryObj = this;
+        let queryObj:any = this;
         var state = new Promise((resolve, reject) => {
             queryObj.end = resolve;
             queryObj.err = reject;
@@ -39,7 +39,7 @@ class getPixivHtmlClass {
                 });
             } else {
                 loggerShow.error("getHtmlData Msg：requestHtml " + url + "错误的返回信息");
-                loggerErr.error("getHtmlData Error：res :", res);
+                loggerErr.error(response);
             }
         }).catch((err)=>{
             queryObj.end({

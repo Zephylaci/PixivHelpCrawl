@@ -1,6 +1,7 @@
+/**
+ * TODO 根据 类型系统重写
+ */
 import * as fs from 'fs';
-
-const servicePath = '../'
 import { requireMehod } from "../router/refPath";
 const redisCtl = requireMehod('redisCtl')
 
@@ -11,12 +12,12 @@ function getPreViewState({
    let stateMethodMap = {
        'count':({
            fileList=[],
-           result={}
+           result,
        })=>{
            result.count=fileList.length;
        },
        'totalSize':({
-           result={}
+           result
        })=>{
            function getSize({size=0},result){
                 if(typeof size ==='number'){
@@ -28,7 +29,7 @@ function getPreViewState({
            handleList.push(getSize);
        },
        'firstCreat':({
-           result={}
+           result
        })=>{
            function checkCreatTime({
                ctimeMs=0
@@ -79,7 +80,7 @@ async function makeViewDelList({
     checkUse=false,
 }){
     let {fileList,handleListFun}=  fileListHandle();
-    let result = {
+    let result:any = {
         count:fileList.length,
         delList:[]
     };
@@ -207,7 +208,7 @@ function fileListHandle() {
             handleList = [] }) => {
                 fileList.forEach((fileName) => {
                 let path = cashPath + fileName
-                let fileState = fs.statSync(path);
+                let fileState:any = fs.statSync(path);
                 fileState.path = path;
                 handleList.forEach((handleFun) => {
                     handleFun(fileState,result);

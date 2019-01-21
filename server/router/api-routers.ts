@@ -1,12 +1,12 @@
 // 路由设置
-// var getPixivData = require('../api/PixivCrawler/getPixivData.js');
-import * as getPixivHotList from '../api/PixivCrawler/getPixivHotList.js';
-import * as customSearch from '../api/PixivCrawler/customSearch.js';
-import * as downloadControl from '../api/PixivCrawler/pixivDownloadControl.js';
-import * as addFilter from '../api/PixivCrawler/addFilter.js';
+// var getPixivData = require('../api/PixivCrawler/getPixivData');
+import getPixivHotList from '../api/PixivCrawler/getPixivHotList';
+import  customSearch from '../api/PixivCrawler/customSearch';
+import  downloadControl from '../api/PixivCrawler/pixivDownloadControl';
+import  addFilter from '../api/PixivCrawler/addFilter';
 
-import * as randomImg from '../api/ImgControler/randomImg.js';
-import * as proxyImg from '../api/ImgControler/proxyImg.js';
+import  randomImg from '../api/ImgControler/randomImg';
+import  proxyImg from '../api/ImgControler/proxyImg';
 
 
 

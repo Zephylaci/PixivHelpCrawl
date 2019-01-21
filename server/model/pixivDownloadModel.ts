@@ -1,11 +1,19 @@
 
-import {mysqlConfig as mysqlInfo } from '../../config/index.js';
+import {mysqlConfig as mysqlInfo } from '../../config/index';
 import { requireMehod } from "../router/refPath";
+import stringTool from '../utils/stringTool';
 
 const parsePath = requireMehod('parsePath');
 const mySqlCtl = requireMehod('mySqlCtl');
 let {logger,loggerShow} = require('../utils/logger')
-async function downImgInsertSql(downResult = {
+async function downImgInsertSql(downResult:{
+    fileName: string;
+    illustTitle: string;
+    imgPath: string;
+    userName: string;
+    userId: string;
+    tags:any,
+} = {
     fileName: '',
     illustTitle: '',
     imgPath: '',
@@ -59,8 +67,8 @@ async function downImgInsertSql(downResult = {
                 imgTitle: imgTitle,
                 authorName: authorName,
                 authorId: downResult.userId,
-                imgName: imgName
-
+                imgName: imgName,
+                tagTrans:''
             }
         }
         if (typeof targItem.translation != "undefined") {

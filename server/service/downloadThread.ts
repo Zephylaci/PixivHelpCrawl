@@ -1,6 +1,7 @@
 
 import * as cp from 'child_process';
 import { concurrentHandleClass } from './publicClass/concurrentHandle';
+import { join } from 'path';
 let {logger,loggerErr,loggerShow} = require('../utils/logger')
 
 
@@ -23,11 +24,12 @@ export function cashImgHandleSet(cashImgContents){
     }
     return handleFun
 }
+
 export let downloadProcessHandle = {
     downList:(list)=>{
         let downloadProcessHandle = new concurrentHandleClass({
             queryName:'downloadThread',
-            processPath:'./server/service/process/downloadChild.js'
+            processPath:join(__dirname,'/service/process/downloadChild')
         },5);
         return downloadProcessHandle.queryStart(list).overControl();
         

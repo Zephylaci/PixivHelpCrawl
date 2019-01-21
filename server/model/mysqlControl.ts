@@ -1,5 +1,5 @@
 
-import * as mysqlPoolCtl from '../dataBaseControl/mysqlLink.js';
+import  mysqlPoolCtl from '../dataBaseControl/mysqlLink';
 const sqlStringTool = mysqlPoolCtl.getSqlStringMethod();
 let mysqlPool = null;
 let {loggerErr} = require('../utils/logger')
@@ -52,9 +52,9 @@ function order(sql) {
 
 let makeSqlString = {
     getSearchSqlString: (opt) => {
-        var sql = 'SELECT ?? FROM ?? ';
-        var keySqlStr = '';
-        var inserts = [opt.getValue, opt.tableName];
+        let sql = 'SELECT ?? FROM ?? ';
+        let keySqlStr:string|object = '';
+        let inserts = [opt.getValue, opt.tableName];
         if (typeof opt.getValue === 'string') {
             sql = `SELECT ${opt.getValue} FROM ??`;
             inserts = [opt.tableName]
@@ -85,8 +85,8 @@ let makeSqlString = {
     },
     getUpDataSqlString: (opt) => {
         var sql = 'UPDATE ?? SET ? WHERE ?';
-        var keySqlStr = makeSqlString.objToSqlString(opt.key);
         var valueSqlStr = makeSqlString.objToSqlString(opt.value);
+        var keySqlStr = makeSqlString.objToSqlString(opt.key);
         var inserts = [opt.tableName, valueSqlStr, keySqlStr];
         return sql = sqlStringTool.format(sql, inserts);
     },

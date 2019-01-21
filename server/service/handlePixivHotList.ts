@@ -6,9 +6,8 @@ const pixivTagFilter = requireMehod('pixivTagFilter');
 const redisCtl = requireMehod('redisCtl')
 import {logger,loggerErr,loggerShow}  from '../utils/logger';
 import { downloadProcessHandle, cashImgHandleSet } from "./downloadThread";
-
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
-class handlePixivHotList {
+export class handlePixivHotListClass {
     COMMON:any;
     closeRedis:any;
     constructor(
@@ -161,4 +160,3 @@ class handlePixivHotList {
 }
 
 
-module.exports = handlePixivHotList;

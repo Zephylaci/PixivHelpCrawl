@@ -27,6 +27,9 @@ function downLoadMethod(url, upPath = pathConfig.downloadPath) {
 
 
 class downLoadClass {
+    downToPath:string;
+    downFrom:string;
+    tryAgainConfig:any;
     constructor({
         downFrom = 'pixiv',
         downToPath = pathConfig.downloadPath,
@@ -145,4 +148,4 @@ class downLoadClass {
 
     }
 }
-module.exports = downLoadMethod;
+export let downloadImg = downLoadMethod;

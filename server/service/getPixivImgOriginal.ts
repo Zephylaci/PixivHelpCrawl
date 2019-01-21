@@ -97,7 +97,7 @@ async function isExist(imgId) {
     return false;
 }
 
-let getPixivImgOriginal = {
+export let getPixivImgOriginal = {
     /**
      *  实际的调用入口 
     */
@@ -109,4 +109,3 @@ let getPixivImgOriginal = {
         getPixivImgOriginalClass.queryAddToWaitList(queryList);
     } 
 }
-module.exports = getPixivImgOriginal

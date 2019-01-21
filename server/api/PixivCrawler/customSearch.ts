@@ -1,11 +1,9 @@
-const servicePath = '../../';
-const manPath = '../../../';
 import { requireMehod } from "../../router/refPath";
 const pixivSearch = requireMehod('pixivSearch');
 
 
 
-const main = {
+const mainObj = {
     makePlan:(ctx,next)=>{
         ctx.body = {
             code: 200,
@@ -111,4 +109,4 @@ const main = {
         }
     },
 }
-module.exports=main;
+export default mainObj

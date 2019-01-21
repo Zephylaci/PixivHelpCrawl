@@ -1,11 +1,12 @@
-import * as handlePixivHotList from '../handlePixivHotList';
+import { handlePixivHotListClass } from "../handlePixivHotList";
+
 
 
 var tryGet = 1;
 var wait = 5000;
-var mainQuery = {};
+var mainQuery:any = {};
 function childFun(getConfig) {
-	mainQuery = new handlePixivHotList(getConfig);
+	mainQuery = new handlePixivHotListClass(getConfig);
 
     mainQuery.queryStartWithCash()
         .then(() => {
@@ -34,12 +35,6 @@ function myCatch(err,getConfig){
 }
 process.on('message', (opt) => {
     childFun(opt);
-});
-
-process.on('close', () => {
-
-    console.log('autoCash process close!')
-
 });
 
 process.on('disconnect', () => {
