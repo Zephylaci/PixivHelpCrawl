@@ -1,14 +1,19 @@
-const redisConfig = require('../config/index.js')['redisConfig'];
+import {redisConfig} from '../config/index.js';
 const autoCash = redisConfig['autoCash'];
-const {loggerShow,logger} = require('./utils/logger');
+
+import {loggerShow,logger} from './utils/logger';
+import {setRunEveryDay} from './utils/schedule';
+import * as cp from 'child_process';
+
 if (redisConfig.useCash === false || autoCash.enable === false) {
-    return
+    
+}else{
+    //程序入口
+    makePlan();
 }
 
-const scheduleHandle = require('./utils/schedule.js');
-const cp = require('child_process');
-//程序入口
-makePlan();
+
+
 
 function startCash() {
     //开始缓存
@@ -94,7 +99,7 @@ function startCash() {
         makeprocess: function () {
             let processList = processMain.processList
             if (processList.length === 0) {
-                var downChild = cp.fork('./server/service/process/cashChild.js', {
+                var downChild = cp.fork('./server/service/process/cashChild.js',[], {
                     silent:true
                 });
 
@@ -170,10 +175,9 @@ function makePlan() {
     if(toDayRunDate<now){
         startCash();
     }
-    let jobs = scheduleHandle.setRunEveryDay({
+    let jobs = setRunEveryDay({
         dateStr:runDate,
-        task:startCash,
-        taskKey:'autoCash'
+        task:startCash
     });
     logger.info('autoCash: 创建定时任务完成:',jobs.name)
 }

@@ -1,7 +1,5 @@
 
-const servicePath = '../../';
-
-const requireMehod = require(servicePath + 'router/refPath.js');
+import { requireMehod } from "../../router/refPath";
 const handlePixivHotList = requireMehod('pixivTagFilter');
 const main={
     contrl:async (ctx,next)=>{

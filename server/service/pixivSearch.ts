@@ -1,21 +1,26 @@
-const servicePath = '../';
-const manPath = '../../';
-const requireMehod = require(servicePath + 'router/refPath.js');
+import { requireMehod } from "../router/refPath";
 const getPixivData = requireMehod('getPixivData');
-const publicClass = require('./publicClass/concurrentHandle.js');
+import { concurrentHandleClass } from "./publicClass/concurrentHandle";
 const downloadThread = requireMehod('downloadThread')
 const StringTool = requireMehod('StringTool');
-let {logger,loggerErr,loggerShow} = require('../utils/logger');
+import {logger,loggerErr,loggerShow}  from '../utils/logger';
 const planStore={};
-
+/**
+ * TODO 补充类型检查
+ */
 class searchProcess {
+    common:any;
+    contrlMethod:any;
+    promise:any;
+    result:any;
+    queryProcess:any;
     constructor({
         strKey="",
         baseUrl = 'https://www.pixiv.net/search.php?s_mode=s_tag&mode=MODE &word=STRKEY&p=${page};',
         startPage=1,
         endPage=2,
         bookmarkCountLimit=100,
-        cashPreview = 'false', 
+        cashPreview = false, 
     }){
         this.common={
             strKey,
@@ -62,21 +67,19 @@ class searchProcess {
     }
     
     start(){
-        const pixivSearchClass = new publicClass(3);
+
         let process = this;
         let common = process.common;
-        
+        const pixivSearchClass = new concurrentHandleClass({
+            queryName: 'pixivSearch',
+            step: process.oneSetp.bind(process)
+        },3);
         let queryList = [];
         for(let i = common.startPage,l=common.endPage;i<=l;i++){
             let queryUrl = common.baseUrl.replace('${page}',i);
             queryList.push(queryUrl);
         }
-        
-        pixivSearchClass.queryInit({
-            queryName: 'pixivSearch',
-            step: process.oneSetp.bind(process), //单次操作 通常是async函数，返回需要的结果值 
-        });
-        
+           
         pixivSearchClass.queryStart(queryList);   
         process.queryProcess = pixivSearchClass;
         process.promise = pixivSearchClass.overControl();
@@ -121,6 +124,7 @@ class searchProcess {
                     title:illustTitle,
                     url,
                     tags,
+                    originUrl:'',
                     bookmarkCount
                 }
                 let proxyUrl = '/api/proxyImg?url=' + StringTool.strToHexCharCode(url);
@@ -294,7 +298,7 @@ function createPreviewCash(planKey){
     }
     return 'do cash';
 }
-module.exports = {
+export default {
     makePlan,
     getStateByKey,
     getDetail,

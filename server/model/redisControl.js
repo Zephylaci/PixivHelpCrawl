@@ -1,4 +1,4 @@
-const redisCtl = require('../dataBaseControl/redisLink.js');
+import * as redisCtl from '../dataBaseControl/redisLink.js';
 
 let {logger,loggerErr,loggerShow} = require('../utils/logger')
 

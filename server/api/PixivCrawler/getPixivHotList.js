@@ -3,13 +3,11 @@
 *  功能：根据前端数据返回榜单数据
 *  未完成：是否过滤不可配置      
 **/
-const servicePath = '../../';
-const manPath = '../../../';
-
-const requireMehod = require(servicePath + 'router/refPath.js');
+import { requireMehod } from "../../router/refPath";
 const handlePixivHotList = requireMehod('handlePixivHotList');
 
-const redisConfig = require('../../../config/index.js')['redisConfig'];
+import { redisConfig} from '../../../config/index.js';
+
 
 
 var mainObj = {

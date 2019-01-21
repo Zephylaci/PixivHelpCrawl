@@ -1,4 +1,4 @@
-const handlePixivHotList = require('../handlePixivHotList.js');
+import * as handlePixivHotList from '../handlePixivHotList.js';
 
 
 var tryGet = 1;

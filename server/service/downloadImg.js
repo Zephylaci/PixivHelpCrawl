@@ -3,13 +3,8 @@
 *  功能：根据url下载文件到指定文件夹 
 *        
 **/
-const servicePath = '../';
-const manPath = '../../';
-
-const pixivAbout = require(manPath + 'config')['pixivConfig'];
-const pathConfig = require(manPath + 'config')['pathConfig'];
-
-const requireMehod = require(servicePath + 'router/refPath.js');
+import { requireMehod } from "../router/refPath";
+import { pixivConfig as pixivAbout,pathConfig } from "../../config";
 const request = requireMehod('request');
 const fs = requireMehod('fs');
 const parseUrl = requireMehod('url');

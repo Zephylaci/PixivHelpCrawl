@@ -1,12 +1,12 @@
-const fs = require('fs');
-const socketStream = require('socket.io-stream');
-const downPath = require('../../config/index.js')['pathConfig']['downloadPath'];
-const crypto = require('crypto');
-const Stream = require('stream');
-
+import * as fs from 'fs';
+import * as socketStream from 'socket.io-stream';
+import {pathConfig } from '../../config/index.js';
+import * as crypto from 'crypto';
+import * as Stream from 'stream';
+const downPath = pathConfig.downloadPath
 const methodMap = {
     init:({
-        clientSocket={},
+        clientSocket,
     })=>{
         let fileList = fs.readdirSync(downPath, {
             encoding: 'utf8'

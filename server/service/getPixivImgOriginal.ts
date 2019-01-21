@@ -1,23 +1,31 @@
-
-
-const servicePath = '../';
-const manPath = '../../';
-const requireMehod = require(servicePath + 'router/refPath.js');
+import { requireMehod } from "../router/refPath";
 const pixivDownloadModel = requireMehod('pixivDownloadModel');
 const getPixivData = requireMehod('getPixivData');
 const checkImg = requireMehod('checkImg');
 const downloadImg = requireMehod('downloadImg');
 
-const publicClass = require('./publicClass/concurrentHandle.js');
-const getPixivImgOriginalClass = new publicClass();
 
-const PathConfig = require(manPath + 'config/index.js')['pathConfig'];
-const webPath = PathConfig.webPath;
+import { pathConfig } from "../../config";
+import { loggerErr, loggerShow, logger } from "../utils/logger";
+import { concurrentHandleClass } from "./publicClass/concurrentHandle";
+const getPixivImgOriginalClass = new concurrentHandleClass({
+    queryName: 'getPixivImgOriginal',
+    step: handleUpitem, //单次操作 通常是async函数，返回需要的结果值
+});
 
-async function handleUpitem(queryItem) {
+const webPath = pathConfig.webPath;
+interface pixivImgResInter{
+    imgId:number;
+    state:string;
+    downUrl?:string;
+    fileName?:string;
+    imgPath?:string;
+}
+async function handleUpitem(queryItem:number) {
     let imgId = queryItem;
-    let result = {
+    let result:pixivImgResInter = {
         imgId: imgId,
+        state:'init'
     };
     if (await isExist(imgId)) {
         result.state = 'isExist'
@@ -38,6 +46,7 @@ async function handleUpitem(queryItem) {
             result.state='queryErr';
         }
     }).catch((err) => {
+        loggerErr.warn(`getPixivImg query Error:${err}`);
         result.state='queryErr';
     });
     if(result.state==='queryErr'){
@@ -61,6 +70,8 @@ async function handleUpitem(queryItem) {
             tags: queryObj.tags,
             userId: queryObj.userId,
         }, 'PiGetPixiv').catch((err) => {
+            logger.error(`getPixivImg saveInfoErr Error:`);
+            logger.error(err);
             result.state = 'saveInfoErr'
         });
     }
@@ -85,10 +96,6 @@ async function isExist(imgId) {
 
     return false;
 }
-getPixivImgOriginalClass.queryInit({
-    queryName: 'getPixivImgOriginal',
-    step: handleUpitem, //单次操作 通常是async函数，返回需要的结果值
-})
 
 let getPixivImgOriginal = {
     /**

@@ -1,7 +1,7 @@
-const doSearchMethod = require('./doSearchMethod.js');
-const controlCrawlerMethod = require('./controlCrawlerMethod.js');
-const synchronousMethod = require('./synchronousMethod.js')
-const {loggerShow} = require('../utils/logger');
+import * as doSearchMethod from './doSearchMethod';
+import * as controlCrawlerMethod from './controlCrawlerMethod';
+import * as synchronousMethod from './synchronousMethod'
+import  {loggerShow} from '../utils/logger';
 
 const handleConfig=[
     {

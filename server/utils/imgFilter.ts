@@ -10,8 +10,8 @@
 *  needDataKey 需要的项目的键(一个数组) 可选 
 *  callback（可选） 
 **/
-var fs = require('fs');
-let {logger,loggerErr,loggerShow} = require('../utils/logger')
+import * as fs from 'fs';
+import {loggerErr} from '../utils/logger';
 function Astraea(opt){
     var filterType = opt.filterType;
     var defJudgeTag = [];
@@ -31,9 +31,12 @@ function Astraea(opt){
     var result = Astraea.Scales[filterType](opt);
    return result;
 }
+/**
+ * TODO 现在看这个真是混沌....根据类型系统重写
+ */
 Astraea.Scales={
     Publice:{
-    
+        judgeTag:[],
     },
     Convenient:(opt)=>{
         var sourceData = opt.sourceData;

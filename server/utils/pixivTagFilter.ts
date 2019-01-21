@@ -1,5 +1,5 @@
-const fs = require('fs');
-const {loggerShow,loggerErr,logger} = require('../utils/logger');
+import * as fs from 'fs';
+import {loggerShow,loggerErr,logger} from '../utils/logger';
 //过滤器
 const needFilter = new Set();
 function makeSet(){
@@ -48,7 +48,7 @@ function addTags(tagsArr){
     
     try{
         fs.appendFileSync('./config/filter','\n'+newTagsStr);
-    }catch(e){
+    }catch(err){
         loggerErr.error('Filter: 写入规则文件失败 err:',err);
     }
     logger.info('Filter: 写入过滤规则:',newTagsStr);
@@ -56,7 +56,8 @@ function addTags(tagsArr){
         needFilter.add(item);
     });
 }
-module.exports= {
+
+export default {
     judgeItem,
     addTags
 };

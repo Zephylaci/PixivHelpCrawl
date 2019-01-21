@@ -1,9 +1,8 @@
-const request = require('request');
+import * as request from 'request';
+import {logger,loggerErr,loggerShow}  from '../utils/logger';
+import {linkProxy} from '../../config';
 
-const mainConfig = require('../../config');
-let {logger,loggerErr,loggerShow} = require('../utils/logger');
-
-function customRequest(opt){
+export default function customRequest(opt){
     let url = opt.url;
     let successFun = opt.success || null;
 
@@ -20,19 +19,21 @@ function customRequest(opt){
         encoding:'encoding'
     }
     //遍历生成请求方法
-    for(key in opt){
+    for(let key in opt){
         var item = opt[key];
         var setKey = keyHashMap[key];
         if(typeof setKey ==='string'){
             requestOpt[setKey] = item;
         }
     }
-    if(mainConfig.linkProxy.useLinkProxy===true){
-        requestOpt['proxy']=mainConfig.linkProxy.linkProxyAddr;
+    if(linkProxy.useLinkProxy===true){
+        requestOpt['proxy']=linkProxy.linkProxyAddr;
     }
-    
-    let mainRequest = {};
-    let promise = new Promise((resolve,reject)=>{
+    /**
+     * TODO 根据具体类型重写  
+     */
+    let mainRequest:any = {};
+    let promise:any = new Promise((resolve,reject)=>{
         function responseFun(error, response, data){
             if(!error && response.statusCode == 200){
                 //success
@@ -52,7 +53,7 @@ function customRequest(opt){
             }
         }
         
-        mainRequest = request(requestOpt,responseFun) 
+        mainRequest= request(requestOpt,responseFun) 
        
         mainRequest.on('error',function(err){
             loggerShow.error('link url:',url,' fail');

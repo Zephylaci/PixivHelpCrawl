@@ -1,15 +1,16 @@
-const pixivSearch = require('../service/pixivSearch.js');
+import  pixivSearch from '../service/pixivSearch';
 
 const methodMap = {
     init:({
-        clientSocket={},
+        clientSocket,
     })=>{
        let keyList = pixivSearch.getList();
        let result = [];
        keyList.forEach((planKey)=>{
-           let item = {};
-           item.planKey = planKey;
-           item.state = pixivSearch.getStateByKey(planKey);
+           let item = {
+            planKey,
+            state:pixivSearch.getStateByKey(planKey)
+           };
            result.push(item);
        });
        clientSocket.local.emit('doSearch-addList',{
@@ -17,8 +18,8 @@ const methodMap = {
        })
     },
     makeSeachPlan:({
-        clientSocket={},
-        data={},
+        clientSocket,
+        data,
     })=>{
         let {
             strKey="",

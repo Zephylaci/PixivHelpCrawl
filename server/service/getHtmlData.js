@@ -1,13 +1,13 @@
 
 const servicePath = '../';
 const manPath = '../../';
-const requireMehod = require(servicePath + 'router/refPath.js');
+import { requireMehod } from "../router/refPath";
 
 const request = requireMehod('request');
 const fs = requireMehod('fs');
 
 let {logger,loggerErr,loggerShow} = require('../utils/logger')
-const pixivAbout = require(manPath + 'config')['pixivConfig'];
+import { pixivConfig as pixivAbout } from '../../config';
 
 class getPixivHtmlClass {
     constructor() {

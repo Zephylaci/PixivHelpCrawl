@@ -1,11 +1,13 @@
-const controlCash = require('../service/controlCash.js');
+import  controlCash from '../service/controlCash.js';
 let delPlanStore={};
 
 const methodMap = {
     init:({
-        clientSocket={},
+        clientSocket,
     })=>{
-       let result = controlCash.getPreViewState(['count','totalSize','firstCreat']);
+       let result = controlCash.getPreViewState({
+           needState:['count','totalSize','firstCreat']
+       });
         if(result.totalSize !==0){
             result.totalSize = Math.ceil(result.totalSize/1048576);
             result.firstCreat = new Date(result.firstCreat).toLocaleString();   
@@ -26,8 +28,8 @@ const methodMap = {
         
     },
     delPreView:async ({
-         clientSocket={},
-         data={},
+         clientSocket,
+         data,
     })=>{
        let beforeTimeDate = new Date(data.beforeTime).getTime();
 
@@ -49,8 +51,8 @@ const methodMap = {
 
     },
     delUnusePreView:({
-         clientSocket={},
-         data={},
+         clientSocket,
+         data,
     })=>{
        let beforeTimeDate = new Date(data.beforeTime).getTime();
 
@@ -75,8 +77,8 @@ const methodMap = {
 
     },
     delRedisData:({
-         clientSocket={},
-         data={},
+         clientSocket,
+         data,
     })=>{
        let beforeTimeDate = new Date(data.beforeTime).getTime();
        
@@ -98,8 +100,8 @@ const methodMap = {
 
     },
     delPlane:({
-         clientSocket={},
-         data={},
+         clientSocket,
+         data,
     })=>{
         if(data.type==='confirm'){
             var delList = delPlanStore[data.planKey];

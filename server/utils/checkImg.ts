@@ -3,9 +3,9 @@
 *  功能：检查图片是否存在，存在是否完整避免重复下载和下一半问题。       
 *  图片完整性检查算法来自http://blog.csdn.net/osmeteor/article/details/40299357      
 **/
-var fs = require('fs');
+import * as fs from 'fs';
 
-var check = function (path){
+export var checkImgComplete = function (path){
   var result = false;
   var data = null;
   if(fs.existsSync(path)){
@@ -58,4 +58,4 @@ var isComplete = function(szBuffer){
   }
   return false;
 }
-module.exports = check;
+module.exports = checkImgComplete;

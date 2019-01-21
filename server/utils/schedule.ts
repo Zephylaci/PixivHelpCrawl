@@ -1,14 +1,13 @@
-const schedule = require('node-schedule');
+import * as schedule from 'node-schedule';
 let runStack = new Map();
 
 //let rule = 'second  minute  hour  day month  dayofweek';
 
 
 
-function setRunEveryDay({
+export function setRunEveryDay({
     dateStr='00:00:00',
-    task=()=>{},
-    taskKey=new Date().getTime(),
+    task=()=>{}
 }){
     
     let rule = 'second minute hour * * *';
@@ -40,6 +39,3 @@ function replaceRule({
     return rule
 }
 
-module.exports ={
-    setRunEveryDay
-}

@@ -1,5 +1,5 @@
 
-const mysqlPoolCtl = require('../dataBaseControl/mysqlLink.js');
+import * as mysqlPoolCtl from '../dataBaseControl/mysqlLink.js';
 const sqlStringTool = mysqlPoolCtl.getSqlStringMethod();
 let mysqlPool = null;
 let {loggerErr} = require('../utils/logger')
@@ -54,7 +54,7 @@ let makeSqlString = {
     getSearchSqlString: (opt) => {
         var sql = 'SELECT ?? FROM ?? ';
         var keySqlStr = '';
-        inserts = [opt.getValue, opt.tableName];
+        var inserts = [opt.getValue, opt.tableName];
         if (typeof opt.getValue === 'string') {
             sql = `SELECT ${opt.getValue} FROM ??`;
             inserts = [opt.tableName]
@@ -75,7 +75,7 @@ let makeSqlString = {
         var keyArr = [];
         var valueArr = [];
         var insertOpt = opt.insertOpt;
-        for (key in insertOpt) {
+        for (let key in insertOpt) {
             keyArr.push(key);
             valueArr.push(insertOpt[key]);
         }

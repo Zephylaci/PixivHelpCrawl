@@ -1,6 +1,6 @@
 
 //字符串转16进制
-function strToHexCharCode(str) {
+export function strToHexCharCode(str) {
     if (str === "")
         return "";
     var hexCharCode = [];
@@ -11,7 +11,7 @@ function strToHexCharCode(str) {
     return hexCharCode.join("");
 }
 //16进制转字符串
-function hexCharCodeToStr(hexCharCodeStr) {
+export function hexCharCodeToStr(hexCharCodeStr) {
     var trimedStr = hexCharCodeStr.trim();
     var rawStr =
         trimedStr.substr(0, 2).toLowerCase() === "0x"
@@ -32,8 +32,11 @@ function hexCharCodeToStr(hexCharCodeStr) {
     }
     return resultStr.join("");
 }
-
-module.exports ={
-        strToHexCharCode,
-        hexCharCodeToStr
+export let StringTool = {
+    strToHexCharCode,
+    hexCharCodeToStr
+}
+export default {
+    strToHexCharCode,
+    hexCharCodeToStr
 }

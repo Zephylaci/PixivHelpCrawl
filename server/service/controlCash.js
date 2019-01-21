@@ -1,7 +1,7 @@
-const fs = require('fs');
+import * as fs from 'fs';
 
 const servicePath = '../'
-const requireMehod = require(servicePath + 'router/refPath.js');
+import { requireMehod } from "../router/refPath";
 const redisCtl = requireMehod('redisCtl')
 
 const cashPath = 'client/cash/';
@@ -229,7 +229,7 @@ async function delRedisDataForList(delList){
         await redisCtl.HDEL(item)
     }
 }
-module.exports= {
+export default{
     getPreViewState,
     getRedisState,
     makeViewDelList,

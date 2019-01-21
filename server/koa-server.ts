@@ -1,20 +1,19 @@
-const Koa = require('koa')
+import * as Koa from 'koa'
 const app = new Koa()
-const json = require('koa-json')
-const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
-
-const KoaRouter = require('koa-router')()
-const apiRouter = require('./router/api-routers.js')
-const static = require('koa-static');
-const path = require('path');
+import * as json from 'koa-json'
+import * as onerror from 'koa-onerror'
+import * as bodyparser from 'koa-bodyparser'
+import * as KoaRouterBase from'koa-router'
+import * as apiRouter from './router/api-routers.js'
+import * as koaStatic from 'koa-static';
+import * as path from 'path';
 
 var mainConfig = require('../config/index.js')
 var pathConfig = mainConfig['pathConfig']
-var makeRouterList = require('./utils/makeRouterList.js');
+var makeRouterList = require('./utils/makeRouterList');
 
-const {loggerShow,loggerErr} = require('./utils/logger');
-
+import {loggerShow,loggerErr} from './utils/logger';
+const KoaRouter = KoaRouterBase();
 onerror(app)
 
 // middlewares
@@ -29,20 +28,19 @@ app.use(json())
 
 // logger
 app.use(async (ctx, next) => {
-  const start = new Date()
+  const start = new Date().getTime();
   await next()
-  const ms = new Date() - start
+  const ms = new Date().getTime() - start
   loggerShow.info(`${ctx.method} ${ctx.url} - ${ms}ms - ${ctx.status}`)
 });
 KoaRouter.use('/api',makeRouterList(apiRouter).routes()); 
 
 app.use(KoaRouter.routes()); // 将api路由规则挂载到Koa上。
 // 读取前端文件
-app.use(static(path.resolve(pathConfig.webPath))); 
+app.use(koaStatic(path.resolve(pathConfig.webPath))); 
 // error-handling
 app.on('error', (err, ctx) => {
   loggerErr.error('server error', err, ctx)
 });
 
-module.exports = app
-
+export default app

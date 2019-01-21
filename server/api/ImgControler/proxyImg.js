@@ -1,10 +1,5 @@
-const servicePath = '../../';
-const manPath = '../../../';
-
-const pathConfig = require(manPath+'config')['pathConfig'];
-const pixivAbout = require(manPath+'config')['pixivConfig'];
-
-const requireMehod = require(servicePath+'router/refPath.js');
+import { pixivConfig as  pixivAbout} from "../../../config";
+import { requireMehod } from "../../router/refPath";
 const StringTool = requireMehod('StringTool')
 const parseUrl = requireMehod('parseUrl')
 const request = requireMehod('request')

@@ -4,10 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "crawl": "node server/pixivLogin.js",
-    "server": "node server/www",
+    "build": "npm run clear&&npx tsc",
+    "clear": "rm ./built/* -rf",
+    "dev": "nodemon",
+    "start": "node built/app.js",
     "test": "jest"
   },
   "keywords": [
@@ -17,13 +17,11 @@
   "author": "zephyru@163.com",
   "license": "GPL",
   "dependencies": {
-    "async": "^2.6.1",
     "axios": "^0.18.0",
     "cheerio": "^1.0.0-rc.2",
     "koa": "^2.5.1",
     "koa-bodyparser": "^4.2.1",
     "koa-json": "^2.0.2",
-    "koa-logger": "^3.2.0",
     "koa-onerror": "^4.0.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
@@ -37,7 +35,10 @@
     "socket.io-stream": "^0.9.1"
   },
   "devDependencies": {
+    "@types/node": "^10.12.18",
     "jest": "^23.6.0",
-    "nodemon": "^1.18.6"
+    "nodemon": "^1.18.6",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.4"
   }
 }

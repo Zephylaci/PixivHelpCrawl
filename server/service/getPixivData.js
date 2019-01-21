@@ -1,8 +1,8 @@
-const servicePath = '../';
-const manPath = '../../';
 
-const requireMehod = require(servicePath + 'router/refPath.js');
-const StringTool = requireMehod('StringTool');
+
+import { requireMehod } from "../router/refPath";
+ const StringTool = requireMehod('StringTool');
+
 const getHtmlData = requireMehod('getHtmlData');
 const cheerio = requireMehod('cheerio');
 
@@ -64,6 +64,8 @@ class MonomersClass extends NornClass {
             else {
                 loggerShow.error('MonomersClass queryOver err');
             }
+        }).catch(err=>{
+            loggerShow.error(err);
         });
         return result;
     }
@@ -96,7 +98,7 @@ class ConvenientClass extends NornClass {
 
             }
             else {
-                loggerShow.error('MonomersClass queryOver err', getResult);
+                loggerShow.error('NornClass queryOver err', getResult);
             }
         });
         return result;
@@ -229,14 +231,16 @@ Norn.Scales = {
         var $ = Public.$;
         if (upUrl.indexOf('illust_id') != -1) {
             var result = $('head').html();
-            var cashInfo = null
+            var cashInfo = null;
+            var illustInfo = null;
             if (result) {
                 var authorReg = new RegExp('.*,"name":"|","image":.*');
                 var objReg = new RegExp('.*,preload:|,user.*');
-                var strobj = 'var illustInfo = ' + result.split(objReg)[1] + '}';
+                var strObjFun = 'return' + result.split(objReg)[1] + '}';
   
                 try{
-                    eval(strobj);
+                    illustInfo = new Function(strObjFun)()
+                    cashInfo = illustInfo.illust;
                 }
                 catch(e){
                     loggerErr.error('Monomers: error',e);
@@ -244,8 +248,7 @@ Norn.Scales = {
                 }
                
                 //illustInfo.authorName = result.split(authorReg)[1];
-
-                cashInfo = illustInfo.illust;
+                
                 for (let key in cashInfo) {
                     cashInfo = cashInfo[key];
                 }

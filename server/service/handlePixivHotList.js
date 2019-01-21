@@ -1,12 +1,11 @@
-const servicePath = '../'
-const requireMehod = require(servicePath + 'router/refPath.js');
+import { requireMehod } from "../router/refPath";
 
 const getPixivData = requireMehod('getPixivData')
 const downloadThread = requireMehod('downloadThread')
 const pixivTagFilter = requireMehod('pixivTagFilter');
 
 const redisCtl = requireMehod('redisCtl')
-let {logger,loggerErr,loggerShow} = require('../utils/logger');
+import {logger,loggerErr,loggerShow}  from '../utils/logger';
 
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
 class handlePixivHotList {

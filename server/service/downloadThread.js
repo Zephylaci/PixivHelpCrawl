@@ -1,5 +1,5 @@
 
-const cp = require('child_process');
+import * as cp from 'child_process';
 let {logger,loggerErr,loggerShow} = require('../utils/logger')
 
 class makeDownLoadObj {

@@ -1,9 +1,6 @@
 
-const servicePath = '../';
-const manPath = '../../';
-const mysqlInfo = require('../../config/index.js')['mysqlConfig'];
-
-const requireMehod = require(servicePath + 'router/refPath.js');
+import {mysqlConfig as mysqlInfo } from '../../config/index.js';
+import { requireMehod } from "../router/refPath";
 
 const parsePath = requireMehod('parsePath');
 const mySqlCtl = requireMehod('mySqlCtl');

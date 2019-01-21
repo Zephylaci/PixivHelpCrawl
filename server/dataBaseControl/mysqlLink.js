@@ -1,5 +1,5 @@
-const mysql  = require('mysql');
-const mysqlInfo = require('../../config/index.js')['mysqlConfig'];
+import * as mysql  from 'mysql';
+import {mysqlConfig as mysqlInfo} from '../../config/index.js';
 
 
 /*

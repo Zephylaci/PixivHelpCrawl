@@ -1,4 +1,4 @@
-const fs = require('fs');
+var  fs = require( 'fs');
 var development_env ={                                                                                                                                                                                             
     port: 8082,                                                                                                                                                                                                    
     mysqlConfig: {
@@ -10,7 +10,11 @@ var development_env ={
         database: '',
         charset:'utf8mb4',
 		connectTimeout: 180000
-	},
+    },
+    log:{
+        basePath:'../logs',
+        level:'debug' // debug watching  running  
+    },
 	redisConfig:{                                                                                                                                                                                                
         useCash:false,                                                                                                                                                                                            
         autoCash:{                                                                                                                                                                                               
@@ -54,9 +58,12 @@ var development_env ={
 }    
 
 if(fs.existsSync('./config/config.js')){
-    development_env = require('./config.js')
+    let my_dev = require('./config.js')
+    development_env = Object.assign(development_env,my_dev)
 }
 
+export let {pixivConfig,redisConfig,pathConfig,mysqlConfig,linkProxy} = development_env;
+export default development_env;   
 
-                                                                                                                                                                                              
-module.exports = development_env                                                                                                                                                                                   
+module.exports = development_env;
+                                                                                                                                                                                 

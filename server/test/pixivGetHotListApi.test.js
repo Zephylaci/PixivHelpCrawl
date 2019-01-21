@@ -2,9 +2,12 @@
  *  开始测试前需要先启动项目
  * 
  */
-const axios = require('axios');
-const env = require('../../config');
-
+// import * as axios from 'axios';
+// import  env from '../../config';
+var axios = require('axios')
+var env = {
+    port:8086
+}
 const address = `http://localhost:${env.port}/api/` 
 
 

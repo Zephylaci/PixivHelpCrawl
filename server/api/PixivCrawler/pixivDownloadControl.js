@@ -1,9 +1,6 @@
+import * as getPixivImgOriginal from '../../service/getPixivImgOriginal';
 
-const servicePath = '../../';
-
-const getPixivImgOriginal = require(servicePath + 'service/getPixivImgOriginal.js');
-
-const {logger,loggerShow} = require('../../utils/logger');
+import {logger,loggerShow} from '../../utils/logger';
 var mainObj = {
     common: {
         runStat: false,
@@ -41,6 +38,7 @@ function queryStart(queryList) {
         let errIdArr = [];
         result.forEach(element => {
             if(element.state.indexOf('Err')!==-1){
+                loggerShow.warn(`downErr:${JSON.stringify(element)}`);
                 errIdArr.push(element.imgId);
             }
         });

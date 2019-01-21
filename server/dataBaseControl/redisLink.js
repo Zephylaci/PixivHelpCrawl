@@ -1,5 +1,5 @@
-const env = require('../../config/index.js')['redisConfig'];
-const redis = require('redis');
+import {redisConfig as env} from '../../config/index.js';
+import * as redis from 'redis';
 //var redisStore = require('koa-redis');
 //var options = {client: client,db:1};
 //var store = redisStore(options);

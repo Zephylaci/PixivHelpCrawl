@@ -1,48 +1,77 @@
-const path = require('path');
+const logConfig= require('../config')['log'];
+import * as path from 'path';
 
 //日志根目录
-const baseLogPath = path.resolve(__dirname, '../logs')
-//错误日志目录
-const errorPath = "/";
-//错误日志文件名
-const errorFileName = "error_";
-//错误日志输出完整路径
-const errorLogPath = baseLogPath + errorPath + "/" + errorFileName;
-// const errorLogPath = path.resolve(__dirname, "../logs/error/error");
- 
+const baseLogPath = path.resolve(__dirname, logConfig.basePath);
+const level = logConfig.level;
 
-//响应日志目录
-const responsePath = "/";
-//响应日志文件名
-const responseFileName = "response_";
-//响应日志输出完整路径
-const responseLogPath = baseLogPath + responsePath + "/" + responseFileName;
-// const responseLogPath = path.resolve(__dirname, "../logs/response/response");
-
-module.exports = {
+const baseConfig = {
     appenders: {
-        stdout: {//控制台输出
+        stdout: {
             type: 'console',
         },
         console:{
-            type:'console'
+            type:'console',
         },
-        response: {//请求日志
+        http: {//请求日志
             type: 'dateFile',
-            filename: responseLogPath,
-            pattern: 'req-yyyy-MM-dd.log',
+            filename: baseLogPath+'/response_',
+            pattern: 'yyyy-MM-dd.log',
+            alwaysIncludePattern: true
+        },
+        logger:{//主日志
+            type: 'dateFile',
+            filename: baseLogPath+'/logger_',
+            pattern: 'yyyy-MM-dd.log',
             alwaysIncludePattern: true
         },
         error: {//错误日志
             type: 'dateFile',
-            filename: errorLogPath,
-            pattern: 'err-yyyy-MM-dd.log',
+            filename: baseLogPath+'/error_',
+            pattern: 'yyyy-MM-dd.log',
             alwaysIncludePattern: true
         }
     },
     categories: {
-        default: { appenders: ['console','response'], level: 'debug' },
-        stdout: { appenders: ['stdout'], level: 'debug' },//appenders:采用的appender,取appenders项,level:设置级别 
-        error: { appenders: ['console','error'], level: 'warn' }
+        default: { appenders: ['console', 'logger'], level: 'debug' },
+        http:{ appenders: ['console','http'], level: 'debug' },
+        stdout: { appenders: ['stdout'], level: 'debug' },
+        error: { appenders: ['console', 'error'], level: 'error' }
     }
 }
+/**
+ *  根据不同level输出不同的Logger配置
+ */
+const levelState= {
+    'debug':()=>{
+        let outConfig = Object.assign(baseConfig);
+        let appenders = outConfig.appenders;
+        for(let key in appenders){
+            appenders[key]['type'] = 'console';
+        }
+        outConfig.categories={
+            default: { appenders: ['logger'], level: 'debug' },
+            http:{ appenders: ['http'], level: 'debug' },
+            stdout: { appenders: ['stdout'], level: 'debug' },
+            error: { appenders: ['error'], level: 'error' }
+        }
+        return outConfig
+    },
+    'watching':()=>{
+        let outConfig = Object.assign(baseConfig);
+        outConfig.categories.http.appenders=['http'];
+        return outConfig;
+    },
+    'running':()=>{
+        let outConfig = Object.assign(baseConfig);
+
+        outConfig.categories={
+            default: { appenders: ['logger'], level: 'debug' },
+            http:{ appenders: ['http'], level: 'debug' },
+            error: { appenders: ['error'], level: 'warn' }
+        }
+        return outConfig
+    }
+}
+const log4jsConfig = levelState[level]();
+export default log4jsConfig

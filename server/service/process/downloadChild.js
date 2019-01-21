@@ -1,4 +1,4 @@
-const downloadImg = require('../downloadImg.js');
+import * as downloadImg from '../downloadImg.js';
 var tryGet = 1;
 var wait = 5000;
 let {logger,loggerErr,loggerShow} = require('../../utils/logger')

@@ -6,15 +6,14 @@
  * Module dependencies.
  */
 
-const app = require('./koa-server.js');
-const debug = require('debug')('demo:server');
-const http = require('http');
-const {loggerShow} = require('./utils/logger');
+import app from './koa-server';
+import * as http from 'http';
+import { loggerShow } from './utils/logger';
 
 //socketIo
-const socketIo=require("socket.io");
-const socketHandle=require("./socket/socketHandle.js");
-
+const socketIo = require("socket.io");
+const socketHandle = require("./socket/socketHandle");
+const debug = require('debug')('demo:server')
 //引入配置文件
 const env = require('../config/');
 // 将端口号设置为配置文件的端口号，默认值为3000,dev,test默认端口3001
@@ -26,12 +25,12 @@ loggerShow.info('listen prot: ' + env.port);
 var fs = require('fs');
 
 if (!fs.existsSync(env.pathConfig.downloadPath)) {
-    fs.mkdirSync(env.pathConfig.downloadPath)
+  fs.mkdirSync(env.pathConfig.downloadPath)
 }
 
 
 
-var server = http.createServer(app.callback());
+const server = http.createServer(app.callback());
 
 
 /**
@@ -42,9 +41,9 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 //socketIo
-var io=new socketIo(server);
+var io = new socketIo(server);
 //每个客户端socket连接时都会触发 connection 事件
-io.on("connection",socketHandle);
+io.on("connection", socketHandle);
 
 /**
  * Normalize a port into a number, string, or false.

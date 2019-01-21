@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2017",
+        "allowJs": true,
+        //允许值为隐式的any
+        //"noImplicitAny": false,
+        "moduleResolution": "node",
+        //"sourceMap": true,
+        "outDir": "./built",  // TS文件编译后会放入到此文件夹内
+       // "baseUrl": ".",
+        // "paths": {
+        //     "*": [
+        //         "node_modules/*",
+        //         "src/types/*"
+        //     ]
+        // }
+    },
+    "include": [
+    	"app.ts",
+        "./server/**/*"
+    ]
+    // "exclude": [
+    //     "node_modules",
+    // ]
+}

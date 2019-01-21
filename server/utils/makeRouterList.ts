@@ -1,8 +1,9 @@
-
+import * as BashRouter from 'koa-router';
+const Router = BashRouter();
 //创建路由表
 function makeRouterList(config) {
-    const Router = require('koa-router')()
-    for (key in config) {
+    
+    for (let key in config) {
         var item = config[key];
         var type = item.type;
         if (type === 'post') {
