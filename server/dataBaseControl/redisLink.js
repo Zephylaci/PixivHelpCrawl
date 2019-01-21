@@ -52,8 +52,6 @@ var main = {
         global.clearTimeout(main.autoClose);
         main.autoClose = null;
       }
-    } else {
-      loggerShow.info("redisLink: redis连接 保持");
     }
   },
   end: function () {

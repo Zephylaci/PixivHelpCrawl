@@ -13,7 +13,7 @@ var development_env ={
     },
     log:{
         basePath:'../logs',
-        level:'debug' // debug watching  running  
+        level:'watching' // debug watching  running  
     },
 	redisConfig:{                                                                                                                                                                                                
         useCash:false,                                                                                                                                                                                            

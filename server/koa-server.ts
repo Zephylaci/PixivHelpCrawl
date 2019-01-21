@@ -12,7 +12,7 @@ var mainConfig = require('../config/index.js')
 var pathConfig = mainConfig['pathConfig']
 var makeRouterList = require('./utils/makeRouterList');
 
-import {loggerShow,loggerErr} from './utils/logger';
+import {loggerShow,loggerErr, loggerRes} from './utils/logger';
 const KoaRouter = KoaRouterBase();
 onerror(app)
 
@@ -31,7 +31,8 @@ app.use(async (ctx, next) => {
   const start = new Date().getTime();
   await next()
   const ms = new Date().getTime() - start
-  loggerShow.info(`${ctx.method} ${ctx.url} - ${ms}ms - ${ctx.status}`)
+  
+  loggerRes.info(`${ctx.method} ${ctx.url} - ${ms}ms - ${ctx.status}`)
 });
 KoaRouter.use('/api',makeRouterList(apiRouter).routes()); 
 

@@ -12,7 +12,6 @@ let pathAddress = {
     pixivTagFilter:servicePath + 'utils/pixivTagFilter',
     
     downloadImg: servicePath + 'service/downloadImg',
-    downloadThread: servicePath + 'service/downloadThread',
     pixivDownloadControl: servicePath + 'service/pixivDownloadControl',
     getHtmlData: servicePath + 'service/getHtmlData',
     getPixivData: servicePath + 'service/getPixivData',

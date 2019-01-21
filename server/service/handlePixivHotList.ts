@@ -1,14 +1,16 @@
 import { requireMehod } from "../router/refPath";
 
 const getPixivData = requireMehod('getPixivData')
-const downloadThread = requireMehod('downloadThread')
 const pixivTagFilter = requireMehod('pixivTagFilter');
 
 const redisCtl = requireMehod('redisCtl')
 import {logger,loggerErr,loggerShow}  from '../utils/logger';
+import { downloadProcessHandle, cashImgHandleSet } from "./downloadThread";
 
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
 class handlePixivHotList {
+    COMMON:any;
+    closeRedis:any;
     constructor(
         {
             getType = null, //获取的类型（不能为null）
@@ -24,6 +26,7 @@ class handlePixivHotList {
             startPage: startPage,
             endPage: endPage
         }
+        this.closeRedis = redisCtl.end;
     }
     //不使用缓存的主过程
     async queryStartNoCash() {
@@ -108,7 +111,7 @@ class handlePixivHotList {
             return item
         }
 
-        let handleList = [changeData];
+        let handleList:Array<any> = [changeData];
         if (useCash) {
             handleList.push(makeDownList);
         }
@@ -141,14 +144,14 @@ class handlePixivHotList {
     async saveQueryResult(queryResult) {
         //缓存逻辑
         console.time('downImgList');
-        var path = 'client/cash';
+        
         var downList = queryResult.cashDownList
-        var downObj = new downloadThread({
-            path: path
-        })
-        downObj.downList(downList);
-        let resHandle = downloadThread.extend.cashImgHandleSet(queryResult.data.contents);
-        await downObj.overControl().then(resHandle);
+
+        
+       
+        let resHandle =  cashImgHandleSet(queryResult.data.contents);
+        await downloadProcessHandle.downList(downList).then(resHandle);
+
         delete queryResult.cashDownList;
 		let  setRedis = JSON.stringify(queryResult);
         await redisCtl.HMSET(JSON.parse(setRedis));
@@ -156,6 +159,6 @@ class handlePixivHotList {
         return queryResult.data.contents;
     }
 }
-handlePixivHotList.closeRedis = redisCtl.end;
+
 
 module.exports = handlePixivHotList;

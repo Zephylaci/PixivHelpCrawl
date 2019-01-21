@@ -1,9 +1,9 @@
 import { requireMehod } from "../router/refPath";
 const getPixivData = requireMehod('getPixivData');
 import { concurrentHandleClass } from "./publicClass/concurrentHandle";
-const downloadThread = requireMehod('downloadThread')
 const StringTool = requireMehod('StringTool');
 import {logger,loggerErr,loggerShow}  from '../utils/logger';
+import { cashImgHandleSet, downloadProcessHandle } from "./downloadThread";
 const planStore={};
 /**
  * TODO 补充类型检查
@@ -157,7 +157,6 @@ class searchProcess {
                     
     }
     async cashPreviewMethod(){
-        var path = 'client/cash';
         let process = this;
 
         var downList = process.result.items.map((item)=>{
@@ -167,12 +166,9 @@ class searchProcess {
             loggerShow.info('没有需要缓存的预览图')
             return
         }
-        var downObj = new downloadThread({
-            path: path
-        })
-        downObj.downList(downList);
-        let resHandle = downloadThread.extend.cashImgHandleSet(process.result.items);
-        await downObj.overControl().then(resHandle);
+
+        let resHandle =  cashImgHandleSet(process.result.items);
+        await downloadProcessHandle.downList(downList).then(resHandle);
     }
     
 }

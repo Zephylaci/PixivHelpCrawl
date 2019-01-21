@@ -1,11 +1,11 @@
-import * as handlePixivHotList from '../handlePixivHotList.js';
+import * as handlePixivHotList from '../handlePixivHotList';
 
 
 var tryGet = 1;
 var wait = 5000;
-
+var mainQuery = {};
 function childFun(getConfig) {
-	var mainQuery = new handlePixivHotList(getConfig);
+	mainQuery = new handlePixivHotList(getConfig);
 
     mainQuery.queryStartWithCash()
         .then(() => {
@@ -43,6 +43,6 @@ process.on('close', () => {
 });
 
 process.on('disconnect', () => {
-    handlePixivHotList.closeRedis();
+    mainQuery.closeRedis();
     console.log('autoCash process disconnect!')
 })

@@ -4,6 +4,7 @@ const autoCash = redisConfig['autoCash'];
 import {loggerShow,logger} from './utils/logger';
 import {setRunEveryDay} from './utils/schedule';
 import * as cp from 'child_process';
+import { concurrentHandleClass } from './service/publicClass/concurrentHandle';
 
 if (redisConfig.useCash === false || autoCash.enable === false) {
     
@@ -21,119 +22,14 @@ function startCash() {
     let deep = autoCash.deep;
     let linkList = makeLinkList(plan, deep);
 
-    let checkOver = global.setTimeout(function () {
-        logger.warn('autoCash：15分钟经过，缓存过程超时');
-        var existProcess = processMain.allCreate;
-        var length = existProcess.length;
-        for (var i = 0; i < length; i++) {
-            var process = existProcess.shift();
-            if (process.connected === true) {
-                process.kill();
-            }
-        }
-        logger.info('autoCash：清空子线程30S后重新启动缓存过程');
-        global.setTimeout(function () {
-            startCash();
-        }, 30000)
-
-    }, 900000)
-
-    let processMain = {
-        linkList: linkList,
-        allCreate: [], //方便清空
-        processList: [], //线程池
-        limitNum: 2, //并发限制
-        runNum: 0, //正在运行的
-        controlStep: function () {
-            let linkList = processMain.linkList;
-
-
-            if (linkList.length < processMain.limitNum) {
-                processMain.limitNum = linkList.length;
-                if (linkList.length > 0) {
-                    processMain.runNum++;
-                    processMain.oneStep();
-                }
-
-            }
-
-            if (processMain.linkList.length != 0 && processMain.limitNum != 0) {
-                while (processMain.runNum < processMain.limitNum) {
-                    processMain.runNum++;
-                    processMain.oneStep();
-                }
-            } else {
-                if (processMain.runNum === 0) {
-                    if (linkList.length === 0) {
-                        logger.info('autoCash: 缓存完毕！');
-                        let processList = processMain.processList;
-
-                        if (processList.length !== 0) {
-                            var length = processMain.processList.length;
-                            for (var i = 0; i < length; i++) {
-                                var childProcess = processList.shift();
-                                childProcess.disconnect();
-                            }
-                        }
-                        //清楚检查函数
-                        processMain.allCreate = [];
-                        global.clearTimeout(checkOver);
-                        checkOver = null;
-                    } else {
-                        linkList = linkList.shift();
-                        processMain.runNum++;
-                        processMain.limitNum = 3;
-                        processMain.oneStep();
-                    }
-                }
-            }
-            loggerShow.info('autoCash：单次缓存状态 队列中：', processMain.linkList.length, '运行中:', processMain.runNum, '限制数：', processMain.limitNum);
-
-        },
-        oneStep: function () {
-            var getConfig = processMain.linkList.shift();
-            var downChild = processMain.makeprocess();
-
-            downChild.send(getConfig);
-        },
-        makeprocess: function () {
-            let processList = processMain.processList
-            if (processList.length === 0) {
-                var downChild = cp.fork('./server/service/process/cashChild.js',[], {
-                    silent:true
-                });
-
-
-                processMain.allCreate.push(downChild);
-
-                downChild.on('message', (getConfig) => {
-                    processMain.runNum--;
-                    if (processMain.linkList.length === 0 && processMain.runNum === 0) {
-                        downChild.disconnect();
-                    } else {
-                        if (processMain.processList.length > processMain.limitNum) {
-                            downChild.disconnect();
-                        } else {
-                            processList.push(downChild);
-                        }
-                    }
-                    processMain.controlStep();
-                });
-                downChild.on('close', (code) => {
-                    loggerShow.info('autoCash process:', 'downChild子进程close，剩余空闲process:', processMain.processList.length);
-                });
-
-                downChild.on('disconnect', () => {
-                    loggerShow.info('autoCash:', 'downChild子进程disconnect，剩余空闲process:', processMain.processList.length);
-                });
-                return downChild;
-            } else {
-                return processList.shift();
-            }
-        }
-    }
-
-    processMain.controlStep();
+    let cashProcessHandle = new concurrentHandleClass({
+        queryName:'autoCash',
+        processPath:'./server/service/process/cashChild.js'
+    },2)
+    cashProcessHandle.queryStart(linkList).overControl().then((res)=>{
+        logger.info(`autoCash: 缓存结束`);
+    });
+     
     logger.info(`autoCash: 缓存开始`);
     function makeLinkList(plan, deep) {
         var linkList = [];

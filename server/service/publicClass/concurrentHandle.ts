@@ -34,11 +34,16 @@ export class concurrentHandleClass {
     common:concurrentCommonInter
     DEFALUT:concurrentCommonInter
     privateAttr:concurrentPrivateInter
-    /**
+    /*
      *  同时初始化
      *  TODO:各种回调
      *  以及更具参数来决定是否使用child_process
      *  研究下能不能不写单独的文件来fork 子进程
+     */
+    /**
+     * 创建一个多任务控制对象
+     * @param privateAttr 
+     * @param limitRunNum 
      */
     constructor(privateAttr:concurrentPrivateInter,limitRunNum = 5) {
         this.common = {
@@ -96,6 +101,7 @@ export class concurrentHandleClass {
     /**
      *  获得当前类的promise对象
      */
+    //TODO 直接接收回调来做处理
     overControl() {
         let queryObj = this;
         let common = queryObj.common;
@@ -253,7 +259,9 @@ class Process {
             }
         }else{
             try{
-                let process = fork(privateAttr.processPath);
+                let process = fork(privateAttr.processPath,[],{
+                    silent:true
+                });
                 process.on('message',this.queryOver.bind(this));
                 process.on('close',()=>{
                     loggerShow.info(`process : close SIGN, id:${id}`);
