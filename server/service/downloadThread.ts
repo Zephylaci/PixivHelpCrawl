@@ -29,7 +29,7 @@ export let downloadProcessHandle = {
     downList:(list)=>{
         let downloadProcessHandle = new concurrentHandleClass({
             queryName:'downloadThread',
-            processPath:join(__dirname,'/service/process/downloadChild')
+            processPath:join(__dirname,'/process/downloadChild')
         },5);
         return downloadProcessHandle.queryStart(list).overControl();
         

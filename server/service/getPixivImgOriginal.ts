@@ -2,12 +2,11 @@ import { requireMehod } from "../router/refPath";
 const pixivDownloadModel = requireMehod('pixivDownloadModel');
 const getPixivData = requireMehod('getPixivData');
 const checkImg = requireMehod('checkImg');
-const downloadImg = requireMehod('downloadImg');
-
 
 import { pathConfig } from "../../config";
 import { loggerErr, loggerShow, logger } from "../utils/logger";
 import { concurrentHandleClass } from "./publicClass/concurrentHandle";
+import { downloadImg } from "./downloadImg";
 const getPixivImgOriginalClass = new concurrentHandleClass({
     queryName: 'getPixivImgOriginal',
     step: handleUpitem, //单次操作 通常是async函数，返回需要的结果值
@@ -53,7 +52,8 @@ async function handleUpitem(queryItem:number) {
         return result;
     }
     //下载，及获得保存信息
-    await downloadImg(result.downUrl).then((dres) => {
+    
+    await downloadImg(result.downUrl).then((dres:any) => {
         result.state = dres.state;
         result.fileName = dres.fileName;
         result.imgPath = dres.imgPath; 

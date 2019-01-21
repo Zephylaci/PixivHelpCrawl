@@ -1,7 +1,7 @@
 import { requireMehod } from "../router/refPath";
 
 const getPixivData = requireMehod('getPixivData')
-const pixivTagFilter = requireMehod('pixivTagFilter');
+import  pixivTagFilter from '../utils/pixivTagFilter';
 
 const redisCtl = requireMehod('redisCtl')
 import {logger,loggerErr,loggerShow}  from '../utils/logger';

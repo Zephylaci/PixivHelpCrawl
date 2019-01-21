@@ -1,6 +1,6 @@
 
-import { requireMehod } from "../../router/refPath";
-const handlePixivHotList = requireMehod('pixivTagFilter');
+
+import  pixivTagFilter from '../../utils/pixivTagFilter';
 const mainObj={
     contrl:async (ctx,next)=>{
         ctx.body = {
@@ -10,7 +10,7 @@ const mainObj={
         let upData = ctx.request.body;
         let tagsArr = upData.tags;
         if(Array.isArray(tagsArr)&&tagsArr.length>0){
-            handlePixivHotList.addTags(tagsArr);
+            pixivTagFilter.addTags(tagsArr);
         }
     }
 }

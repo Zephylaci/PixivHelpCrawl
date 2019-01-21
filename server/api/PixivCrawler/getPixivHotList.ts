@@ -3,10 +3,8 @@
 *  功能：根据前端数据返回榜单数据
 *  未完成：是否过滤不可配置      
 **/
-import { requireMehod } from "../../router/refPath";
-const handlePixivHotList = requireMehod('handlePixivHotList');
-
 import { redisConfig} from '../../../config/index';
+import { handlePixivHotListClass } from "../../service/handlePixivHotList";
 
 
 
@@ -35,7 +33,7 @@ var mainObj = {
 		}
 		var useCash = redisConfig.useCash && upUseCash ? true : false;
 
-		let mainQuery = new handlePixivHotList({
+		let mainQuery = new handlePixivHotListClass({
 			getType: upType, //获取的类型（不能为null）
 			getDate: upTime, //指定的时间(不能为null)
 			startPage: startPage,  //开始读取的页数
