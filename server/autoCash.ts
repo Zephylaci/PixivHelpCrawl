@@ -1,7 +1,7 @@
 import {redisConfig} from '../config/index.js';
 const autoCash = redisConfig['autoCash'];
 
-import {loggerShow,logger} from './utils/logger';
+import {loggerShow,logger, loggerErr} from './utils/logger';
 import {setRunEveryDay} from './utils/schedule';
 import * as cp from 'child_process';
 import { concurrentHandleClass } from './service/publicClass/concurrentHandle';
@@ -28,6 +28,8 @@ function startCash() {
     },2)
     cashProcessHandle.queryStart(linkList).overControl().then((res)=>{
         logger.info(`autoCash: 缓存结束`);
+    }).catch((err)=>{
+        loggerErr.error(err);
     });
      
     logger.info(`autoCash: 缓存开始`);
