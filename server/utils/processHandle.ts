@@ -21,6 +21,7 @@ const itemPrivateMethod = {
         })
         loggerShow.info(`${processHandleItem.COMMON.processName}: pid:${Process.pid} 创建`);
         processHandleItem.COMMON.Porcess = Process;
+        return Process;
     },
     overHandle: (typeItem: string, processHandleItem: processHandleClass) => {
         let me = processHandleItem;
@@ -60,6 +61,10 @@ const itemPrivateMethod = {
     }) => {
         let { processHandleItem, resolve, reject, message } = opt;
         let Process = processHandleItem.COMMON.Porcess;
+        
+        if(!Process){
+            Process = itemPrivateMethod.crateProcess(processHandleItem.COMMON.processAddr,processHandleItem);
+        }
         processHandleItem.COMMON.state = 'work'
         Process.send(message);
         let errorCalback = (err) => {
@@ -110,7 +115,7 @@ class processHandleClass {
             waitTime,
             timer: null
         }
-        itemPrivateMethod.crateProcess(processAddr, this);
+       
 
 
     }
