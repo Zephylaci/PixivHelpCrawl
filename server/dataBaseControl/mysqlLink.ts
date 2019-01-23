@@ -1,5 +1,6 @@
 import * as mysql  from 'mysql';
 import {mysqlConfig as mysqlInfo} from '../../config/index';
+import { loggerErr } from '../utils/logger';
 
 
 /*
@@ -23,8 +24,11 @@ contrl:
 		key:{uid:1}
 	}
 */
-var mainObj={
+
+const mainObj={
 	mysqlPool:null,
+	active:false,
+	over:false,
 	init:()=>{
 		var mysqlPool = mysql.createPool(poolConfig)
 		mysqlPool.on('acquire', function (connection) {
@@ -43,9 +47,28 @@ var mainObj={
 		return mysqlPool
 	},
 	getMysqlPool:function(){
-		
 		if(mainObj.mysqlPool===null){
-			return mainObj.init();
+			mainObj.mysqlPool = mainObj.init();
+			/**
+			 *  对原始方法进行改造，使其可以被安全的关闭
+			 */
+			mainObj.mysqlPool._getConnection = mainObj.mysqlPool.getConnection
+			mainObj.mysqlPool.getConnection = (stepFun)=>{
+				mainObj.active=true;
+				mainObj.mysqlPool._getConnection((err,connection)=>{
+					if(!connection._release){
+						connection._release = connection.release;
+						connection.release = ()=>{
+							connection._release();
+							mainObj.active = false;
+							if(mainObj.over){
+								mainObj.closePool();
+							}
+						}
+					}
+					stepFun(err,connection)
+				})
+			}
 		}
 		return mainObj.mysqlPool
 	},
@@ -55,9 +78,22 @@ var mainObj={
 			escape:mysql.escape,
 		}
 		return method;
+	},
+	closePool:function(){
+		if(mainObj.mysqlPool!==null&&!mainObj.active){
+			mainObj.mysqlPool.end((err)=>{
+				if(err){
+					loggerErr.error('pool :end Error',err);
+					return 
+				}
+				mainObj.mysqlPool = null
+			});
+
+		}else{
+			mainObj.over = true;
+		}
 	}
 }
-
 
 
 export default mainObj;

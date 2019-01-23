@@ -19,8 +19,9 @@
     "include": [
     	"app.ts",
         "./server/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "./server/test/",
     ]
-    // "exclude": [
-    //     "node_modules",
-    // ]
 }

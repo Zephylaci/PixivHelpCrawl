@@ -33,7 +33,7 @@ test('getPixivHotList', () => {
     let getPixivHotList = address+'getPixivHotList';
     let testProcess = new Promise(async (resolve,reject)=>{
         //至少会有14个断言 (每次请求两个)
-        expect.assertions(14);
+        expect.assertions(16);
         // 不开启缓存读取
         let startTiem = new Date().getTime();
 
@@ -84,6 +84,13 @@ test('getPixivHotList', () => {
                 expect(result.content).toBe('本次云端下载已开始');
                 console.log(`pixivDownloadControl :单张图片下载开始`);
              })
+        // 重复提交
+        axios.post(downloadPixivImgById, { downList: JSON.stringify(downList) })
+            .then((res) => {
+                let result = res.data;
+                expect(result.code).toBe(200);
+                expect(result.content).toBe('云端下载中，且已将本次提交添加至队列');
+            })
         //等待第一次的图片下完
         await new Promise((over)=>{
             function check(){

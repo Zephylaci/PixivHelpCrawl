@@ -14,8 +14,6 @@ if (redisConfig.useCash === false || autoCash.enable === false) {
     makePlan();
 }
 
-
-
 function startCash() {
     //开始缓存
     let plan = autoCash.plan;
@@ -26,11 +24,15 @@ function startCash() {
         queryName:'autoCash',
         processPath:join(__dirname,'/service/process/cashChild')
     },2)
-    cashProcessHandle.queryStart(linkList).overControl().then((res)=>{
-        logger.info(`autoCash: 缓存结束`);
-    }).catch((err)=>{
-        loggerErr.error(err);
-    });
+
+    cashProcessHandle.queryStart(linkList).overControl({
+        success:(res)=>{
+            loggerShow.info('autoCash:缓存结束');
+        },
+        error:(err)=>{
+            loggerErr.error(err);
+        }
+    })
  
     logger.info(`autoCash: 缓存开始`);
     function makeLinkList(plan, deep) {

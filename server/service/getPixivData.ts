@@ -3,7 +3,7 @@
  *  TODO 重构
  */
 import { requireMehod } from "../router/refPath";
- const StringTool = requireMehod('StringTool');
+import { StringTool } from "../utils/stringTool";
 
 const getHtmlData = requireMehod('getHtmlData');
 const cheerio = requireMehod('cheerio');
@@ -288,10 +288,8 @@ Norn.Scales = {
     }
 }
 
-
-
-module.exports = {
+export default {
     MonomersClass,
     ConvenientClass,
     InsightClass
-};
+}   

@@ -1,10 +1,10 @@
 
 import {mysqlConfig as mysqlInfo } from '../../config/index';
 import { requireMehod } from "../router/refPath";
-import stringTool from '../utils/stringTool';
+import { makeSqlString, mySqlPoolOrder } from './mysqlControl';
 
 const parsePath = requireMehod('parsePath');
-const mySqlCtl = requireMehod('mySqlCtl');
+
 let {logger,loggerShow} = require('../utils/logger')
 async function downImgInsertSql(downResult:{
     fileName: string;
@@ -50,9 +50,9 @@ async function downImgInsertSql(downResult:{
         }
     }
 
-    const getSqlString = mySqlCtl.makeSqlString;
+    
     let sqlList = [];
-    let insertImgSql = getSqlString.getInsertSqlString(imgInsertSqlOpt);
+    let insertImgSql = makeSqlString.getInsertSqlString(imgInsertSqlOpt);
     sqlList.push(insertImgSql);
     //图片相关tag信息
     let tagsArr = downResult.tags.tags;
@@ -74,11 +74,11 @@ async function downImgInsertSql(downResult:{
         if (typeof targItem.translation != "undefined") {
             tagInsertSqlOpt.insertOpt.tagTrans = JSON.stringify(targItem.translation)
         }
-        let inserTagSql = getSqlString.getInsertSqlString(tagInsertSqlOpt);
+        let inserTagSql = makeSqlString.getInsertSqlString(tagInsertSqlOpt);
         sqlList.push(inserTagSql)
     }
 
-    await mySqlCtl.order(sqlList)
+    await mySqlPoolOrder(sqlList)
         .then((res) => {
             logger.info('pixivDownloadModel: ',imgName, '相关信息数据库写入完成');
         });
@@ -96,9 +96,9 @@ async function searchPath(imgId) {
         key: `imgName like "%${imgId}%"`
     }
     let result = false;
-    let judgeImgExistSql = mySqlCtl.makeSqlString.getSearchSqlString(searchSqlOpt);
+    let judgeImgExistSql = makeSqlString.getSearchSqlString(searchSqlOpt);
 
-    await mySqlCtl.order(judgeImgExistSql).then((res) => {
+    await mySqlPoolOrder(judgeImgExistSql).then((res:any) => {
         if (res.length !== 0) {
             result = res;
         }
@@ -115,8 +115,8 @@ async function judgeIsExist(imgName) {
         key: { imgName: imgName }
     }
     let isExist = false;
-    let judgeImgExistSql = mySqlCtl.makeSqlString.getSearchSqlString(searchSqlOpt);
-    await mySqlCtl.order(judgeImgExistSql).then((res) => {
+    let judgeImgExistSql = makeSqlString.getSearchSqlString(searchSqlOpt);
+    await mySqlPoolOrder(judgeImgExistSql).then((res:any) => {
         if (res.length !== 0) {
             isExist = true;
         }
@@ -124,7 +124,8 @@ async function judgeIsExist(imgName) {
     return isExist
 
 }
-module.exports = {
+export let pixivDownloadModel = {
     downImgInsertSql,
     searchPath,
+    closePool:mySqlPoolOrder.closePool
 }

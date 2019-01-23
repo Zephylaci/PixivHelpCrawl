@@ -102,7 +102,10 @@ export class concurrentHandleClass {
      *  获得当前类的promise对象
      */
     //TODO 直接接收回调来做处理
-    overControl() {
+    overControl(opt:{
+        success?:Function;
+        error?:Function;
+    }={}) {
         let queryObj = this;
         let common = queryObj.common;
         if (common.runStat === 'queryIng') {
@@ -115,11 +118,23 @@ export class concurrentHandleClass {
                     };
                 });
                 common.promise = promise
-                return promise;
             }
+            let {success,error} = opt
+            if(typeof success ==='function'){
+                common.promise.then(success)
+            }
+            if(typeof error ==='function'){
+                common.promise.catch(error);
+            }else{
+                common.promise.catch((err)=>{
+                    loggerErr.error(err);
+                });
+            }
+
             return common.promise
         }
-        return common.runStat;
+        throw 'concurrent 错误的调用'
+        
     }
     showState() {
         let queryObj = this;

@@ -34,8 +34,9 @@ var mainObj = {
 
 
 function queryStart(queryList) {
-    getPixivImgOriginal.downList(queryList).then((result) => {
+    getPixivImgOriginal.downList(queryList).then((result:any) => {
         let errIdArr = [];
+        loggerShow.info(`getPixivImgOriginal : 输出：${result.length}`);
         result.forEach(element => {
             if(element.state.indexOf('Err')!==-1){
                 loggerShow.warn(`downErr:${JSON.stringify(element)}`);

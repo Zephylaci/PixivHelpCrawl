@@ -1,6 +1,5 @@
 import { requireMehod } from "../router/refPath";
-
-const getPixivData = requireMehod('getPixivData')
+import getPixivData from '../service/getPixivData';
 import  pixivTagFilter from '../utils/pixivTagFilter';
 
 const redisCtl = requireMehod('redisCtl')

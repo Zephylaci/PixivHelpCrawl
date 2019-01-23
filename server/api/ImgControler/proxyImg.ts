@@ -1,6 +1,7 @@
 import { pixivConfig as  pixivAbout} from "../../../config";
 import { requireMehod } from "../../router/refPath";
-const StringTool = requireMehod('StringTool')
+import { StringTool } from "../../utils/stringTool";
+
 const parseUrl = requireMehod('parseUrl')
 const request = requireMehod('request')
 

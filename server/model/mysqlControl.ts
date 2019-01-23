@@ -3,11 +3,10 @@ import  mysqlPoolCtl from '../dataBaseControl/mysqlLink';
 const sqlStringTool = mysqlPoolCtl.getSqlStringMethod();
 let mysqlPool = null;
 let {loggerErr} = require('../utils/logger')
-function order(sql) {
+export  function mySqlPoolOrder(sql) {
     if (mysqlPool === null) {
         mysqlPool = mysqlPoolCtl.getMysqlPool();
     }
-
     let promise = new Promise((resolve, reject) => {
         let runList = [];
         if (Array.isArray(sql)) {
@@ -45,12 +44,11 @@ function order(sql) {
             }
         });
     });
-
-    
     return promise;
 }
+mySqlPoolOrder.closePool = mysqlPoolCtl.closePool
 
-let makeSqlString = {
+export let makeSqlString = {
     getSearchSqlString: (opt) => {
         let sql = 'SELECT ?? FROM ?? ';
         let keySqlStr:string|object = '';
@@ -101,8 +99,3 @@ let makeSqlString = {
     formatSqlString: sqlStringTool.format
 }
 
-
-module.exports = {
-    order: order,
-    makeSqlString: makeSqlString
-}

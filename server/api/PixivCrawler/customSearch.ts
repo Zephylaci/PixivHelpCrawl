@@ -1,7 +1,4 @@
-import { requireMehod } from "../../router/refPath";
-const pixivSearch = requireMehod('pixivSearch');
-
-
+import pixivSearch from '../../service/pixivSearch';
 
 const mainObj = {
     makePlan:(ctx,next)=>{

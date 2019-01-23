@@ -24,7 +24,6 @@ let pathAddress = {
     mySqlCtl: servicePath + 'model/mysqlControl',
     redisCtl: servicePath + 'model/redisControl',
 
-    pixivDownloadModel:servicePath + 'model/pixivDownloadModel',
 
     parsePath: 'path',
     parseUrl: 'url',
