@@ -1,14 +1,11 @@
-import { requireMehod } from "../../router/refPath";
-
-
 import getPixivData from '../../service/getPixivData';
-const checkImg = requireMehod('checkImg');
 
 import { pathConfig } from "../../../config";
 import { loggerErr, loggerShow, logger } from "../../utils/logger";
 import { concurrentHandleClass } from ".././publicClass/concurrentHandle";
 import { downloadImg } from ".././downloadImg";
 import { pixivDownloadModel } from "../../model/pixivDownloadModel";
+import { checkImgComplete } from '../../utils/checkImg';
 const getPixivImgOriginalClass = new concurrentHandleClass({
     queryName: 'getPixivImgOriginal',
     step: handleUpitem, //单次操作 通常是async函数，返回需要的结果值
@@ -94,7 +91,7 @@ async function isExist(imgId) {
     }
     if(imgPath){
         let imgSavePath = webPath + imgPath;
-        if (checkImg(imgSavePath)) {
+        if (checkImgComplete(imgSavePath)) {
             return true;
         }
     }

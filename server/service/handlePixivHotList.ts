@@ -1,10 +1,10 @@
-import { requireMehod } from "../router/refPath";
+
 import getPixivData from '../service/getPixivData';
 import  pixivTagFilter from '../utils/pixivTagFilter';
 
-const redisCtl = requireMehod('redisCtl')
 import {logger,loggerErr,loggerShow}  from '../utils/logger';
 import { downloadProcessHandle, cashImgHandleSet } from "./downloadThread";
+import { redisControl } from '../model/redisControl';
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
 export class handlePixivHotListClass {
     COMMON:any;
@@ -24,7 +24,7 @@ export class handlePixivHotListClass {
             startPage: startPage,
             endPage: endPage
         }
-        this.closeRedis = redisCtl.end;
+        this.closeRedis = redisControl.end;
     }
     //不使用缓存的主过程
     async queryStartNoCash() {
@@ -60,7 +60,7 @@ export class handlePixivHotListClass {
             let queryUrl = BaseUrl.replace('${page}', i);
             let _cashResult = null;
             //读取缓存
-            await redisCtl.HMGET({
+            await redisControl.HMGET({
                 mainKey: mainKey,
                 key: timeKey + i
             }).then((res) => {
@@ -152,7 +152,7 @@ export class handlePixivHotListClass {
 
         delete queryResult.cashDownList;
 		let  setRedis = JSON.stringify(queryResult);
-        await redisCtl.HMSET(JSON.parse(setRedis));
+        await redisControl.HMSET(JSON.parse(setRedis));
         console.timeEnd('downImgList');
         return queryResult.data.contents;
     }

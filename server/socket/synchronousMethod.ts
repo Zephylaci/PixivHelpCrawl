@@ -4,7 +4,7 @@ import {pathConfig } from '../../config/index';
 import * as crypto from 'crypto';
 import * as Stream from 'stream';
 const downPath = pathConfig.downloadPath
-const methodMap = {
+export const methodMap = {
     init:({
         clientSocket,
     })=>{
@@ -81,7 +81,5 @@ function setGetFile({
         bufferStream.pipe(putStream); 
         return true
     }
-      
     return oneStep
 }
-module.exports = methodMap

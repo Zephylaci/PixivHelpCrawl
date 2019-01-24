@@ -9,10 +9,11 @@
 import app from './koa-server';
 import * as http from 'http';
 import { loggerShow } from './utils/logger';
+import { socketHandle } from './socket/socketHandle';
 
 //socketIo
 const socketIo = require("socket.io");
-const socketHandle = require("./socket/socketHandle");
+
 const debug = require('debug')('demo:server')
 //引入配置文件
 const env = require('../config/');

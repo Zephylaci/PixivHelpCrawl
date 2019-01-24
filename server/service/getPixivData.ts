@@ -2,11 +2,11 @@
 /**
  *  TODO 重构
  */
-import { requireMehod } from "../router/refPath";
+
 import { StringTool } from "../utils/stringTool";
 
-const getHtmlData = requireMehod('getHtmlData');
-const cheerio = requireMehod('cheerio');
+import * as cheerio from 'cheerio';
+import { getPixivHtmlClass } from "./getHtmlData";
 
 
 let {logger,loggerErr,loggerShow} = require('../utils/logger')
@@ -20,7 +20,7 @@ class NornClass{
     }){
 
         let promise = new Promise((resolve, reject) => {
-            let getHtmlPromise = new getHtmlData.getPixivHtmlClass().start(opt);
+            let getHtmlPromise = new getPixivHtmlClass().start(opt);
             getHtmlPromise.then((getResult) => {
                 resolve(getResult);
             });

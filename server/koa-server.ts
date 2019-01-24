@@ -4,15 +4,16 @@ import * as json from 'koa-json'
 import * as onerror from 'koa-onerror'
 import * as bodyparser from 'koa-bodyparser'
 import * as KoaRouterBase from'koa-router'
-import * as apiRouter from './router/api-routers'
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
 
 var mainConfig = require('../config/index')
 var pathConfig = mainConfig['pathConfig']
-var makeRouterList = require('./utils/makeRouterList');
+
 
 import {loggerShow,loggerErr, loggerRes} from './utils/logger';
+import { makeRouterList } from './utils/makeRouterList';
+import { routerConfig } from './router/api-routers';
 const KoaRouter = KoaRouterBase();
 onerror(app)
 
@@ -34,7 +35,7 @@ app.use(async (ctx, next) => {
   
   loggerRes.info(`${ctx.method} ${ctx.url} - ${ms}ms - ${ctx.status}`)
 });
-KoaRouter.use('/api',makeRouterList(apiRouter).routes()); 
+KoaRouter.use('/api',makeRouterList(routerConfig).routes()); 
 
 app.use(KoaRouter.routes()); // 将api路由规则挂载到Koa上。
 // 读取前端文件

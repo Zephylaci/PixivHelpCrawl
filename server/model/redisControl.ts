@@ -188,6 +188,4 @@ const method = {
     },
     end: redisCtl.end,
 }
-
-
-module.exports = method;
+export let redisControl = method;

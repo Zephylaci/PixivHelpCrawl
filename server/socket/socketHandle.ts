@@ -21,7 +21,7 @@ const handleConfig=[
     }
 ]
 //每次进入的回掉
-function handle (clientSocket){
+export function socketHandle (clientSocket){
     loggerShow.info('socke content:',clientSocket.id);
     clientSocket.on('disconnect', function(){
         loggerShow.info('user disconnected',this.id);
@@ -47,4 +47,3 @@ function maekSocketEvent({
     })
 }
 
-module.exports = handle

@@ -1,14 +1,12 @@
 import { pixivConfig as  pixivAbout} from "../../../config";
-import { requireMehod } from "../../router/refPath";
 import { StringTool } from "../../utils/stringTool";
+import { parse } from "url";
+import customRequest from "../../utils/customRequest";
 
-const parseUrl = requireMehod('parseUrl')
-const request = requireMehod('request')
-
-var mainObj={
+const mainObj={
     contrl: async (ctx, next) => {
         var Url = ctx.url;
-        var key = parseUrl.parse(Url,true).query;
+        var key = parse(Url,true).query;
         var getUrl = StringTool.hexCharCodeToStr(key.url);
         var requresOpt = {
             url:getUrl,
@@ -24,7 +22,7 @@ var mainObj={
                 }
         }
 
-        var promise =  request(requresOpt);
+        var promise =  customRequest(requresOpt);
 
        await promise
         // ctx.type= 'image/jpg'

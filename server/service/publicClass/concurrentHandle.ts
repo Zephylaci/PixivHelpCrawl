@@ -278,11 +278,11 @@ class Process {
                    silent:true
                 });
                 process.on('message',this.queryOver.bind(this));
-                process.on('close',()=>{
-                    loggerShow.info(`process : close SIGN, id:${id}`);
+                process.on('close',(code,signal)=>{
+                    loggerShow.info(`process : id:${id} 收到关闭信号 ${code},${signal}`);
                 });
-                process.on('disconnect',()=>{
-                    loggerShow.info(`process : disconnect SIGN, id:${id}`);
+                process.on('exit',(code,signal)=>{
+                    loggerShow.info(`process : id:${id} 已经关闭 ${code},${signal}`);
                 });
                 this.send = function(sendOpt:{
                     queryItem:any;

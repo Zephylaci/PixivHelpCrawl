@@ -1,12 +1,9 @@
 import * as request from 'request';
 import {logger,loggerErr,loggerShow}  from '../utils/logger';
 import {linkProxy} from '../../config';
-
-export default function customRequest(opt){
+let customRequest:request = function(opt){
     let url = opt.url;
     let successFun = opt.success || null;
-
-    
     let  requestOpt = {
           method:'GET'
     }
@@ -74,7 +71,4 @@ export default function customRequest(opt){
 
 customRequest.__proto__ = request;
 
-
-
-
-module.exports=customRequest
+export default customRequest

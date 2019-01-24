@@ -1,7 +1,7 @@
 import * as BashRouter from 'koa-router';
 const Router = BashRouter();
 //创建路由表
-function makeRouterList(config) {
+export function makeRouterList(config) {
     
     for (let key in config) {
         var item = config[key];
@@ -14,8 +14,3 @@ function makeRouterList(config) {
     }
     return Router;
 }
-
-
-
-
-module.exports = makeRouterList;

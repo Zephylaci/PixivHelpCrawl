@@ -1,15 +1,11 @@
 
-const servicePath = '../';
-const manPath = '../../';
-import { requireMehod } from "../router/refPath";
-
-const request = requireMehod('request');
-const fs = requireMehod('fs');
+import * as fs from 'fs';
 
 let {logger,loggerErr,loggerShow} = require('../utils/logger')
 import { pixivConfig as pixivAbout } from '../../config';
+import customRequest from '../utils/customRequest';
 
-class getPixivHtmlClass {
+export class getPixivHtmlClass {
     constructor() {
     }
     start(opt) {
@@ -61,10 +57,10 @@ class getPixivHtmlClass {
         var cookies = pixivAbout.cookieAbout.cookies;
         var headers = pixivAbout.headers;
         //设置cookie
-        var j = request.jar();
-        var rcookie = request.cookie(cookies);
+        var j = customRequest.jar();
+        var rcookie = customRequest.cookie(cookies);
         j.setCookie(rcookie, url);
-        var mainQuery = request(
+        var mainQuery = customRequest(
             {
                 url: url,
                 headers: headers,
@@ -78,6 +74,3 @@ class getPixivHtmlClass {
 
 
 
-module.exports = {
-    getPixivHtmlClass
-}

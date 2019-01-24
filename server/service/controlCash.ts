@@ -2,8 +2,8 @@
  * TODO 根据 类型系统重写
  */
 import * as fs from 'fs';
-import { requireMehod } from "../router/refPath";
-const redisCtl = requireMehod('redisCtl')
+import { redisControl } from '../model/redisControl';
+
 
 const cashPath = 'client/cash/';
 function getPreViewState({
@@ -66,7 +66,8 @@ async function getRedisState(){
    await redisListHandle({
        result,
        handleFun:async ({result,key})=>{
-           let getCount = await redisCtl.HLEN(key);
+        
+           let getCount = await redisControl.HLEN(key);
            result.totalCount+=getCount;
        }
    });
@@ -106,7 +107,7 @@ async function makeViewDelList({
             result:redisResult,
             handleFun:async ({result,key})=>{
                 
-                let values = await redisCtl.HVALS(key);
+                let values:any = await redisControl.HVALS(key);
                 values.forEach((itemStr)=>{
                     let item = JSON.parse(itemStr);
                     result.allCashItem = result.allCashItem.concat(item.contents);
@@ -146,7 +147,7 @@ async function makeRedisDelList({
                hkey:key,
                keys:[],
            }
-           let getList = await redisCtl.HKEYS(key);
+           let getList:any = await redisControl.HKEYS(key);
            getList.forEach((key)=>{
                let dateStr = key.slice(0,4)+'-'+key.slice(4,6)+'-'+key.slice(6,8);
 
@@ -171,7 +172,7 @@ async function redisListHandle({
     result={},
     handleFun,
 }){
-    let keyList = await redisCtl.KEYS();
+    let keyList:any = await redisControl.KEYS();
     if(keyList.length===0){
         return 0;
     }
@@ -227,7 +228,7 @@ async function delViewForlist(delList){
 
 async function delRedisDataForList(delList){
     for(let item of delList){
-        await redisCtl.HDEL(item)
+        await redisControl.HDEL(item)
     }
 }
 export default{

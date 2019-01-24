@@ -3,12 +3,11 @@
 *  功能：根据url下载文件到指定文件夹 
 *        
 **/
-import { requireMehod } from "../router/refPath";
 import { pixivConfig as pixivAbout,pathConfig } from "../../config";
-const request = requireMehod('request');
-const fs = requireMehod('fs');
-const parseUrl = requireMehod('url');
-const checkImg = requireMehod('checkImg');
+import * as fs from 'fs';
+import customRequest from "../utils/customRequest";
+import { parse } from "url";
+import { checkImgComplete } from "../utils/checkImg";
 
 const pathCash = {}
 pathCash[pathConfig.downloadPath] = true;
@@ -45,7 +44,7 @@ class downLoadClass {
     }
     start(url) {
         let downObj = this;
-        let urlObj = parseUrl.parse(url);
+        let urlObj = parse(url);
         let fileName = urlObj.path.slice(urlObj.path.lastIndexOf('/'));
         let imgPath = downObj.downToPath + fileName;
         if (!pathCash[downObj.downToPath] && !fs.existsSync(downObj.downToPath)) {
@@ -63,7 +62,7 @@ class downLoadClass {
                 imgPath: imgPath,
                 runNum: 0,
             }
-            if (checkImg(imgPath)) {
+            if (checkImgComplete(imgPath)) {
                 loggerShow.info('downLoadImg:文件 ' + fileName + ' 存在且已经下载完全.')
                 downObj.downOver(Option);
             } else {
@@ -89,7 +88,7 @@ class downLoadClass {
             headers: Option.headers
         }
         let stream = fs.createWriteStream(Option.imgPath);
-        let downRequest = request(requresOpt);
+        let downRequest = customRequest(requresOpt);
         downRequest.catch(() => {
             loggerErr.warn('downLoadImg:文件 ' + fileName + '下载失败，发生错误');
             downObj.tryAgain(Option);
@@ -100,7 +99,7 @@ class downLoadClass {
             downObj.tryAgain(Option);
         });
         pipe.on('finish', () => {
-            if (checkImg(imgPath)) {
+            if (checkImgComplete(imgPath)) {
                 
                 downObj.downOver(Option);
             } else {

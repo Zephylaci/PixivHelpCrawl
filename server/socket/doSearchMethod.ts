@@ -1,6 +1,6 @@
 import  pixivSearch from '../service/pixivSearch';
 
-const methodMap = {
+export const methodMap = {
     init:({
         clientSocket,
     })=>{
@@ -72,4 +72,3 @@ const methodMap = {
         }
     }
 }
-module.exports = methodMap

@@ -1,7 +1,7 @@
 import  controlCash from '../service/controlCash';
 let delPlanStore={};
 
-const methodMap = {
+export const methodMap = {
     init:({
         clientSocket,
     })=>{
@@ -120,4 +120,4 @@ const methodMap = {
         delete delPlanStore[data.planKey]
     }
 }
-module.exports = methodMap
+ 

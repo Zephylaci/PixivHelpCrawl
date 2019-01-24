@@ -5,7 +5,7 @@
 **/
 import * as fs from 'fs';
 
-export var checkImgComplete = function (path){
+export let checkImgComplete = function (path){
   var result = false;
   var data = null;
   if(fs.existsSync(path)){
@@ -58,4 +58,3 @@ var isComplete = function(szBuffer){
   }
   return false;
 }
-module.exports = checkImgComplete;

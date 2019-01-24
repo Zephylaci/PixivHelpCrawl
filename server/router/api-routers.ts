@@ -10,7 +10,7 @@ import  proxyImg from '../api/ImgControler/proxyImg';
 
 
 
-var routerConfig = {
+export let routerConfig = {
         getPixivHotList:{
             type:'post',
             contrl:getPixivHotList.contrl
@@ -57,4 +57,3 @@ var routerConfig = {
         }
     }
 
-module.exports =  routerConfig 

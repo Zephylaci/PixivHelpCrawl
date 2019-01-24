@@ -1,9 +1,8 @@
 
 import {mysqlConfig as mysqlInfo } from '../../config/index';
-import { requireMehod } from "../router/refPath";
 import { makeSqlString, mySqlPoolOrder } from './mysqlControl';
+import { join } from 'path';
 
-const parsePath = requireMehod('parsePath');
 
 let {logger,loggerShow} = require('../utils/logger')
 async function downImgInsertSql(downResult:{
@@ -34,7 +33,7 @@ async function downImgInsertSql(downResult:{
     let imgTitle = downResult.illustTitle;
 
     let imgOrigin = imgOriginFrom || 'PiGetPixiv';
-    let imgTruePath = parsePath.join(__dirname + '../../.' + downResult.imgPath);
+    let imgTruePath = join(__dirname + '../../.' + downResult.imgPath);
     let imgPath = '/download' + imgName;
     let authorName = downResult.userName;
     //图片本身信息

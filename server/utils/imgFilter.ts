@@ -12,7 +12,7 @@
 **/
 import * as fs from 'fs';
 import {loggerErr} from '../utils/logger';
-function Astraea(opt){
+export function Astraea(opt){
     var filterType = opt.filterType;
     var defJudgeTag = [];
     console.log(__dirname);
@@ -64,4 +64,3 @@ Astraea.Scales={
         return true;
     }
 }
-module.exports=Astraea;
