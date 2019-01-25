@@ -14,6 +14,7 @@ var pathConfig = mainConfig['pathConfig']
 import {loggerShow,loggerErr, loggerRes} from './utils/logger';
 import { makeRouterList } from './utils/makeRouterList';
 import { routerConfig } from './router/api-routers';
+import generalResult from './middleware/generalResult';
 const KoaRouter = KoaRouterBase();
 onerror(app)
 
@@ -23,13 +24,11 @@ app.use(bodyparser({
 }))
 app.use(json())
 
-//app.use(logger())
-
-
 
 // logger
 app.use(async (ctx, next) => {
   const start = new Date().getTime();
+  generalResult(ctx);
   await next()
   const ms = new Date().getTime() - start
   

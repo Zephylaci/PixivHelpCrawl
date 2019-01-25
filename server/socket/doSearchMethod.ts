@@ -1,40 +1,41 @@
-import  pixivSearch from '../service/pixivSearch';
+import pixivSearch from '../service/pixivSearch';
 
-export const methodMap = {
-    init:({
+const methodMap = {
+    init: ({
         clientSocket,
-    })=>{
-       let keyList = pixivSearch.getList();
-       let result = [];
-       keyList.forEach((planKey)=>{
-           let item = {
-            planKey,
-            state:pixivSearch.getStateByKey(planKey)
-           };
-           result.push(item);
-       });
-       clientSocket.local.emit('doSearch-addList',{
-           contents:result
-       })
+    }) => {
+        console.log('init');
+        let keyList = pixivSearch.getList();
+        let result = [];
+        keyList.forEach((planKey) => {
+            let item = {
+                planKey,
+                state: pixivSearch.getStateByKey(planKey)
+            };
+            result.push(item);
+        });
+        clientSocket.local.emit('doSearch-addList', {
+            contents: result
+        })
     },
-    makeSeachPlan:({
+    makeSeachPlan: ({
         clientSocket,
         data,
-    })=>{
+    }) => {
         let {
-            strKey="",
-            isSafe=false,
-            cashPreview=false,
-            startPage=1,
-            endPage=2,
-            bookmarkCountLimit=100,
+            strKey = "",
+            isSafe = false,
+            cashPreview = false,
+            startPage = 1,
+            endPage = 2,
+            bookmarkCountLimit = 100,
         } = data;
 
-        if(typeof isSafe==='string'){
-            isSafe=isSafe==='false'?false:true;
-            cashPreview=cashPreview==='false'?false:true;
+        if (typeof isSafe === 'string') {
+            isSafe = isSafe === 'false' ? false : true;
+            cashPreview = cashPreview === 'false' ? false : true;
         }
-        if(startPage>endPage){
+        if (startPage > endPage) {
             endPage = startPage
         }
         let planRes = pixivSearch.makePlan({
@@ -54,21 +55,22 @@ export const methodMap = {
 
             }
         ];
-        clientSocket.local.emit('doSearch-addList',{
-            contents:result,
-            change:planKey
+        clientSocket.local.emit('doSearch-addList', {
+            contents: result,
+            change: planKey
         });
         let watchObj = pixivSearch.watchChange(planKey);
 
-        watchObj.change=()=>{      
+        watchObj.change = () => {
             var result = {
                 planKey,
-                state:pixivSearch.getStateByKey(planKey)
+                state: pixivSearch.getStateByKey(planKey)
             }
-            clientSocket.local.emit('doSearch-changeState',{
-                contents:result
+            clientSocket.local.emit('doSearch-changeState', {
+                contents: result
             });
-            
+
         }
     }
 }
+export default methodMap

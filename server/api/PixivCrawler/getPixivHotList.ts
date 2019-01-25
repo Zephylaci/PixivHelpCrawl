@@ -10,10 +10,7 @@ import { handlePixivHotListClass } from "../../service/handlePixivHotList";
 
 var mainObj = {
 	contrl: async (ctx, next) => {
-		ctx.body = {
-			code: 199,
-			contents: '为啥没有返回值..'
-		}
+
 		//如果是autoCash调用
 
 		var resultArr = [];

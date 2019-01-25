@@ -9,7 +9,7 @@
 import app from './koa-server';
 import * as http from 'http';
 import { loggerShow } from './utils/logger';
-import { socketHandle } from './socket/socketHandle';
+import { socketHandle } from './middleware/socketHandle';
 
 //socketIo
 const socketIo = require("socket.io");

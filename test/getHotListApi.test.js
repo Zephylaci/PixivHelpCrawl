@@ -2,15 +2,11 @@
  *  开始测试前需要先启动项目
  * 
  */
-// import * as axios from 'axios';
-// import  env from '../../config';
+
 var axios = require('axios')
-var env = {
-    port:8086
-}
+var env = require('../config/config');
+
 const address = `http://localhost:${env.port}/api/` 
-
-
 
 /**
  *  1、对获取每日热榜（getPixivHotList）的api测试

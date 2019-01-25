@@ -64,6 +64,5 @@ if(fs.existsSync('./config/config.js')){
 
 export let {pixivConfig,redisConfig,pathConfig,mysqlConfig,linkProxy} = development_env;
 export default development_env;   
-
 module.exports = development_env;
                                                                                                                                                                                  

@@ -152,7 +152,7 @@ class searchProcess {
         common.state = 'over';
         delete process.queryProcess;
 
-        loggerShow.info(process.common.baseUrl, 'over');
+        loggerShow.info('搜索任务：',process.common.strKey, '结束');
 
     }
     async cashPreviewMethod() {

@@ -1,9 +1,9 @@
-import { getProcess } from "../utils/processHandle";
+import { getProcessItem } from "../utils/processHandle";
 import { loggerShow, logger, loggerErr } from "../utils/logger";
 
 
-let Process = getProcess({
-    processAddr:'../service/process/getPixivImgProcess',
+let Process = getProcessItem({
+    processAddr:'../process/getPixivImgProcess',
     processName:'getPixivImgProcess'
 });
 let COMMON={

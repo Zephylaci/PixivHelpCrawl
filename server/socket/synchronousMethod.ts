@@ -1,56 +1,56 @@
 import * as fs from 'fs';
 import * as socketStream from 'socket.io-stream';
-import {pathConfig } from '../../config/index';
+import { pathConfig } from '../../config/index';
 import * as crypto from 'crypto';
 import * as Stream from 'stream';
 const downPath = pathConfig.downloadPath
 export const methodMap = {
-    init:({
+    init: ({
         clientSocket,
-    })=>{
+    }) => {
         let fileList = fs.readdirSync(downPath, {
             encoding: 'utf8'
         });
-        
-        clientSocket.local.emit('synchronous-fileState',{
-            contents:{
-                rows:fileList
+
+        clientSocket.local.emit('synchronous-fileState', {
+            contents: {
+                rows: fileList
             }
         });
-        
+
     },
-    getFile:({
-        clientSocket={},   
-        data={
-            list:[]
+    getFile: ({
+        clientSocket = {},
+        data = {
+            list: []
         }
-    })=>{
+    }) => {
         let oneStep = setGetFile({
             clientSocket,
-            list:data.list,
+            list: data.list,
         });
         oneStep();
         methodMap.oneStep = oneStep;
     },
-    overGetFile:({
-        clientSocket={},   
-        data={
-            fileName:'',
-            del:false,
+    overGetFile: ({
+        clientSocket = {},
+        data = {
+            fileName: '',
+            del: false,
         }
-    })=>{
-        if(data.del===true){
-            let filePath = downPath+'/'+data.fileName
-           fs.unlink(filePath,(err)=>{
-            if(err){
-                console.log('del:',data.fileName,'err');
-            }
-           }); 
+    }) => {
+        if (data.del === true) {
+            let filePath = downPath + '/' + data.fileName
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.log('del:', data.fileName, 'err');
+                }
+            });
         }
         methodMap.oneStep();
-        
+
     },
-    oneStep:()=>{
+    oneStep: () => {
         return false;
     }
 
@@ -58,28 +58,29 @@ export const methodMap = {
 function setGetFile({
     clientSocket,
     list,
-}){
-    let oneStep = ()=>{
+}) {
+    let oneStep = () => {
         let fileName = list.shift();
-        if(!fileName){
-          console.log('list over');
-         clientSocket.local.emit('synchronous-listOver',{});
+        if (!fileName) {
+            console.log('list over');
+            clientSocket.local.emit('synchronous-listOver', {});
             return false
         }
-        console.log('put file:',fileName);
-        let filePath = downPath+'/'+fileName
+        console.log('put file:', fileName);
+        let filePath = downPath + '/' + fileName
         let fileBuffer = fs.readFileSync(filePath);
         let md5 = crypto.createHash('md5').update(fileBuffer).digest('hex');
         let putStream = socketStream.createStream();
         let bufferStream = new Stream.PassThrough();
         bufferStream.end(fileBuffer);
-        socketStream(clientSocket).emit('synchronous-filePutInStorage',putStream,{
+        socketStream(clientSocket).emit('synchronous-filePutInStorage', putStream, {
             fileName,
             md5,
         });
 
-        bufferStream.pipe(putStream); 
+        bufferStream.pipe(putStream);
         return true
     }
     return oneStep
 }
+export default methodMap

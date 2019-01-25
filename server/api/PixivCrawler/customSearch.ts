@@ -2,10 +2,7 @@ import pixivSearch from '../../service/pixivSearch';
 
 const mainObj = {
     makePlan:(ctx,next)=>{
-        ctx.body = {
-            code: 200,
-            contents: '为啥没有返回值..'
-        }
+
         let {
             strKey="",
             isSafe=false,
@@ -34,17 +31,11 @@ const mainObj = {
         
     },
     getList:(ctx,next)=>{
-        ctx.body = {
-            code: 200,
-            contents: '为啥没有返回值..'
-        }
+
         ctx.body.contents = pixivSearch.getList();
     },
     getState:(ctx,next)=>{
-        ctx.body = {
-            code: 200,
-            contents: '为啥没有返回值..'
-        }
+
         let {
             planKey="",
         } = ctx.request.body;
@@ -58,10 +49,7 @@ const mainObj = {
         
     },
     getDetail:(ctx,next)=>{
-        ctx.body = {
-            code: 200,
-            contents: '为啥没有返回值..'
-        }
+
         let {
             planKey="",
         } = ctx.request.body;
@@ -74,10 +62,7 @@ const mainObj = {
         }
     },
     delItem:(ctx,next)=>{
-        ctx.body = {
-            code: 200,
-            contents: '为啥没有返回值..'
-        }
+
         let {
             planKey="",
         } = ctx.request.body; 
@@ -90,10 +75,6 @@ const mainObj = {
         }
     },
     createPreviewCash:(ctx,next)=>{
-        ctx.body = {
-            code: 200,
-            contents: '为啥没有返回值..'
-        }
         let {
             planKey="",
         } = ctx.request.body; 
