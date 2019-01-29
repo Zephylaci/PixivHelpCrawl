@@ -4,7 +4,7 @@ const autoCash = redisConfig['autoCash'];
 import {loggerShow,logger, loggerErr} from './utils/logger';
 import {setRunEveryDay} from './utils/schedule';
 import * as cp from 'child_process';
-import { concurrentHandleClass } from './service/publicClass/concurrentHandle';
+import { concurrentHandleClass } from './service/class/concurrentHandle';
 import { join } from 'path';
 
 if (redisConfig.useCash === false || autoCash.enable === false) {

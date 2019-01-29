@@ -1,6 +1,6 @@
 
 import * as cp from 'child_process';
-import { concurrentHandleClass } from './publicClass/concurrentHandle';
+import { concurrentHandleClass } from './class/concurrentHandle';
 import { join } from 'path';
 let {logger,loggerErr,loggerShow} = require('../utils/logger')
 

@@ -2,7 +2,7 @@ import getPixivData from '../../service/getPixivData';
 
 import { pathConfig } from "../../../config";
 import { loggerErr, loggerShow, logger } from "../../utils/logger";
-import { concurrentHandleClass } from ".././publicClass/concurrentHandle";
+import { concurrentHandleClass } from ".././class/concurrentHandle";
 import { downloadImg } from ".././downloadImg";
 import { pixivDownloadModel } from "../../model/pixivDownloadModel";
 import { checkImgComplete } from '../../utils/checkImg';

@@ -5,7 +5,7 @@
  */
 
 import { getProcessOptType } from "../type/processHandle";
-import { processHandleItemClass } from "../service/publicClass/processHandleItem";
+import { processHandleItemClass } from "../service/class/processHandleItem";
 
 
 const processStorage = new Map();

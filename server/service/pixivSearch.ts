@@ -1,5 +1,5 @@
 import getPixivData from '../service/getPixivData';
-import { concurrentHandleClass } from "./publicClass/concurrentHandle";
+import { concurrentHandleClass } from "./class/concurrentHandle";
 import { logger, loggerErr, loggerShow } from '../utils/logger';
 import { cashImgHandleSet, downloadProcessHandle } from "./downloadThread";
 import { StringTool } from "../utils/stringTool";

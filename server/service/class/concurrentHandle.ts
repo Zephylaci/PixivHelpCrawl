@@ -1,32 +1,128 @@
 /* 针对同时多次处理 的抽象
 *  提供，依赖child_process和不依赖的两种实现方式
+*  
 *  TODO 提供超时处理
+*  TODO 主动结束
+*  TODO:各种回调
+*  TODO 将运行过程提出来，透明化
 */
 import {logger,loggerErr,loggerShow} from '../../utils/logger';
 import { fork } from 'child_process';
+import { concurrentCommonInter, concurrentPrivateInter } from '../../type/concurrentHandle';
 
-interface concurrentCommonInter {
-    runStat:string;
-    promise:any;
-    linkList:Array<any>;
-    waitList:Array<any>;
-    processList:Array<any>;
-    idNum:number;
-    runNum:number;
-    limitRunNum:number;
-    mainResult:Array<any>;
-    queryOver?:Function;
-}
-    
 /**
- *  queryName   输出用的名字
- *  step        单步操作通常为async函数
- *  processPath  fork的地址和step至少存在一个
- */ 
-interface concurrentPrivateInter {
-    queryName: string;
-    step?:Function;
-    processPath?:string;
+ * concurrentHandleClass 不向外暴露的公用方法
+ */
+const concurrentHandlePrivateMethod = {
+    mainControl: async (queryObj: concurrentHandleClass) => {
+        let common = queryObj.common;
+        let method = concurrentHandlePrivateMethod;
+        let stateMap = {
+            nextStep: () => {
+                while (common.runNum < common.limitRunNum) {
+                    method.oneStep(queryObj).then(()=>{
+                        method.mainControl(queryObj);
+                    })
+                }
+            },
+            nextList: () => {
+                common.linkList=common.waitList;
+                common.waitList = [];
+                common.limitRunNum = queryObj.DEFALUT.limitRunNum;
+                method.mainControl(queryObj);
+            },
+            taskOver: () => {
+                let processList = common.processList;
+                if (processList.length !== 0) {
+                    var length = common.processList.length;
+                    for (var i = 0; i < length; i++) {
+                        var childProcess = processList.shift();
+                        childProcess.disconnect();
+                    }
+                }
+                //如果运行了控制函数，默认的返回
+                if (typeof common.queryOver === 'function') {
+                    common.queryOver(common.mainResult);
+                }
+                loggerShow.info(queryObj.privateAttr.queryName, ' 运行结束');
+                method.resetCommon(queryObj);
+            },
+            noChange: () => {
+
+            }
+        }
+        let state = method.judgeTask(common);
+        stateMap[state]()
+    },
+    /**
+     *  单次操作
+     */
+    oneStep:(queryObj:concurrentHandleClass)=> {
+        
+        let common = queryObj.common;
+
+        common.runNum++;
+
+        var queryItem = common.linkList.shift();
+        var id = common.idNum
+
+        var queryChild = concurrentHandlePrivateMethod.makeprocess(queryObj);
+        var opt = {
+            queryItem: queryItem,
+            tid: id,
+        }
+        let stepPromise = queryChild.send(opt);
+        common.idNum++
+        return stepPromise
+    },
+    /**
+     *  创建子执行对象
+     */
+    makeprocess:(queryObj:concurrentHandleClass)=>{
+        let common = queryObj.common;
+        let processList = common.processList
+        if (processList.length === 0) {
+            let queryChild = new Process(common.idNum, queryObj);
+            return queryChild;
+        } else {
+            return processList.shift();
+        }
+    },
+    /**
+     * 检查任务状态
+     * 返回字符串：
+     *   nextStep :  开始下一个任务
+     *   nextList ： 当前列表完成，但是存在等待列表
+     *   taskOver ： 所有任务完成
+     *   noChange :  不满足上述任何一个条件时返回
+     */
+    judgeTask: (common: concurrentCommonInter): string => {
+        let { linkList } = common
+        if (linkList.length < common.limitRunNum) {
+            common.limitRunNum = linkList.length;
+            if (linkList.length > 0) {
+                return 'nextStep'
+            }
+        }
+        if (common.linkList.length != 0 && common.limitRunNum != 0) {
+            return 'nextStep'
+        } else {
+            if (common.runNum === 0 && linkList.length === 0) {
+
+                if (common.waitList.length !== 0) {
+                    return 'nextList'
+                }else{
+                    return 'taskOver'
+                }
+            }
+        }
+
+        return 'noChange'
+    },
+    resetCommon:(queryObj:concurrentHandleClass)=>{
+        let defalut = JSON.stringify(queryObj.DEFALUT);
+        queryObj.common = JSON.parse(defalut);
+    }
 }
 
 
@@ -34,15 +130,9 @@ export class concurrentHandleClass {
     common:concurrentCommonInter
     DEFALUT:concurrentCommonInter
     privateAttr:concurrentPrivateInter
-    /*
-     *  同时初始化
-     *  TODO:各种回调
-     *  以及更具参数来决定是否使用child_process
-     *  研究下能不能不写单独的文件来fork 子进程
-     */
     /**
      * 创建一个多任务控制对象
-     * @param privateAttr 
+     * @param privateAttr 相关的参数
      * @param limitRunNum 
      */
     constructor(privateAttr:concurrentPrivateInter,limitRunNum = 5) {
@@ -58,6 +148,7 @@ export class concurrentHandleClass {
             mainResult: [],
         }
         this.privateAttr = privateAttr
+
         this.DEFALUT = {
             runStat: 'before',
             promise: null,
@@ -74,7 +165,7 @@ export class concurrentHandleClass {
 
     }
     /**
-     *  列表任务开始
+     *  任务开始
      */
     queryStart(listArr) {
         let queryObj = this;
@@ -84,7 +175,7 @@ export class concurrentHandleClass {
             common.linkList = listArr
             loggerShow.info(queryObj.privateAttr.queryName, '运行开始');
             logger.info(queryObj.privateAttr.queryName, '输入: ',listArr.length);
-            queryObj.controlStep();
+            concurrentHandlePrivateMethod.mainControl(queryObj);
 
         } else {
             throw queryObj.privateAttr.queryName, '错误的开始时机';
@@ -101,7 +192,6 @@ export class concurrentHandleClass {
     /**
      *  获得当前类的promise对象
      */
-    //TODO 直接接收回调来做处理
     overControl(opt:{
         success?:Function;
         error?:Function;
@@ -142,102 +232,7 @@ export class concurrentHandleClass {
         loggerShow.info(common)
         return JSON.stringify(common)
     }
-    /**
-     *  重置整个query对象的状态为初始
-     */
-    resetCommon() {
-        //这里需要换一个深拷贝实现
-        var defalut = JSON.stringify(this.DEFALUT);
-        this.common = JSON.parse(defalut);
-    }
-    /**
-     *  执行控制
-     */
-    controlStep() {
-        let queryObj = this;
-        let common = queryObj.common;
-        let linkList = common.linkList;
 
-        if (linkList.length < common.limitRunNum) {
-            common.limitRunNum = linkList.length;
-            if (linkList.length > 0) {
-                queryObj.oneStep();
-            }
-
-        }
-
-        if (common.linkList.length != 0 && common.limitRunNum != 0) {
-            while (common.runNum < common.limitRunNum) {
-                queryObj.oneStep();
-            }
-        } else {
-            if (common.runNum === 0) {
-                if (linkList.length === 0) {
-                    let processList = common.processList;
-                    if (processList.length !== 0) {
-                        var length = common.processList.length;
-                        for (var i = 0; i < length; i++) {
-                            var childProcess = processList.shift();
-                            childProcess.disconnect();
-                        }
-                    }
-                    if (common.waitList.length !== 0) {
-                        common.linkList = common.waitList;
-                        common.waitList = [];
-                        common.limitRunNum = queryObj.DEFALUT.limitRunNum;
-                        queryObj.controlStep();
-                        return
-                    }
-                    //如果运行了控制函数，默认的返回
-                    if (typeof common.queryOver === 'function') {
-                        common.queryOver(common.mainResult);
-                    }
-                    loggerShow.info(queryObj.privateAttr.queryName, ' 运行结束');
-                    queryObj.resetCommon();
-                }
-            }
-        }
-        //loggerShow.info(queryObj.privateAttr.queryName, '：队列中:', common.linkList.length, '运行中:', common.runNum, '限制数:', common.limitRunNum);
-    }
-    /**
-     *  单次操作
-     */
-    oneStep() {
-        
-        let queryObj = this;
-        let common = queryObj.common;
-
-        common.runNum++;
-
-        var queryItem = common.linkList.shift();
-        var id = common.idNum
-
-        var queryChild = queryObj.makeprocess(id);
-        var opt = {
-            queryItem: queryItem,
-            tid: id,
-        }
-        queryChild.send(opt);
-
-        common.idNum++
-    }
-    /**
-     *  创建子执行对象
-     *   TODO 基于child_process的执行对象
-     */
-    makeprocess(id) {
-        let queryObj = this;
-        let common = queryObj.common;
-        let processList = common.processList
-
-        if (processList.length === 0) {
-            let queryChild = new Process(id, queryObj);
-
-            return queryChild;
-        } else {
-            return processList.shift();
-        }
-    }
 }
 
 /**
@@ -250,32 +245,37 @@ class Process {
     id:string
     queryObj:concurrentHandleClass
     send: Function
+    stepOver:Function
     process?:any
     constructor(id, queryObj) {
         this.id = id;
         this.queryObj = queryObj
 
         let privateAttr = queryObj.privateAttr;
+
         if (typeof privateAttr.step === 'function') {
-            this.send = async function(sendOpt:{
+            this.send = function(sendOpt:{
                 queryItem:any;
                 tid:number;
             }){
-                
+
                 let {queryItem,tid} = sendOpt;
                 //loggerShow.info(`sim process: 任务开始！ tid:${tid}`);
                 let _queryChild:Process = this;
-                let queryObj = _queryChild.queryObj;
-                let privateAttr = queryObj.privateAttr;
 
-                let stepRsult = await privateAttr.step(queryItem);
+                let stepPromise = new Promise((resolve,reject)=>{
+                    _queryChild.stepOver=resolve;
+                })
+                privateAttr.step(queryItem).then((stepRsult)=>{
+                    _queryChild.queryOver(stepRsult);
+                });
                 //loggerShow.info(`sim process: 任务结束！ tid:${tid}`);
-                _queryChild.queryOver(stepRsult);
+                return stepPromise
             }
         }else{
             try{
                 let process = fork(privateAttr.processPath,[],{
-                   silent:true
+                   //silent:true
                 });
                 process.on('message',this.queryOver.bind(this));
                 process.on('close',(code,signal)=>{
@@ -291,7 +291,11 @@ class Process {
                     let {queryItem,tid} = sendOpt;
                     //loggerShow.info(`process: 任务设置！ tid:${tid}`);
                     let _queryChild:Process = this;
+                    let stepPromise = new Promise((resolve,reject)=>{
+                        _queryChild.stepOver=resolve;
+                    })
                     _queryChild.process.send(queryItem);
+                    return stepPromise
                 } 
                 this.process = process;
 
@@ -300,6 +304,7 @@ class Process {
                 this.send = this.queryOver;
             }
         }
+        
         loggerShow.info(queryObj.privateAttr.queryName, 'process:', this.id, '创建');
     }
     queryOver( queryResult = null) {
@@ -317,7 +322,8 @@ class Process {
                 processList.push(this);
             }
         }
-        queryObj.controlStep();
+
+        this.stepOver();
     }
     disconnect() {
         let queryObj = this.queryObj;

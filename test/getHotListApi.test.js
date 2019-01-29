@@ -37,7 +37,7 @@ test('getPixivHotList', () => {
             .then((res)=>{
                 let result = res.data;
                 expect(result.code).toBe(200);
-                expect(result.contents.length).toBe(50);
+                expect(result.contents.length>0).toBe(true);
                 let endTime = new Date().getTime();
                 console.log(`getPixivHotList : 不开启缓存获取日榜完成,耗时：${startTiem-endTime} -ms`);
  
@@ -49,7 +49,7 @@ test('getPixivHotList', () => {
             .then((res)=>{
                 let result = res.data;
                 expect(result.code).toBe(200);
-                expect(result.contents.length).toBe(50);
+                expect(result.contents.length>0).toBe(true);
                 let endTime = new Date().getTime();
                 console.log(`getPixivHotList : 开启缓存获取日榜(第一次)完成,耗时：${startTiem-endTime} -ms`);
 
@@ -61,7 +61,7 @@ test('getPixivHotList', () => {
             .then((res)=>{
                 let result = res.data;
                 expect(result.code).toBe(200);
-                expect(result.contents.length).toBe(50);
+                expect(result.contents.length>0).toBe(true);
                 imgList = result.contents;
                 let endTime = new Date().getTime();
                 console.log(`getPixivHotList : 开启缓存获取日榜(第二次)完成,耗时：${startTiem-endTime} -ms`);

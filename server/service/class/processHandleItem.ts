@@ -6,7 +6,7 @@ import { getProcessOptType } from "../../type/processHandle";
 const itemPrivateMethod = {
     crateProcess: (processAddr, processHandleItem: processHandleItemClass) => {
         let Process = fork(join(__dirname, processAddr), [], {
-            silent: true
+           // silent: true
         });
         Process.once('exit', (code, signal) => {
             loggerShow.info(`${processHandleItem.COMMON.processName}: pid:${Process.pid} 断开, Code: ${code} Signal ${signal}`);
