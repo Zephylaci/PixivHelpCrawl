@@ -53,7 +53,8 @@ var development_env ={
     pathConfig:{                                                                                                                                                                                                   
         webPath:'./client',                                                                                                                                                                                        
         downloadPath:'./client/download'                                                                                                                                                                          
-    }                                                                                                                                                                                                              
+    },
+    NoProcessStdout:true                                                                                                                                                                                                         
 
 }    
 
@@ -62,7 +63,7 @@ if(fs.existsSync('./config/config.js')){
     development_env = Object.assign(development_env,my_dev)
 }
 
-export let {pixivConfig,redisConfig,pathConfig,mysqlConfig,linkProxy} = development_env;
+export let {NoProcessStdout,pixivConfig,redisConfig,pathConfig,mysqlConfig,linkProxy} = development_env;  
 export default development_env;   
 module.exports = development_env;
                                                                                                                                                                                  

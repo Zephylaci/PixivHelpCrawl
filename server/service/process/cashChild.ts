@@ -1,4 +1,5 @@
 import { handlePixivHotListClass } from "../handlePixivHotList";
+import { loggerShow } from "../../utils/logger";
 
 
 
@@ -19,9 +20,8 @@ function childFun(getConfig) {
         });
 }
 function myCatch(err,getConfig){
-	console.log('cashChild：进入重试流程，等待时间，', wait / 1000, 's');
+	loggerShow.info('cashChild：进入重试流程，等待时间，', wait / 1000, 's');
 	if (tryGet < 5) {
-		console.log(getConfig);
 		setTimeout(() => {
 			childFun(getConfig)
 		}, wait)
@@ -39,5 +39,5 @@ process.on('message', (opt) => {
 
 process.on('disconnect', () => {
     mainQuery.closeRedis();
-    console.log('autoCash process disconnect!')
+    loggerShow.info('autoCash process:disconnect!')
 })

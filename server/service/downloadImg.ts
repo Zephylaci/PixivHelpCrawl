@@ -8,10 +8,11 @@ import * as fs from 'fs';
 import customRequest from "../utils/customRequest";
 import { parse } from "url";
 import { checkImgComplete } from "../utils/checkImg";
+import {logger,loggerErr,loggerRes} from "../utils/logger";
 
 const pathCash = {}
 pathCash[pathConfig.downloadPath] = true;
-let {logger,loggerErr,loggerShow} = require('../utils/logger')
+
 
 function downLoadMethod(url, upPath = pathConfig.downloadPath) {
     const newDownObj = new downLoadClass({
@@ -51,7 +52,7 @@ class downLoadClass {
             fs.mkdirSync(downObj.downToPath)
             pathCash[downObj.downToPath] = true;
         }
-        loggerShow.info('downLoadImg:文件 ' + fileName + ' 下载开始.')
+
         let promise = new Promise((resolve, reject) => {
 
             let Option = {
@@ -63,7 +64,7 @@ class downLoadClass {
                 runNum: 0,
             }
             if (checkImgComplete(imgPath)) {
-                loggerShow.info('downLoadImg:文件 ' + fileName + ' 存在且已经下载完全.')
+                loggerRes.info('downLoadImg:文件 ' + fileName + ' 存在且已经下载完全.')
                 downObj.downOver(Option);
             } else {
                 Option.runNum=1;
@@ -117,7 +118,7 @@ class downLoadClass {
         });
     }
     downOver(Option) {
-        loggerShow.info('downLoadImg:文件 ' + Option.fileName + '下载完成！下载次数：' + Option.runNum)
+        loggerRes.info('downLoadImg:文件 ' + Option.fileName + '下载完成！下载次数：' + Option.runNum)
         Option.state = 'downOver'
         Option.mainDownloadEnd(Option);
     }
@@ -126,18 +127,18 @@ class downLoadClass {
         let tryConfig = downObj.tryAgainConfig;
         Option.wait = tryConfig.wait;
         Option.waitTimer = null;
-        loggerShow.warn('downLoadImg：进入重试流程，等待时间，', Option.wait / 1000, 's');
+        loggerRes.warn('downLoadImg：进入重试流程，等待时间，', Option.wait / 1000, 's');
 
         if (Option.runNum <= tryConfig.tryNum) {
             if (Option.waitTimer === null) {
                 Option.waitTimer = global.setTimeout(() => {
                     Option.runNum++;
-                    loggerShow.info('downLoadImg:文件 ' + Option.fileName + '尝试第：' + Option.runNum + '次重下');
+                    loggerRes.info('downLoadImg:文件 ' + Option.fileName + '尝试第：' + Option.runNum + '次重下');
                     Option.wait = Option.wait + Option.wait;
                     downObj.downMethod(Option);
                 }, Option.wait);
             } else {
-                loggerShow.error('downLoadImg:文件 ' + Option.fileName + '已经创建等待任务');
+                loggerRes.error('downLoadImg:文件 ' + Option.fileName + '已经创建等待任务');
             }
         } else {
             loggerErr.error('downLoadImg:文件下载失败，已尝试：' + Option.runNum + '次重下');

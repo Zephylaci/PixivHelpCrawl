@@ -4,11 +4,12 @@
 *  TODO 提供超时处理
 *  TODO 主动结束
 *  TODO:各种回调
-*  TODO 将运行过程提出来，透明化
 */
 import {logger,loggerErr,loggerShow} from '../../utils/logger';
 import { fork } from 'child_process';
 import { concurrentCommonInter, concurrentPrivateInter } from '../../type/concurrentHandle';
+import { NoProcessStdout } from '../../../config';
+
 
 /**
  * concurrentHandleClass 不向外暴露的公用方法
@@ -275,7 +276,7 @@ class Process {
         }else{
             try{
                 let process = fork(privateAttr.processPath,[],{
-                   //silent:true
+                   silent:NoProcessStdout
                 });
                 process.on('message',this.queryOver.bind(this));
                 process.on('close',(code,signal)=>{

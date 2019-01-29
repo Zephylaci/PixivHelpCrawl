@@ -5,7 +5,9 @@ import { cashImgHandleSet, downloadProcessHandle } from "./downloadThread";
 import { StringTool } from "../utils/stringTool";
 const planStore = {};
 /**
+ * TODO 用concurrentHandle来替换
  * TODO 补充类型检查
+ * TODO 缓存过程的中断
  */
 class searchProcess {
     common: any;

@@ -2,11 +2,12 @@ import { fork, ChildProcess } from "child_process";
 import { join } from "path";
 import { loggerShow, loggerErr, logger } from "../../utils/logger";
 import { getProcessOptType } from "../../type/processHandle";
+import { NoProcessStdout } from "../../../config";
 
 const itemPrivateMethod = {
     crateProcess: (processAddr, processHandleItem: processHandleItemClass) => {
         let Process = fork(join(__dirname, processAddr), [], {
-           // silent: true
+            silent: NoProcessStdout
         });
         Process.once('exit', (code, signal) => {
             loggerShow.info(`${processHandleItem.COMMON.processName}: pid:${Process.pid} 断开, Code: ${code} Signal ${signal}`);
