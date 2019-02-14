@@ -1,20 +1,37 @@
-import getPixivData from '../service/getPixivData';
+import getPixivData from './getPixivData';
 import { concurrentHandleClass } from "./class/concurrentHandle";
 import { logger, loggerErr, loggerShow } from '../utils/logger';
 import { cashImgHandleSet, downloadProcessHandle } from "./downloadThread";
 import { StringTool } from "../utils/stringTool";
 const planStore = {};
-/**
- * TODO 用concurrentHandle来替换
- * TODO 补充类型检查
- * TODO 缓存过程的中断
- */
+
+interface searchProcessCommonInter {
+    strKey: string;
+    baseUrl: string;
+    startPage: number;
+    endPage: number;
+    bookmarkCountLimit: number;
+    previewState: string;
+    state: string;
+}
+interface searchProcessCommonInter {
+    strKey: string;
+    baseUrl: string;
+    startPage: number;
+    endPage: number;
+    bookmarkCountLimit: number;
+    previewState: string;
+    state: string;
+}
+interface searchProcessContrlMethodInter {
+    queryOver: Function;
+}
 class searchProcess {
-    common: any;
-    contrlMethod: any;
+    common: searchProcessCommonInter;
+    contrlMethod: searchProcessContrlMethodInter;
     promise: any;
     result: any;
-    queryProcess: any;
+    queryProcess: concurrentHandleClass;
     constructor({
         strKey = "",
         baseUrl = 'https://www.pixiv.net/search.php?s_mode=s_tag&mode=MODE &word=STRKEY&p=${page};',
@@ -77,7 +94,7 @@ class searchProcess {
         }, 3);
         let queryList = [];
         for (let i = common.startPage, l = common.endPage; i <= l; i++) {
-            let queryUrl = common.baseUrl.replace('${page}', i);
+            let queryUrl = common.baseUrl.replace('${page}', String(i));
             queryList.push(queryUrl);
         }
 
@@ -90,7 +107,7 @@ class searchProcess {
     breakQuery() {
         let process = this;
         logger.info('pixivSearch: 读取到无信息页，或主动中断,队列清零')
-        process.queryProcess.common.linkList = [];
+        process.queryProcess.breakQuery();
     }
     async oneSetp(queryItem) {
         let queryUrl = queryItem;
@@ -153,8 +170,9 @@ class searchProcess {
         }
         common.state = 'over';
         delete process.queryProcess;
+        process.queryProcess = null;
 
-        loggerShow.info('搜索任务：',process.common.strKey, '结束');
+        loggerShow.info('搜索任务：', process.common.strKey, '结束');
 
     }
     async cashPreviewMethod() {
@@ -169,7 +187,12 @@ class searchProcess {
         }
 
         let resHandle = cashImgHandleSet(process.result.items);
-        await downloadProcessHandle.downList(downList).then(resHandle);
+        let cashDownProces = downloadProcessHandle.getDownList();
+        process.queryProcess = cashDownProces;
+        await cashDownProces.queryStart(downList).overControl({
+            success: resHandle
+        });
+
     }
 
 }
@@ -287,10 +310,13 @@ function createPreviewCash(planKey) {
     let processState = searchPlan.common.state;
     searchPlan.common.previewState = 'do';
     if (processState === 'over') {
-        searchPlan.common.state = 'cashPreview';
+        planStore[planKey].common.state = 'cashPreview';
         searchPlan.cashPreviewMethod().then(() => {
-            searchPlan.common.state = 'over';
-            searchPlan.common.previewState = 'over';
+            //如果没被中断
+            if (planStore[planKey]) {
+                planStore[planKey].common.state = 'over';
+                planStore[planKey].common.previewState = 'over';
+            }
         });
     }
     return 'do cash';

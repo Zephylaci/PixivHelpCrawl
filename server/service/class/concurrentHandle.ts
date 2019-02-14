@@ -2,8 +2,6 @@
 *  提供，依赖child_process和不依赖的两种实现方式
 *  
 *  TODO 提供超时处理
-*  TODO 主动结束
-*  TODO:各种回调
 */
 import {logger,loggerErr,loggerShow} from '../../utils/logger';
 import { fork } from 'child_process';
@@ -226,6 +224,16 @@ export class concurrentHandleClass {
         }
         throw 'concurrent 错误的调用'
         
+    }
+    /**
+     *  中断
+     */
+    breakQuery(){
+        let queryObj = this;
+        let common = queryObj.common; 
+        logger.info(`${queryObj.privateAttr.queryName}: 中断`)
+        common.linkList=[];
+        common.waitList=[]; 
     }
     showState() {
         let queryObj = this;

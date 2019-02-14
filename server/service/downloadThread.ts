@@ -31,6 +31,12 @@ export let downloadProcessHandle = {
         },5);
         return downloadProcessHandle.queryStart(list).overControl();
         
+    },
+    getDownList:()=>{
+        return new concurrentHandleClass({
+            queryName:'downloadThread',
+            step:downloadStep
+        },5);
     }
 }
 

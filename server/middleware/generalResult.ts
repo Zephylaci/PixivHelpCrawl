@@ -1,4 +1,5 @@
-import { resultBean } from "../utils/bean/resultBean";
+import { resultBean } from "../type/bean/resultBean";
+
 
 export function generalResult(ctx) {
     if (ctx.request.method === 'POST') {

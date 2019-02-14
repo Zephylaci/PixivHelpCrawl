@@ -4,7 +4,6 @@ const methodMap = {
     init: ({
         clientSocket,
     }) => {
-        console.log('init');
         let keyList = pixivSearch.getList();
         let result = [];
         keyList.forEach((planKey) => {
