@@ -1,22 +1,30 @@
 import * as Koa from 'koa'
-const app = new Koa()
 import * as json from 'koa-json'
 import * as onerror from 'koa-onerror'
 import * as bodyparser from 'koa-bodyparser'
 import * as KoaRouterBase from'koa-router'
 import * as staticServer from'koa-static-server'
 import * as path from 'path';
+import * as koaGizep from 'koa-compress';
 
 var mainConfig = require('../config/index')
 var pathConfig = mainConfig['pathConfig']
-
 
 import {loggerShow,loggerErr, loggerRes} from './utils/logger';
 import { makeRouterList } from './utils/makeRouterList';
 import { routerConfig } from './router/api-routers';
 import generalResult from './middleware/generalResult';
+
+const app = new Koa()
 const KoaRouter = KoaRouterBase();
 onerror(app)
+app.use(koaGizep({
+  filter: function (content_type) {
+  	return /(javascript|text)/i.test(content_type)
+  },
+  threshold: 2048,
+  flush: require('zlib').Z_SYNC_FLUSH
+}));
 
 // middlewares
 app.use(bodyparser({
@@ -42,6 +50,7 @@ app.use(staticServer({
   rootDir: path.resolve(pathConfig.webPath),
   rootPath: '/'
 })); 
+
 
 // error-handling
 app.on('error', (err, ctx) => {
