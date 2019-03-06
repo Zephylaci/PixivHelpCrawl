@@ -12,7 +12,7 @@ var mainObj = {
 	contrl: async (ctx, next) => {
 
 		//如果是autoCash调用
-
+		
 		var resultArr = [];
 
 		//TODO 精简参数处理

@@ -6,7 +6,7 @@
 import {logger,loggerErr,loggerShow} from '../../utils/logger';
 import { fork } from 'child_process';
 import { concurrentCommonInter, concurrentPrivateInter } from '../../type/concurrentHandle';
-import { NoProcessStdout } from '../../../config';
+import { NoProcessStdout, execArgv } from '../../../config';
 
 
 /**
@@ -282,9 +282,17 @@ class Process {
                 return stepPromise
             }
         }else{
+
             try{
+
+                if(execArgv.indexOf('--inspect-brk')!==-1){
+                    var port = Math.floor(Math.random()*1000+10000)
+                    execArgv[execArgv.indexOf('--inspect-brk')] = `--inspect-brk=${port}`
+                    console.log(execArgv);
+                }
                 let process = fork(privateAttr.processPath,[],{
-                   silent:NoProcessStdout
+                   silent:NoProcessStdout,
+                   execArgv: execArgv
                 });
                 process.on('message',this.queryOver.bind(this));
                 process.on('close',(code,signal)=>{

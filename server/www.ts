@@ -10,7 +10,7 @@ import app from './koa-server';
 import * as http from 'http';
 import { loggerShow } from './utils/logger';
 import { socketHandle } from './middleware/socketHandle';
-
+//"exec": "ts-node app.ts" 
 //socketIo
 const socketIo = require("socket.io");
 
@@ -20,6 +20,7 @@ const env = require('../config/');
 // 将端口号设置为配置文件的端口号，默认值为3000,dev,test默认端口3001
 const port = normalizePort(env.port || '3000');
 // 打印输出端口号
+
 loggerShow.info('listen prot: ' + env.port);
 
 //初始化相关目录

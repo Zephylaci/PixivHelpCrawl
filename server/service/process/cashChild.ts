@@ -8,7 +8,6 @@ var wait = 5000;
 var mainQuery:any = {};
 function childFun(getConfig) {
 	mainQuery = new handlePixivHotListClass(getConfig);
-
     mainQuery.queryStartWithCash()
         .then(() => {
 			tryGet = 1;

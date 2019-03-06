@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run clear&&npx tsc",
     "clear": "rm ./built/* -rf",
-    "dev": "nodemon",
+    "dev": "cross-env NODE_ENV=development nodemon",
     "start": "node built/app.js",
     "test": "jest"
   },
@@ -19,6 +19,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "cheerio": "^1.0.0-rc.2",
+    "cross-env": "^5.2.0",
     "koa": "^2.5.1",
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",

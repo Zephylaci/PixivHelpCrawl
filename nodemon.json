@@ -1,6 +1,7 @@
 {
     "watch": ["server","app.ts","config"], 
     "ext": "ts,js", 
-    "ignore": [], 
-    "exec": "ts-node app.ts" 
-  }
+    "ignore": [],
+    "exec":"node --inspect -r ts-node/register app.ts"
+
+}
