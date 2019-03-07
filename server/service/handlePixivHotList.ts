@@ -2,19 +2,27 @@
 import getPixivData from '../service/getPixivData';
 import  pixivTagFilter from '../utils/pixivTagFilter';
 
-import {logger,loggerErr,loggerShow}  from '../utils/logger';
+import {loggerErr}  from '../utils/logger';
 import { downloadProcessHandle, cashImgHandleSet } from "./downloadThread";
-import { redisControl } from '../model/redisControl';
+
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
+/**
+ *  日榜api数据的获取
+ *  FIXME: 使用缓存的实现
+ */
 export class handlePixivHotListClass {
-    COMMON:any;
-    closeRedis:any;
+    private COMMON:{
+        getType: string,
+        getDate: string,
+        startPage: number,
+        endPage: number
+    };
     constructor(
         {
-            getType = null, //获取的类型（不能为null）
-            getDate = null, //指定的时间(不能为null)
-            startPage = 1,  //开始读取的页数
-            endPage = 1,   //结束读取的页数
+            getType , //获取的类型（不能为null）
+            getDate , //指定的时间(不能为null)
+            startPage=1,  //开始读取的页数
+            endPage=1,   //结束读取的页数
         }
     ) {
         //调用前注意参数的处理
@@ -24,7 +32,6 @@ export class handlePixivHotListClass {
             startPage: startPage,
             endPage: endPage
         }
-        this.closeRedis = redisControl.end;
     }
     //不使用缓存的主过程
     async queryStartNoCash() {
@@ -36,7 +43,7 @@ export class handlePixivHotListClass {
 			
         let BaseUrl = MainUrlStr.replace('${type}', COMMON.getType).replace('${date}', COMMON.getDate.replace(/-/g, ''));
         for (let i = COMMON.startPage; i <= COMMON.endPage; i++) {
-            var queryUrl = BaseUrl.replace('${page}', i);
+            var queryUrl = BaseUrl.replace('${page}', String(i));
             var queryResult = await this.originQuery(queryUrl, useCash);
             if(queryResult.retStat===1){
                 resultArr = resultArr.concat(queryResult.data.contents);
@@ -57,22 +64,11 @@ export class handlePixivHotListClass {
 
         let BaseUrl = MainUrlStr.replace('${type}', COMMON.getType).replace('${date}', COMMON.getDate.replace(/-/g, ''));
         for (let i = COMMON.startPage; i <= COMMON.endPage; i++) {
-            let queryUrl = BaseUrl.replace('${page}', i);
+            let queryUrl = BaseUrl.replace('${page}', String(i));
             let _cashResult = null;
             //读取缓存
-            await redisControl.HMGET({
-                mainKey: mainKey,
-                key: timeKey + i
-            }).then((res) => {
-                if (Object.prototype.toString.call(res) === "[object Array]") {
-                    let cashData = res[0];
-                    //缓存的数据
-                    if (cashData) {
-                        _cashResult = JSON.parse(cashData).contents;
-                    }
-
-                }
-            });
+            //TODO: 将缓存数据读取至 _cashResult,错误处理，及错误抛出
+            
             if (_cashResult === null) {
                 _cashResult = [];
                 var queryResult = await this.originQuery(queryUrl, useCash);
@@ -82,12 +78,12 @@ export class handlePixivHotListClass {
             }
            resultArr = resultArr.concat(_cashResult);
         }
-        //TODO 错误处理，及错误抛出
+    
         //正常结束
         return resultArr;
 
     }
-    async originQuery(url, useCash) {
+    private async originQuery(url, useCash) {
         //过滤参数
         function changeData(item) {
             let cashItem = {};
@@ -139,21 +135,16 @@ export class handlePixivHotListClass {
 
         return result
     }
-    async saveQueryResult(queryResult) {
-        //缓存逻辑
-        console.time('downImgList');
-        
+    private async saveQueryResult(queryResult) {
+        //TODO: 缓存逻辑
+  
         var downList = queryResult.cashDownList
-
-        
-       
         let resHandle =  cashImgHandleSet(queryResult.data.contents);
         await downloadProcessHandle.downList(downList).then(resHandle);
 
         delete queryResult.cashDownList;
 		let  setRedis = JSON.stringify(queryResult);
-        await redisControl.HMSET(JSON.parse(setRedis));
-        console.timeEnd('downImgList');
+ 
         return queryResult.data.contents;
     }
 }

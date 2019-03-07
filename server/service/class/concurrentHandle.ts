@@ -284,12 +284,7 @@ class Process {
         }else{
 
             try{
-
-                if(execArgv.indexOf('--inspect-brk')!==-1){
-                    var port = Math.floor(Math.random()*1000+10000)
-                    execArgv[execArgv.indexOf('--inspect-brk')] = `--inspect-brk=${port}`
-                    console.log(execArgv);
-                }
+                
                 let process = fork(privateAttr.processPath,[],{
                    silent:NoProcessStdout,
                    execArgv: execArgv

@@ -1,5 +1,6 @@
-const logConfig= require('../config')['log'];
+
 import * as path from 'path';
+import { logConfig } from '../config';
 
 //日志根目录
 const baseLogPath = path.resolve(__dirname, logConfig.basePath);
@@ -10,31 +11,31 @@ const baseConfig = {
         stdout: {
             type: 'console',
         },
-        console:{
-            type:'console',
+        console: {
+            type: 'console',
         },
         http: {//请求日志
             type: 'dateFile',
-            filename: baseLogPath+'/response_',
+            filename: baseLogPath + '/response_',
             pattern: 'yyyy-MM-dd.log',
             alwaysIncludePattern: true
         },
-        logger:{//主日志
+        logger: {//主日志
             type: 'dateFile',
-            filename: baseLogPath+'/logger_',
+            filename: baseLogPath + '/logger_',
             pattern: 'yyyy-MM-dd.log',
             alwaysIncludePattern: true
         },
         error: {//错误日志
             type: 'dateFile',
-            filename: baseLogPath+'/error_',
+            filename: baseLogPath + '/error_',
             pattern: 'yyyy-MM-dd.log',
             alwaysIncludePattern: true
         }
     },
     categories: {
         default: { appenders: ['console', 'logger'], level: 'debug' },
-        http:{ appenders: ['console','http'], level: 'debug' },
+        http: { appenders: ['console', 'http'], level: 'debug' },
         stdout: { appenders: ['stdout'], level: 'debug' },
         error: { appenders: ['console', 'error'], level: 'error' }
     }
@@ -42,32 +43,32 @@ const baseConfig = {
 /**
  *  根据不同level输出不同的Logger配置
  */
-const levelState= {
-    'debug':()=>{
+const levelState = {
+    'debug': () => {
         let outConfig = Object.assign(baseConfig);
         let appenders = outConfig.appenders;
-        for(let key in appenders){
+        for (let key in appenders) {
             appenders[key]['type'] = 'console';
         }
-        outConfig.categories={
+        outConfig.categories = {
             default: { appenders: ['logger'], level: 'debug' },
-            http:{ appenders: ['http'], level: 'debug' },
+            http: { appenders: ['http'], level: 'debug' },
             stdout: { appenders: ['stdout'], level: 'debug' },
             error: { appenders: ['error'], level: 'error' }
         }
         return outConfig
     },
-    'watching':()=>{
+    'watching': () => {
         let outConfig = Object.assign(baseConfig);
-        outConfig.categories.http.appenders=['http'];
+        outConfig.categories.http.appenders = ['http'];
         return outConfig;
     },
-    'running':()=>{
+    'running': () => {
         let outConfig = Object.assign(baseConfig);
 
-        outConfig.categories={
+        outConfig.categories = {
             default: { appenders: ['logger'], level: 'debug' },
-            http:{ appenders: ['http'], level: 'debug' },
+            http: { appenders: ['http'], level: 'debug' },
             error: { appenders: ['error'], level: 'warn' }
         }
         return outConfig

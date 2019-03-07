@@ -27,7 +27,7 @@ export class resultBean{
  *  1 请求成功
  * -1 请求失败 
  *  @param{any} result
- *  通常为执行结果，即使只有一值也是一个数组
+ *  通常为执行结果
  */
 export class queryBean{
     retState:number

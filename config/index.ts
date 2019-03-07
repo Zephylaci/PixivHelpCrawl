@@ -1,31 +1,20 @@
-var fs = require('fs');
-var defConfig = {
+
+const defConfig = {
     port: 8082,
-    mysqlConfig: {
-        useMysql: true,
-        host: '',
-        user: '',
-        password: '',
-        port: '3386',
-        database: '',
-        charset: 'utf8mb4',
-        connectTimeout: 180000
-    },
-    log: {
+    logConfig: {
         basePath: '../logs',
         level: 'debug' // debug watching  running  
     },
-    redisConfig: {
+    cashConfig: {
         useCash: false,
+        dbAddress:'./client/cash',
+        cashPath:'',
         autoCash: {
             enable: false,
             runDate: '11:30:00',
             plan: ['mode=daily', 'mode=rookie', 'mode=daily_r18', 'mode=weekly_r18', 'mode=male_r18', 'mode=weekly', 'mode=male'],
             deep: 2
-        },
-        host: '127.0.0.1',
-        port: '4001',
-        passwd: ''
+        }
     },
     pixivConfig: {
         form: {
@@ -46,9 +35,8 @@ var defConfig = {
         }
     },
     linkProxy: {
-        useLinkProxy: false,
-        linkProxyAddr: ''
-
+        useLinkProxy:true,
+        linkProxyAddr: 'http://192.168.10.103:8118'
     },
     pathConfig: {
         webPath: './client',
@@ -57,22 +45,29 @@ var defConfig = {
     NoProcessStdout: false,
     execArgv:process.execArgv
 }
-console.log(process.execArgv);
 
-if (fs.existsSync('./config/config.js')) {
-    let myConfig = require('./config.js')
-    defConfig = Object.assign(defConfig, myConfig)
-}
-
-//调试时得设置
-console.log(process.env.NODE_ENV);
+//调试时的设置
 if (process.env.NODE_ENV === 'development') {
-    defConfig.execArgv = ['--inspect-brk','C:\\workSpace\\pixivHelp\\node_modules\\_ts-node@7.0.1@ts-node\\dist\\bin.js'];
+    //为了vscode 能调试子进程
+    let execArgv = defConfig.execArgv
+    let port = Math.floor(Math.random()*1000+10000);
+    if(execArgv.indexOf('--inspect-brk')!==-1){
+        execArgv[execArgv.indexOf('--inspect-brk')] = `--inspect-brk=${port}`;
+    }else{
+        execArgv.unshift(`--inspect-brk=${port}`);
+    }
+    defConfig.execArgv = execArgv;
     defConfig.NoProcessStdout = false;
 }
 
-export let { NoProcessStdout,execArgv, pixivConfig, redisConfig, pathConfig, mysqlConfig, linkProxy } = defConfig;
-
+export let {
+    cashConfig,
+    pathConfig,
+    pixivConfig,
+    linkProxy,
+    logConfig,
+    execArgv,
+    NoProcessStdout,
+} = defConfig;
 export default defConfig;
-module.exports = defConfig;
 

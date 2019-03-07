@@ -14,9 +14,9 @@ import { socketHandle } from './middleware/socketHandle';
 //socketIo
 const socketIo = require("socket.io");
 
-const debug = require('debug')('demo:server')
+const debug = require('debug')('demo:server');
 //引入配置文件
-const env = require('../config/');
+import env from '../config/';
 // 将端口号设置为配置文件的端口号，默认值为3000,dev,test默认端口3001
 const port = normalizePort(env.port || '3000');
 // 打印输出端口号

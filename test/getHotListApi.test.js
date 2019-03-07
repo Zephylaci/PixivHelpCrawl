@@ -4,9 +4,9 @@
  */
 
 var axios = require('axios')
-var env = require('../config/config');
 
-const address = `http://localhost:${env.port}/api/` 
+
+const address = `http://localhost:8082/api/` 
 
 /**
  *  1、对获取每日热榜（getPixivHotList）的api测试
