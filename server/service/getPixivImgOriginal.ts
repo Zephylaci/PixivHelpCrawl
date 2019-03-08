@@ -6,6 +6,9 @@ let Process = getProcessItem({
     processAddr:'../process/getPixivImgProcess',
     processName:'getPixivImgProcess'
 });
+if(!Process){
+    throw 'getPixivImgOriginal: 创建失败';
+}
 let COMMON={
     runStat:false,
     addItem:0,

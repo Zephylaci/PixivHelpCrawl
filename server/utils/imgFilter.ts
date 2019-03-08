@@ -32,7 +32,7 @@ export function Astraea(opt){
    return result;
 }
 /**
- * TODO 现在看这个真是混沌....根据类型系统重写
+ * TODO:现在看这个真是混沌....根据类型系统重写
  */
 Astraea.Scales={
     Publice:{

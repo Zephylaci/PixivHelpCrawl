@@ -4,8 +4,9 @@
  *  进程管理
  */
 
-import { getProcessOptType } from "../type/processHandle";
+import { getProcessOptType } from "../type/";
 import { processHandleItemClass } from "../service/class/processHandleItem";
+import { logger, loggerErr } from "./logger";
 
 
 const processStorage = new Map();
@@ -32,16 +33,24 @@ export function getProcessItem({
     processAddr,
     waitTime = 120000,
 }: getProcessOptType) {
-
     let processHandleItem: processHandleItemClass = processStorage.get(processName);
-    if (!processHandleItem) {
-        processHandleItem = createProcessItem({
-            processAddr,
-            processName,
-            waitTime,
-        })
-        processStorage.set(processName, processHandleItem);
+    try {
+        if (!processHandleItem) {
+            processHandleItem = createProcessItem({
+                processAddr,
+                processName,
+                waitTime,
+            })
+            processStorage.set(processName, processHandleItem);
+        }
+
+    } catch (e) {
+        loggerErr.error('processHandle:创建失败！');
+        loggerErr.error(e);
+        
+        return null;
     }
+
     return processHandleItem;
 }
 

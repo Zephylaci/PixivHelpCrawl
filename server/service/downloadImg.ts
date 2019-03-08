@@ -37,7 +37,7 @@ class downLoadClass {
         tryNum = 3
     }) {
         this.downToPath = downToPath;
-        this.downFrom = 'pixiv'; //TODO 支持其它图站的下载
+        this.downFrom = 'pixiv'; 
         this.tryAgainConfig = {
             wait: wait,
             tryNum: tryNum,
@@ -64,7 +64,7 @@ class downLoadClass {
                 runNum: 0,
             }
             if (checkImgComplete(imgPath)) {
-                loggerRes.info('downLoadImg:文件 ' + fileName + ' 存在且已经下载完全.')
+                loggerRes.info('downLoadImg:文件 ' + fileName + ' 存在且已经下载完全.');
                 downObj.downOver(Option);
             } else {
                 Option.runNum=1;

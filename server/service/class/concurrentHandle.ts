@@ -1,11 +1,11 @@
 /* 针对同时多次处理 的抽象
 *  提供，依赖child_process和不依赖的两种实现方式
 *  
-*  TODO 提供超时处理
+*  TODO:提供超时处理
 */
 import {logger,loggerErr,loggerShow} from '../../utils/logger';
 import { fork } from 'child_process';
-import { concurrentCommonInter, concurrentPrivateInter } from '../../type/concurrentHandle';
+import { concurrentCommonInter, concurrentPrivateInter } from '../../type/';
 import { NoProcessStdout, execArgv } from '../../../config';
 
 
@@ -284,15 +284,10 @@ class Process {
         }else{
 
             try{
-
-                if(execArgv.indexOf('--inspect-brk')!==-1){
-                    var port = Math.floor(Math.random()*1000+10000)
-                    execArgv[execArgv.indexOf('--inspect-brk')] = `--inspect-brk=${port}`
-                    console.log(execArgv);
-                }
+                
                 let process = fork(privateAttr.processPath,[],{
                    silent:NoProcessStdout,
-                   execArgv: execArgv
+                   execArgv: execArgv()
                 });
                 process.on('message',this.queryOver.bind(this));
                 process.on('close',(code,signal)=>{

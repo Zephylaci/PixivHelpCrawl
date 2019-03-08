@@ -1,7 +1,7 @@
 let socketClient = require('socket.io-client');
-var env = require('../config/config');
-let address = `127.0.0.1:${env.port}/`;
+import config from '../config';
 
+const address = `http://localhost:${config.port}/api/` 
 
 test('doSearchWebSocket', () => {
     let testProcess = new Promise(async (resolve,reject)=>{

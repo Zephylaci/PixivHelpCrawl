@@ -3,7 +3,7 @@
 *  功能：根据前端数据返回榜单数据
 *  未完成：是否过滤不可配置      
 **/
-import { redisConfig} from '../../../config/index';
+import { cashConfig} from '../../../config/index';
 import { handlePixivHotListClass } from "../../service/handlePixivHotList";
 
 
@@ -28,7 +28,7 @@ var mainObj = {
 			ctx.body.contents = '参数错误';
 			return
 		}
-		var useCash = redisConfig.useCash && upUseCash ? true : false;
+		var useCash = cashConfig.useCash && upUseCash ? true : false;
 
 		let mainQuery = new handlePixivHotListClass({
 			getType: upType, //获取的类型（不能为null）

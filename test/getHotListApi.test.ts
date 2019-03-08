@@ -3,10 +3,10 @@
  * 
  */
 
-var axios = require('axios')
-var env = require('../config/config');
+import axios from 'axios';
+import config from '../config';
 
-const address = `http://localhost:${env.port}/api/` 
+const address = `http://localhost:${config.port}/api/` 
 
 /**
  *  1、对获取每日热榜（getPixivHotList）的api测试
@@ -20,7 +20,7 @@ const address = `http://localhost:${env.port}/api/`
  *    
  */
 test('getPixivHotList', () => {
-    let mockQuery = {
+    let mockQuery:any = {
         type: 'mode=daily',
         date: getBeforeYesterday(),
         startPage: 4,

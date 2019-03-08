@@ -28,19 +28,20 @@
     "koa-router": "^7.4.0",
     "koa-static-server": "^1.4.0",
     "log4js": "^3.0.6",
-    "mysql": "^2.16.0",
     "node-schedule": "^1.3.1",
-    "redis": "^2.8.0",
     "request": "^2.87.0",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.2.0",
     "socket.io-stream": "^0.9.1",
+    "sqlite3": "^4.0.6",
     "zlib": "^1.0.5"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.9",
     "@types/node": "^10.12.18",
     "jest": "^23.6.0",
     "nodemon": "^1.18.6",
+    "ts-jest": "^24.0.0",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.4"
   }
