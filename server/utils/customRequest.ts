@@ -26,9 +26,6 @@ let customRequest:request = function(opt){
     if(linkProxy.useLinkProxy===true){
         requestOpt['proxy']=linkProxy.linkProxyAddr;
     }
-    /**
-     * TODO 根据具体类型重写  
-     */
     let mainRequest:any = {};
     let promise:any = new Promise((resolve,reject)=>{
         function responseFun(error, response, data){

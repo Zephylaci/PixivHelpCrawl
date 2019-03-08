@@ -1,6 +1,6 @@
 
 /**
- *  TODO 重构
+ *  TODO: 重构
  */
 
 import { StringTool } from "../utils/stringTool";

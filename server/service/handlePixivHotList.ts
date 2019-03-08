@@ -4,11 +4,11 @@ import  pixivTagFilter from '../utils/pixivTagFilter';
 
 import {loggerErr}  from '../utils/logger';
 import { downloadProcessHandle, cashImgHandleSet } from "./downloadThread";
+import { getListCash, insertListCash } from '../model/listStorageOperation';
 
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
 /**
  *  日榜api数据的获取
- *  FIXME: 使用缓存的实现
  */
 export class handlePixivHotListClass {
     private COMMON:{
@@ -46,7 +46,7 @@ export class handlePixivHotListClass {
             var queryUrl = BaseUrl.replace('${page}', String(i));
             var queryResult = await this.originQuery(queryUrl, useCash);
             if(queryResult.retStat===1){
-                resultArr = resultArr.concat(queryResult.data.contents);
+                resultArr = resultArr.concat(queryResult.contents);
             }
         }
 
@@ -59,21 +59,35 @@ export class handlePixivHotListClass {
         let useCash = true;
         let COMMON = this.COMMON;
 
-        let mainKey = COMMON.getType.replace('mode=', '');
-        let timeKey = COMMON.getDate.replace(/-/g, '') + '_p';
+        let typeKey = COMMON.getType.replace('mode=', '');
+        let timeKey = COMMON.getDate;
 
         let BaseUrl = MainUrlStr.replace('${type}', COMMON.getType).replace('${date}', COMMON.getDate.replace(/-/g, ''));
         for (let i = COMMON.startPage; i <= COMMON.endPage; i++) {
-            let queryUrl = BaseUrl.replace('${page}', String(i));
             let _cashResult = null;
+            let getListOpt = {
+                listFromDate:timeKey,
+                listType:typeKey,
+                listPage:i
+            }
             //读取缓存
-            //TODO: 将缓存数据读取至 _cashResult,错误处理，及错误抛出
-            
+            await getListCash(getListOpt)
+                .then(queryBean=>{
+                    if(queryBean.retState===1&&typeof queryBean.result!=="boolean"){
+                        let queryRes = queryBean.result;
+                        _cashResult = JSON.parse(queryRes.result)['contents'];
+                       
+                    }
+                })
+                .catch(err=>{
+                    loggerErr.error(err);
+                })
             if (_cashResult === null) {
+                let queryUrl = BaseUrl.replace('${page}', String(i));
                 _cashResult = [];
                 var queryResult = await this.originQuery(queryUrl, useCash);
                 if(queryResult.retStat===1){
-                    _cashResult = await this.saveQueryResult(queryResult);
+                    _cashResult = await this.saveQueryResult(queryResult,getListOpt);
                 } 
             }
            resultArr = resultArr.concat(_cashResult);
@@ -119,12 +133,8 @@ export class handlePixivHotListClass {
             return result
         }
         result ={
-            retStat:1,
-            key:getResult.date + '_p' + getResult.page,
-            mainHash:getResult.mode,
-            data:{
-                contents:getResult.contents
-            }
+            retStat: 1,
+            contents:getResult.contents
         };
 
         if(Array.isArray(getResult.cashDownList)){
@@ -135,17 +145,21 @@ export class handlePixivHotListClass {
 
         return result
     }
-    private async saveQueryResult(queryResult) {
-        //TODO: 缓存逻辑
-  
+    private async saveQueryResult(queryResult,insertOpt) {
+      
         var downList = queryResult.cashDownList
-        let resHandle =  cashImgHandleSet(queryResult.data.contents);
+        let resHandle =  cashImgHandleSet(queryResult.contents);
         await downloadProcessHandle.downList(downList).then(resHandle);
-
+        
         delete queryResult.cashDownList;
-		let  setRedis = JSON.stringify(queryResult);
+        delete queryResult.retStat;
+
+        let  result = JSON.stringify(queryResult);
+        insertOpt.result = result;
+
+        await insertListCash(insertOpt);
  
-        return queryResult.data.contents;
+        return queryResult.contents;
     }
 }
 

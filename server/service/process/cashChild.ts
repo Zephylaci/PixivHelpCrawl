@@ -5,9 +5,9 @@ import { loggerShow } from "../../utils/logger";
 
 var tryGet = 1;
 var wait = 5000;
-var mainQuery:any = {};
+
 function childFun(getConfig) {
-	mainQuery = new handlePixivHotListClass(getConfig);
+	let mainQuery = new handlePixivHotListClass(getConfig);
     mainQuery.queryStartWithCash()
         .then(() => {
 			tryGet = 1;
@@ -15,7 +15,6 @@ function childFun(getConfig) {
         }).catch((err) => {
 		    console.log(err);
 			myCatch(err,getConfig);
-
         });
 }
 function myCatch(err,getConfig){
@@ -37,6 +36,5 @@ process.on('message', (opt) => {
 });
 
 process.on('disconnect', () => {
-    mainQuery.closeRedis();
     loggerShow.info('autoCash process:disconnect!')
 })

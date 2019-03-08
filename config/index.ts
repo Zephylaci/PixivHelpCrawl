@@ -6,11 +6,11 @@ const defConfig = {
         level: 'watching' // debug watching  running  
     },
     cashConfig: {
-        useCash: false,
-        dbAddress:'./client/cash',
-        cashPath:'',
+        useCash: true,
+        dbAddress: __dirname.match(/.*Help.*\\/)[0] + 'db\\production.db',
+        cashPath: './client/cash/',
         autoCash: {
-            enable: false,
+            enable: true,
             runDate: '11:30:00',
             plan: ['mode=daily', 'mode=rookie', 'mode=daily_r18', 'mode=weekly_r18', 'mode=male_r18', 'mode=weekly', 'mode=male'],
             deep: 2
@@ -35,7 +35,7 @@ const defConfig = {
         }
     },
     linkProxy: {
-        useLinkProxy:true,
+        useLinkProxy: true,
         linkProxyAddr: 'http://192.168.10.103:8118'
     },
     pathConfig: {
@@ -43,23 +43,28 @@ const defConfig = {
         downloadPath: './client/download'
     },
     NoProcessStdout: false,
-    execArgv:process.execArgv
+    execArgv: () => {
+        return process.execArgv
+    }
 }
 
 //调试时的设置
 if (process.env.NODE_ENV === 'development') {
+    defConfig.cashConfig.dbAddress = defConfig.cashConfig.dbAddress.replace('production', 'development');
+    defConfig.cashConfig.autoCash.plan = ['mode=daily', 'mode=rookie'];
+
     //为了vscode 能调试子进程
-    let execArgv = defConfig.execArgv
-    let port = Math.floor(Math.random()*1000+10000);
-    if(execArgv.indexOf('--inspect')!==-1){
-        execArgv[execArgv.indexOf('--inspect')] = `--inspect=${port}`;
-    }else{
-        execArgv.unshift(`--inspect=${port}`);
+    
+    if (process.execArgv.indexOf('--inspect') !== -1) {
+        defConfig.execArgv = function () {
+            let port = Math.floor(Math.random() * 1000 + 10000);
+            let execArgv = Object.assign([],process.execArgv);
+            execArgv[execArgv.indexOf('--inspect')] = `--inspect=${port}`;
+            return execArgv
+        }
     }
-    defConfig.execArgv = execArgv;
     defConfig.NoProcessStdout = false;
 }
-
 
 export let {
     cashConfig,

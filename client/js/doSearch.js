@@ -128,7 +128,7 @@ var doSearchObject = {
         });
         $('#showPlane').click(function(){
             var nowKey = $('#planList select').val();
-            //TODO 验证是否完成
+            //FIXME:验证是否完成
             $.loadingConturl.appendLoading();
             $.postData({planKey:nowKey},'/api/getPlanDetail').success(function(res){
                 if(res.code=200){

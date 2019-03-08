@@ -28,12 +28,16 @@ export class resultBean{
  * -1 请求失败 
  *  @param{any} result
  *  通常为执行结果
+ *  @param{any} errMsg 
+ *  失败时为 错误信息
  */
 export class queryBean{
     retState:number
     result:any
+    errMsg:any
     constructor(){
         this.retState= 0;
         this.result = [];
+        this.errMsg = null;
     }
 }

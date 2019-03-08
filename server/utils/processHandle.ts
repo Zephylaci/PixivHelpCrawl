@@ -4,7 +4,7 @@
  *  进程管理
  */
 
-import { getProcessOptType } from "../type/processHandle";
+import { getProcessOptType } from "../type/";
 import { processHandleItemClass } from "../service/class/processHandleItem";
 import { logger, loggerErr } from "./logger";
 
