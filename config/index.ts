@@ -3,7 +3,7 @@ const defConfig = {
     port: 8082,
     logConfig: {
         basePath: '../logs',
-        level: 'debug' // debug watching  running  
+        level: 'watching' // debug watching  running  
     },
     cashConfig: {
         useCash: false,
@@ -51,14 +51,15 @@ if (process.env.NODE_ENV === 'development') {
     //为了vscode 能调试子进程
     let execArgv = defConfig.execArgv
     let port = Math.floor(Math.random()*1000+10000);
-    if(execArgv.indexOf('--inspect-brk')!==-1){
-        execArgv[execArgv.indexOf('--inspect-brk')] = `--inspect-brk=${port}`;
+    if(execArgv.indexOf('--inspect')!==-1){
+        execArgv[execArgv.indexOf('--inspect')] = `--inspect=${port}`;
     }else{
-        execArgv.unshift(`--inspect-brk=${port}`);
+        execArgv.unshift(`--inspect=${port}`);
     }
     defConfig.execArgv = execArgv;
     defConfig.NoProcessStdout = false;
 }
+
 
 export let {
     cashConfig,

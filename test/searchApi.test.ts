@@ -1,6 +1,7 @@
 let socketClient = require('socket.io-client');
+import config from '../config';
 
-const  address = `127.0.0.1:8082/`;
+const address = `http://localhost:${config.port}/api/` 
 
 test('doSearchWebSocket', () => {
     let testProcess = new Promise(async (resolve,reject)=>{
