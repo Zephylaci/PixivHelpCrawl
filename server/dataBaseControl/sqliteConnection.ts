@@ -68,7 +68,7 @@ export class sqlHandle {
         return promise
     }
     //对原本的api进行包装的函数
-    packPromise(opt: {
+    private packPromise(opt: {
         method: string;
         args: any;
     }) {
@@ -90,7 +90,7 @@ export class sqlHandle {
 
                     resultBean.retState = 1;
                     if (!result) {
-                        result = true;
+                        result = false;
                     }
                     resultBean.result = result;
                     

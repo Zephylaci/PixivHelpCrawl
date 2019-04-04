@@ -63,6 +63,7 @@ if (process.env.NODE_ENV === 'development') {
             return execArgv
         }
     }
+    defConfig.logConfig.level = 'debug';
     defConfig.NoProcessStdout = false;
 }
 

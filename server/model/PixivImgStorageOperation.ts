@@ -1,59 +1,52 @@
 import { queryBean } from "../type/bean/resultBean";
 import { getInsertOpt, getSqlite, getFindOpt } from "../dataBaseControl/sqliteControl";
 import { loggerErr } from "../utils/logger";
+import { insertImgOptType, getImgOptType } from "../type";
 
-
-type insertListType = {
-    listFromDate: string,
-    listType: string,
-    listPage:number,
-    result: string
-}
-
-type getListType = {
-    listFromDate: string,
-    listType: string,
-    listPage:number
-}
-
-export async function insertListCash(insertListOpt: insertListType) {
+export async function insertImgStorage(insertImgOpt:insertImgOptType) {
     let sqlLiteClient = await getSqlite();
     let queryResult = new queryBean();
 
     let insertOpt = getInsertOpt({
-        tableName: 'listStorage',
-        range: insertListOpt
+        tableName: 'pixiv_imgStorage',
+        range: insertImgOpt
     });
     await sqlLiteClient.run(insertOpt)
         .then((resBean: queryBean) => {
             queryResult = resBean;
         })
         .catch((err) => {
-            loggerErr.error('insertListCash error:', err);
+            loggerErr.error('insertImgStorage error:', err);
             queryResult.retState = -1;
             queryResult.errMsg = err;
         });
 
     return queryResult
 }
-export async function getListCash(getListOpt: getListType) {
+
+export async function getImgDetail({
+    getImgOpt,
+    getValue= ['imgId','imgTitle','imgName','imgTags']
+}:{
+    getImgOpt:getImgOptType
+    getValue:Array<string>
+}){
     let sqlLiteClient = await getSqlite();
     let queryResult = new queryBean();
-
     let getOpt = getFindOpt({
-        tableName: 'listStorage',
-        range: getListOpt,
-        getValue: ['result']
+        tableName: 'pixiv_imgStorage',
+        range: getImgOpt,
+        getValue: getValue
     });
     await sqlLiteClient.get(getOpt)
         .then((resBean: queryBean) => {
             queryResult = resBean;
         })
         .catch((err) => {
-            loggerErr.error('insertListCash error:', err);
+            loggerErr.error('getImgDetail error:', err);
             queryResult.retState = -1;
             queryResult.errMsg = err;
         });
-
     return queryResult
-}
+}   
+

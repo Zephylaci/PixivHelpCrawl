@@ -46,3 +46,33 @@ export type sqliteOptType = {
     sqlString:string;
     range?:any;
 }
+
+
+/** 
+ * 
+ *  Model Type
+**/
+type insertListType = {
+    listFromDate: string,
+    listType: string,
+    listPage:number,
+    result: string
+}
+
+type getListType = {
+    listFromDate: string,
+    listType: string,
+    listPage:number
+}
+
+type insertImgOptType = {
+    imgId:string;
+    imgTitle:string;
+    imgName:string;
+    imgTags:string;
+}
+
+type getImgOptType = {
+    imgId?:string;
+    imgName?:string;
+}

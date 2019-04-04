@@ -101,7 +101,6 @@ class downLoadClass {
         });
         pipe.on('finish', () => {
             if (checkImgComplete(imgPath)) {
-                
                 downObj.downOver(Option);
             } else {
                 loggerErr.warn('downLoadImg:文件 ' + fileName + '下载出错,文件不完全');
@@ -109,7 +108,7 @@ class downLoadClass {
                     downObj.tryAgain(Option);
                 } else {
                     loggerErr.error('downLoadImg:文件 ' + fileName + '下载完成,但是可能文件不完全!下载次数:' + Option.runNum);
-                    Option.downState = 'incomplete'
+                    Option.state = 'incomplete'
                     Option.mainDownloadEnd(Option);
                 }
 
@@ -142,7 +141,7 @@ class downLoadClass {
             }
         } else {
             loggerErr.error('downLoadImg:文件下载失败，已尝试：' + Option.runNum + '次重下');
-            Option.downState = 'faill'
+            Option.state = 'downErr'
             Option.mainDownloadEnd(Option);
         }
 
