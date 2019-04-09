@@ -1,12 +1,14 @@
 import getPixivData from '../../service/getPixivData';
-
-import { pathConfig } from "../../../config";
 import { loggerErr, loggerShow, logger } from "../../utils/logger";
 import { concurrentHandleClass } from ".././class/concurrentHandle";
 import { downloadImg } from ".././downloadImg";
 import { insertImgOptType } from '../../type';
-import { insertImgStorage } from '../../model/PixivImgStorageOperation';
-
+import { insertImgStorage, getImgDetail, delImgDetail } from '../../model/PixivImgStorageOperation';
+import { pathConfig } from '../../../config';
+import { queryBean } from '../../type/bean/resultBean';
+import { resolve } from 'path';
+import { existsSync } from 'fs';
+import axios from 'axios';
 const getPixivImgOriginalClass = new concurrentHandleClass({
     queryName: 'getPixivImgOriginal',
     step: handleUpitem, //单次操作 通常是async函数，返回需要的结果值
@@ -28,15 +30,56 @@ function getNeedData(insertOpt, getRes) {
     insertOpt.imgTags = JSON.stringify(tags);
     return insertOpt
 }
+async function imgIsExist(imgId: string) {
+    let isExist = false;
+    //本地数据库及文件查找;
+    await getImgDetail({
+        getImgOpt: {
+            imgId
+        },
+        getValue: ['imgName']
+    }).then(async (queryRes: queryBean) => {
+        if (queryRes.retState === 1) {
+            let imgName = queryRes.result.imgName
+            if (imgName && existsSync(resolve(pathConfig.downloadPath, imgName))) {
+                isExist = true;
+            } else {
+                //不存在文件而存在数据库信息则删除本地库中的内容
+                await delImgDetail({
+                    imgId
+                })
+            }
+        }
+    });
+    if (isExist === false) {
+        //FIXME: 配置文件中配置远端地址，存在则请求
+        await axios.post('http://192.168.10.105:8082/api/judgePixivImgExist', {
+            imgId
+        })
+            .then(function (response) {
+                let resData = response.data
+                if (resData.code == 200) {
+                    isExist = resData.contents.existState;
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
 
+    return isExist;
+}
 async function handleUpitem(queryItem: number) {
     let imgId = queryItem;
     let result: pixivImgResInter = {
         imgId: imgId,
         state: 'init'
     };
-    //FIXME: 此处可以先通过读取文件夹来决定是否下载
 
+    if (await imgIsExist(String(imgId))) {
+        result.state = 'isExist';
+        return result
+    }
     let queryUrl = `https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${imgId}`;
     let getMonomers = new getPixivData.MonomersClass();
 
@@ -73,6 +116,7 @@ async function handleUpitem(queryItem: number) {
             result.fileName = downRes.fileName;
             result.imgPath = downRes.imgPath;
         });
+
     //写入数据库
     if (result.state != 'downErr') {
         let { fileName } = result;
@@ -90,6 +134,7 @@ async function handleUpitem(queryItem: number) {
     return result
 }
 
+
 process.on('message', (queryList) => {
     getPixivImgOriginalClass.queryStart(queryList).overControl({
         success: (res) => {
@@ -101,6 +146,7 @@ process.on('message', (queryList) => {
         }
     });
 })
+
 process.on('disconnect', () => {
     loggerShow.info('getPixivProcess: 开始关闭');
 });

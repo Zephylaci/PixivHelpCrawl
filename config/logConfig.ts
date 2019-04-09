@@ -3,7 +3,7 @@ import * as path from 'path';
 import { logConfig } from '../config';
 
 //日志根目录
-const baseLogPath = path.resolve(__dirname, logConfig.basePath);
+const baseLogPath = path.resolve(logConfig.basePath);
 const level = logConfig.level;
 
 const baseConfig = {

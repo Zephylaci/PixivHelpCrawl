@@ -3,21 +3,32 @@ import * as socketStream from 'socket.io-stream';
 import { pathConfig } from '../../config/index';
 import * as crypto from 'crypto';
 import * as Stream from 'stream';
+import { delImgDetail } from '../model/PixivImgStorageOperation';
+import { loggerErr } from '../utils/logger';
+import { getPixivOriginalDownState } from '../service/getPixivImgOriginal';
 const downPath = pathConfig.downloadPath
 export const methodMap = {
     init: ({
         clientSocket,
     }) => {
-        let fileList = fs.readdirSync(downPath, {
-            encoding: 'utf8'
-        });
-
-        clientSocket.local.emit('synchronous-fileState', {
-            contents: {
-                rows: fileList
-            }
-        });
-
+        //TODO: 如果下载正在进行，则挂起，且只挂起一个
+        if(getPixivOriginalDownState()===false){
+            let fileList = fs.readdirSync(downPath, {
+                encoding: 'utf8'
+            });
+    
+            clientSocket.local.emit('synchronous-fileState', {
+                contents: {
+                    rows: fileList
+                }
+            });
+        }else{
+            clientSocket.local.emit('synchronous-fileState', {
+                contents: {
+                    rows: []
+                }
+            });
+        }
     },
     getFile: ({
         clientSocket = {},
@@ -43,9 +54,14 @@ export const methodMap = {
             let filePath = downPath + '/' + data.fileName
             fs.unlink(filePath, (err) => {
                 if (err) {
-                    console.log('del:', data.fileName, 'err');
+                    loggerErr.error(`del: ${data.fileName} ${err}`);
                 }
             });
+             delImgDetail({
+                imgName:data.fileName
+            }).catch((err)=>{
+                loggerErr.error(`del sql:${data.fileName} ${err}`);
+            })
         }
         methodMap.oneStep();
 

@@ -1,13 +1,14 @@
+//bashDir:__dirname.match(/.*Help.*\\/)[0],
 
 const defConfig = {
     port: 8082,
     logConfig: {
-        basePath: '../logs',
-        level: 'watching' // debug watching  running  
+        basePath: './logs',
+        level: 'debug' // debug watching  running  
     },
     cashConfig: {
         useCash: true,
-        dbAddress: __dirname.match(/.*Help.*\\/)[0] + 'db\\production.db',
+        dbAddress:'./db/production.db',
         cashPath: './client/cash/',
         autoCash: {
             enable: true,
@@ -52,7 +53,7 @@ const defConfig = {
 if (process.env.NODE_ENV === 'development') {
     defConfig.cashConfig.dbAddress = defConfig.cashConfig.dbAddress.replace('production', 'development');
     defConfig.cashConfig.autoCash.plan = ['mode=daily', 'mode=rookie'];
-
+    defConfig.port = 8081;
     //为了vscode 能调试子进程
     
     if (process.execArgv.indexOf('--inspect') !== -1) {

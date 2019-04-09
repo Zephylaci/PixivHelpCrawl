@@ -53,6 +53,7 @@ function checkOver(){
     }else{
         let errIdArr = [];
         loggerShow.info(`getPixivImgOriginal : 总输出：${result.length}`);
+        loggerShow.info(result);
         result.forEach(element => {
             if(element.state.indexOf('Err')!==-1){
                 loggerShow.warn(`downErr:${JSON.stringify(element)}`);
@@ -73,4 +74,7 @@ function checkOver(){
     COMMON.addItem = 0;
     COMMON.step=0;
     COMMON.resList=[];
+}
+export function getPixivOriginalDownState():boolean{
+    return COMMON.runStat;
 }
