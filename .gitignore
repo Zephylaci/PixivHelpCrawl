@@ -4,7 +4,6 @@ quickDev.sh
 *.swp
 node_modules/
 logs/
-/built/
 .cookie
 client/download/
 client/cash/

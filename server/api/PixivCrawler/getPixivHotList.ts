@@ -5,25 +5,24 @@
 **/
 import { cashConfig} from '../../../config/index';
 import { handlePixivHotListClass } from "../../service/handlePixivHotList";
+import { filterTag } from '../../utils/pixivTagFilter';
 
 
 
 var mainObj = {
 	contrl: async (ctx, next) => {
-
-		//如果是autoCash调用
-		
 		var resultArr = [];
-
-		//TODO 精简参数处理
 		let upData = ctx.request.body;
+
 		var upUseCash = upData.useCash;
 		var upTime = upData.date;
 		var upType = upData.type;
 
-		var startPage = upData.startPage
-		var endPage = upData.endPage;
-
+		let {filter,startPage,endPage} = upData
+		let filterTagOpt:filterTag = null;
+		if(filter){
+			 filterTagOpt =  new filterTag();
+		}
 		if (endPage < startPage) {
 			ctx.body.contents = '参数错误';
 			return
@@ -41,7 +40,13 @@ var mainObj = {
 		} else {
 			resultArr = await mainQuery.queryStartNoCash();
 		}
-
+		if(filterTagOpt){
+			if(filterTagOpt.over!==true){
+				await filterTagOpt.over
+			}
+			resultArr = filterTagOpt.listFilter(resultArr)
+			console.log(resultArr.length)
+		}
 		ctx.body.contents = resultArr;
 		if (resultArr.length === 0) {
 			ctx.body.code = 201;

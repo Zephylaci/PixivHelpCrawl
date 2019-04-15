@@ -27,3 +27,12 @@ CREATE TABLE IF NOT EXISTS pixiv_imgStorage (
 	imgName VARCHAR(255) NOT NULL,
 	imgTags VARCHAR(255) NOT null
 );
+/*
+ 保存需要过滤的标签名称
+ id 自增主键
+ tagName 需要过滤的名称
+*/
+CREATE TABLE IF NOT EXISTS pixiv_TagsfilterList(
+	id INTEGER PRIMARY KEY NOT NULL,
+	tagName VARCHAR(255) NOT NULL
+);
