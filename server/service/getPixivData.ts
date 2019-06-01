@@ -192,6 +192,7 @@ Norn.Scales = {
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
         var info:any = Public.info;
+
         if (upUrl.indexOf('format=json') != -1) {
             if (typeof info === "string") {
                 //兼容

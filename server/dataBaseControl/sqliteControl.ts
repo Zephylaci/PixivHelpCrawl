@@ -1,20 +1,9 @@
 import sqlLiteClient from "./sqliteConnection";
 import { sqliteOptType } from "../type";
 import { queryBean } from "../type/bean/resultBean";
+import { singleClassHelp } from "../utils/tool";
 
-function SingClient(signClass) {
-    let instance;
-    let handler = {
-        construct(target, args) {
-            if (!instance) {
-                instance = new signClass(...args)
-            }
-            return instance
-        }
-    }
-    return new Proxy(signClass, handler)
-}
-const signSqlClient = SingClient(sqlLiteClient);
+const signSqlClient = singleClassHelp(sqlLiteClient);
 
 export async function getSqlite() {
     let client: sqlLiteClient = new signSqlClient();
@@ -57,11 +46,16 @@ export function getFindOpt({
     getValue: Array<string>;
     range: any;
 }): sqliteOptType {
-
-    let keys = Object.keys(range);
-    var findRange = {};
+    if (range === false) {
+        return {
+            sqlString: `SELECT ${getValue} FROM ${tableName}`,
+            range: {}
+        }
+    }
+    let findRange = {};
     let valuesRange: string | Array<string> = null;
     if (typeof range === 'object') {
+        let keys = Object.keys(range);
         valuesRange = [];
         for (let keyName of keys) {
             var rangeName = '$' + keyName
