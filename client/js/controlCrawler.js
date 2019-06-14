@@ -150,7 +150,7 @@ var controlCrawlerObject = {
                  }}
              );
             mdui.snackbar({
-                message: '检查redis信息，并等待确认',
+                message: '检查信息，并等待确认',
                 position: 'top'
             });
         });

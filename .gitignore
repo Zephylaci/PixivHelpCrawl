@@ -16,4 +16,5 @@ config/filter
 *.ntvs*
 *.njsproj
 *.sln
+*.db
 

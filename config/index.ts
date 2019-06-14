@@ -41,7 +41,8 @@ const defConfig = {
     },
     pathConfig: {
         webPath: './client',
-        downloadPath: './client/download'
+        downloadPath: './client/download',
+        cashPath:'./client/cash'
     },
     NoProcessStdout: false,
     execArgv: () => {

@@ -79,6 +79,7 @@ export class sqlHandle {
             if (state === 'conection') {
                 let resultBean = new queryBean();
                 db[method](...args, (err, result) => {
+                    
                     if (err) {
                         keepLink.waitStart(this);
                         resultBean.retState = -1;
@@ -106,7 +107,7 @@ export class sqlHandle {
     query(sqlStr: string) {
         return this.packPromise({
             method: 'exec',
-            args: sqlStr
+            args: [sqlStr]
         });
     }
     run(sqlLiteOpt: sqliteOptType | string) {
