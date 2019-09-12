@@ -2,21 +2,31 @@
 
 const defConfig = {
     port: 8082,
+    //日志设置
     logConfig: {
         basePath: './logs',
         level: 'debug' // debug watching  running  
     },
     cashConfig: {
         useCash: true,
+        //sqlite 数据库文件地址 
         dbAddress:'./db/production.db',
-        cashPath: './client/cash/',
+        /**
+         * 自动缓存
+         * 如果开启：每天11:30 会自动请求plan中配置的类型的前两页
+         */
         autoCash: {
-            enable: true,
+            enable: false,
             runDate: '11:30:00',
             plan: ['mode=daily', 'mode=rookie', 'mode=daily_r18', 'mode=weekly_r18', 'mode=male_r18', 'mode=weekly', 'mode=male'],
             deep: 2
         }
     },
+    /**
+    * pixiv_id  p站用户名
+    *  password p站密码
+    *  这个配置用于模拟登录
+    */
     pixivConfig: {
         form: {
             pixiv_id: '',
@@ -30,13 +40,15 @@ const defConfig = {
             'Referer': "http://www.pixiv.net",
             'User-Agent': "Mozilla/5.0 (Windows NT 6.3; rv:27.0) Gecko/20100101 Firefox/27.0",
         },
+        //cokie文件的位置
         cookieAbout: {
             path: '.cookie',
             cookies: null
         }
     },
+    //代理配置 使用代理访问
     linkProxy: {
-        useLinkProxy: true,
+        useLinkProxy: false,
         linkProxyAddr: 'http://192.168.10.103:8118'
     },
     pathConfig: {
