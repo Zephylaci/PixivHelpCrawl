@@ -15,7 +15,6 @@ import {loggerErr} from '../utils/logger';
 export function Astraea(opt){
     var filterType = opt.filterType;
     var defJudgeTag = [];
-    console.log(__dirname);
     if(fs.existsSync('./config/filter')){
         var defJudgeTagstr = fs.readFileSync('./config/filter','utf-8');
         defJudgeTag = defJudgeTagstr.split(',');

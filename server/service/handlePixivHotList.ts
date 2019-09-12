@@ -1,10 +1,9 @@
 
 import getPixivData from '../service/getPixivData';
-import  pixivTagFilter from '../utils/pixivTagFilter';
 
 import {loggerErr}  from '../utils/logger';
 import { downloadProcessHandle, cashImgHandleSet } from "./downloadThread";
-import { getListCash, insertListCash } from '../model/listStorageOperation';
+import { getListCash, insertListCash } from '../model/PixivListStorageOperation';
 
 const MainUrlStr = 'https://www.pixiv.net/ranking.php?format=json&${type}&p=${page}&date=${date}';
 /**
@@ -73,10 +72,9 @@ export class handlePixivHotListClass {
             //读取缓存
             await getListCash(getListOpt)
                 .then(queryBean=>{
-                    if(queryBean.retState===1&&typeof queryBean.result!=="boolean"){
+                    if(queryBean.retState===1&&queryBean.result!==false){
                         let queryRes = queryBean.result;
                         _cashResult = JSON.parse(queryRes.result)['contents'];
-                       
                     }
                 })
                 .catch(err=>{
@@ -123,7 +121,7 @@ export class handlePixivHotListClass {
         if (useCash) {
             handleList.push(makeDownList);
         }
-        let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList,pixivTagFilter.judgeItem);
+        let getResult = await new getPixivData.ConvenientClass().contrl(url,handleList);
         let result = null;
         if(!getResult){
             loggerErr.error(`pixivHotList: 读取数据失败 ${url}`)
@@ -140,8 +138,6 @@ export class handlePixivHotListClass {
         if(Array.isArray(getResult.cashDownList)){
             result.cashDownList=getResult.cashDownList
         }
-
-
 
         return result
     }

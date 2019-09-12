@@ -1,5 +1,5 @@
 import doSearchMethod  from '../socket/doSearchMethod';
-// import controlCrawlerMethod  from '../socket/controlCrawlerMethod';
+import controlCrawlerMethod  from '../socket/controlCrawlerMethod';
 import synchronousMethod from '../socket/synchronousMethod'
 import { loggerShow } from '../utils/logger';
 //TODO: 修复控制台
@@ -9,11 +9,11 @@ const handleConfig = [
         methodMap: doSearchMethod
 
     },
-    // {
-    //     key: 'controlCrawler',
-    //     methodMap: controlCrawlerMethod
+    {
+        key: 'controlCrawler',
+        methodMap: controlCrawlerMethod
 
-    // },
+    },
      {
         key: 'synchronous',
         methodMap: synchronousMethod

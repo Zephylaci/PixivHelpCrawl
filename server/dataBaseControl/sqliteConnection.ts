@@ -68,7 +68,7 @@ export class sqlHandle {
         return promise
     }
     //对原本的api进行包装的函数
-    packPromise(opt: {
+    private packPromise(opt: {
         method: string;
         args: any;
     }) {
@@ -79,6 +79,7 @@ export class sqlHandle {
             if (state === 'conection') {
                 let resultBean = new queryBean();
                 db[method](...args, (err, result) => {
+                    
                     if (err) {
                         keepLink.waitStart(this);
                         resultBean.retState = -1;
@@ -90,7 +91,7 @@ export class sqlHandle {
 
                     resultBean.retState = 1;
                     if (!result) {
-                        result = true;
+                        result = false;
                     }
                     resultBean.result = result;
                     
@@ -106,7 +107,7 @@ export class sqlHandle {
     query(sqlStr: string) {
         return this.packPromise({
             method: 'exec',
-            args: sqlStr
+            args: [sqlStr]
         });
     }
     run(sqlLiteOpt: sqliteOptType | string) {

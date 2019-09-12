@@ -1,63 +1,46 @@
-import * as fs from 'fs';
-import {loggerShow,loggerErr,logger} from '../utils/logger';
-//过滤器
-const needFilter = new Set();
-function makeSet(){
-    if(fs.existsSync('./config/filter')){
-        let needFilterTagStr = fs.readFileSync('./config/filter','utf-8');
-        needFilterTagStr = needFilterTagStr.replace(/\n/g,',');
-        let needFilterTagArr = needFilterTagStr.split(',').filter((item)=>{return item});
-        needFilterTagArr.forEach((item)=>{
-            needFilter.add(item);
+import { singleClassHelp } from "./tool";
+import { addFilterTag, getFilterList } from "../model/PixivTagsFilterLIstOperation";
+
+
+/**
+ * tags 过滤器
+ *  1、生成一个单例，初始化的时候创建一次
+ *  2、之后添加的时候同步添加数据库和这里做持久化
+ *  3、如果之后内存占用成为问题则提供超时和主动释放的逻辑
+ */
+class filterTagBase {
+    private filterSet: Set<string>
+    constructor() {
+        this.filterSet = new Set();
+        this.initSet();
+    }
+    listFilter(imgList: Array<any>) {
+        return imgList.filter(item => {
+            for (let tag of item.tags) {
+                if (this.notSave(tag)) {
+                    return false
+                }
+            }
+            return true
         });
-    }else{
-        loggerShow.warn('Filter: 没有读取到规则配置');
     }
-
-
-}
-makeSet();
-function isExiseInFilterList(tagStr){
-    if(needFilter.size===0){
-        return null
+    addFilterTagName(tagName: string) {
+        this.filterSet.add(tagName)
+        addFilterTag(tagName);
     }
-    return needFilter.has(tagStr)
-}
-function judgeItem (item){
-    let tagArr = item.tags;
-    for(let i = 0,l=tagArr.length;i<l;i++){
-        let tagStr = tagArr[i];
-        if(isExiseInFilterList(tagStr)){
-            return true;
-        };
+    //FIXME: 正常应该有方式阻塞，等待这里查询数据库完成，但是没有找到好的方法，使用单例使这个问题最小化
+    private initSet() {
+        getFilterList().then(queryResult => {
+            if (queryResult.retState == 1 && Array.isArray(queryResult.result)) {
+                queryResult.result.forEach(item => {
+                    this.filterSet.add(item.tagName)
+                });
+            }
+        });
     }
-    return false;
-}
-function addTags(tagsArr){
-    let addTags = [];
-    tagsArr.forEach((tag)=>{
-       if(!isExiseInFilterList(tag)){
-           addTags.push(tag);
-       } 
-    });
-    var newTagsStr = addTags.toString();
-    if(addTags.length<=0){
-        loggerShow.warn('Filter: 没有需要添加的tag',newTagsStr);
-        return
+    private notSave(tagName: string) {
+        return this.filterSet.has(tagName);
     }
-    
-    try{
-        fs.appendFileSync('./config/filter','\n'+newTagsStr);
-    }catch(err){
-        loggerErr.error('Filter: 写入规则文件失败 err:',err);
-    }
-    logger.info('Filter: 写入过滤规则:',newTagsStr);
-    addTags.forEach((item)=>{
-        needFilter.add(item);
-    });
 }
 
-export default {
-    judgeItem,
-    addTags
-};
+export const filterTag = singleClassHelp(filterTagBase)

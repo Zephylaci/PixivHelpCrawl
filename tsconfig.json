@@ -7,7 +7,7 @@
         //"noImplicitAny": false,
         "moduleResolution": "node",
         //"sourceMap": true,
-        "outDir": "./built",  // TS文件编译后会放入到此文件夹内
+        "outDir": "./built/dist/",  // TS文件编译后会放入到此文件夹内
        // "baseUrl": ".",
         // "paths": {
         //     "*": [

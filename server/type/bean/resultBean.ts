@@ -1,8 +1,8 @@
 /**
  *  http 响应时的容器
  *  @param{number} retCode 
- *  1000 默认返回值
- *  2000 成功
+ *  100 默认返回值
+ *  200 成功
  */
 export class resultBean{
     code:number

@@ -3,26 +3,25 @@
 *  功能：根据前端数据返回榜单数据
 *  未完成：是否过滤不可配置      
 **/
-import { cashConfig} from '../../../config/index';
+import { cashConfig } from '../../../config/index';
 import { handlePixivHotListClass } from "../../service/handlePixivHotList";
+import { filterTag } from '../../utils/pixivTagFilter';
+
 
 
 
 var mainObj = {
 	contrl: async (ctx, next) => {
-
-		//如果是autoCash调用
-		
 		var resultArr = [];
-
-		//TODO 精简参数处理
 		let upData = ctx.request.body;
+
 		var upUseCash = upData.useCash;
 		var upTime = upData.date;
 		var upType = upData.type;
 
-		var startPage = upData.startPage
-		var endPage = upData.endPage;
+		let { filter, startPage, endPage } = upData
+
+		const filterHandle = new filterTag()
 
 		if (endPage < startPage) {
 			ctx.body.contents = '参数错误';
@@ -41,12 +40,14 @@ var mainObj = {
 		} else {
 			resultArr = await mainQuery.queryStartNoCash();
 		}
-
+		if (filter) {
+			resultArr = filterHandle.listFilter(resultArr)
+		}
 		ctx.body.contents = resultArr;
 		if (resultArr.length === 0) {
 			ctx.body.code = 201;
 			ctx.body.contents = '缓存不存在且读取出错';
-		}else{
+		} else {
 			ctx.body.code = 200
 		}
 		return ctx

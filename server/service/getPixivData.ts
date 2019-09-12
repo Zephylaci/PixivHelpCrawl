@@ -80,7 +80,7 @@ class ConvenientClass extends NornClass {
     constructor() {
         super()
     }
-    async contrl(queryUrl, callbackArrConfig = [], filterFun = null) {
+    async contrl(queryUrl, callbackArrConfig = []) {
         let opt = {
             url: queryUrl
         }
@@ -93,7 +93,7 @@ class ConvenientClass extends NornClass {
                 }
                 Object.assign(Norn.Scales.Public, handleOpt);
                 //需要过滤可以从这里传进去
-                result = Norn.Scales.Convenient(callbackArrConfig, filterFun);
+                result = Norn.Scales.Convenient(callbackArrConfig);
             } else {
                 result = getResult.data
             }
@@ -187,11 +187,12 @@ Norn.Scales = {
         $: '',
         info: ''
     },
-    Convenient: (callbackArrConfig=[],filterFun=null) => {
+    Convenient: (callbackArrConfig=[]) => {
          
         var Public = Norn.Scales.Public;
         var upUrl = Public.upUrl;
         var info:any = Public.info;
+
         if (upUrl.indexOf('format=json') != -1) {
             if (typeof info === "string") {
                 //兼容
@@ -211,9 +212,6 @@ Norn.Scales = {
             let resArr = info.contents;
             let afterArr = [];
             resArr.forEach((item)=>{
-               if(filterFun&&filterFun(item)){
-                    return
-                }
                 callbackArr.forEach((step:any)=>{
                    item=step(item,info);
                 });
