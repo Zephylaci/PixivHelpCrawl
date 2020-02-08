@@ -45,6 +45,7 @@ export function downList(queryList){
     }
 
 }
+//FIXME: 这里对失败的进程处理不完善
 function checkOver(){
     let result = COMMON.resList;
     if(result.length!==COMMON.addItem){

@@ -48,7 +48,7 @@ const defConfig = {
     },
     //代理配置 使用代理访问
     linkProxy: {
-        useLinkProxy: false,
+        useLinkProxy: true,
         linkProxyAddr: 'http://192.168.10.103:8118'
     },
     pathConfig: {

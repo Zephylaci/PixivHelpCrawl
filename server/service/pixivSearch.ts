@@ -113,7 +113,7 @@ class searchProcess {
         let queryUrl = queryItem;
         let queryProcess = new getPixivData.InsightClass();
         let queryResult = await queryProcess.contrl(queryUrl);
-
+        console.log(queryResult)
         let process = this;
         if (!process.result.relatedTags) {
             process.result.relatedTags = queryResult.relatedTags;
