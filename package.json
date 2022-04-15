@@ -25,6 +25,7 @@
         "camelcase-keys": "^7.0.2",
         "cross-env": "^7.0.3",
         "crypto": "^1.0.1",
+        "dayjs": "^1.11.1",
         "decamelize-keys": "^1.1.0",
         "file-type": "16.5.3",
         "fs-extra": "^10.0.1",
