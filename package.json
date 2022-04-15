@@ -1,0 +1,55 @@
+{
+    "name": "pixiv-crawl",
+    "version": "0.1.1",
+    "description": "",
+    "exports": "./app.js",
+    "engines": {
+        "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+    },
+    "scripts": {
+        "build": "npm run clear&&npx tsc",
+        "clear": "rm ./built/dist/* -rf",
+        "dev": "cross-env NODE_ENV=development nodemon",
+        "start": "node built/dist/app.js"
+    },
+    "keywords": [
+        "pixiv",
+        "Crawl"
+    ],
+    "author": "zephyru@163.com",
+    "license": "GPL",
+    "dependencies": {
+        "@types/koa-bodyparser": "^4.3.7",
+        "@types/koa-json": "^2.0.20",
+        "axios": "^0.26.1",
+        "camelcase-keys": "^7.0.2",
+        "cross-env": "^7.0.3",
+        "crypto": "^1.0.1",
+        "decamelize-keys": "^1.1.0",
+        "file-type": "16.5.3",
+        "fs-extra": "^10.0.1",
+        "got": "11.8.3",
+        "https-proxy-agent": "^5.0.0",
+        "koa": "^2.5.1",
+        "koa-bodyparser": "^4.2.1",
+        "koa-compress": "^5.1.0",
+        "koa-json": "^2.0.2",
+        "koa-onerror": "^4.0.0",
+        "koa-router": "^10.1.1",
+        "koa-static-server": "^1.4.0",
+        "log4js": "^6.4.4",
+        "node-schedule": "^2.1.0",
+        "sequelize": "^6.19.0",
+        "sqlite3": "^5.0.2",
+        "zlib": "^1.0.5"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^9.0.13",
+        "@types/koa": "^2.13.4",
+        "@types/koa-router": "^7.4.4",
+        "@types/node": "^17.0.23",
+        "nodemon": "^2.0.15",
+        "ts-node": "^10.7.0",
+        "typescript": "^4.6.3"
+    }
+}

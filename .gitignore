@@ -1,0 +1,24 @@
+.DS_Store
+quickPush.sh
+quickDev.sh
+*.swp
+node_modules/
+logs/
+.cookie
+client/download/
+client/cash/
+config/config.js
+config/filter
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.db
+build
+client
+study
+imgStorage
+
