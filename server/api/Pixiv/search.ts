@@ -1,5 +1,5 @@
 // 路由设置
-import * as Router from 'koa-router';
+import  Router from 'koa-router';
 import { resultBean } from '../../type/bean/resultBean';
 import pixivClient from '../../module/pixiv-api/index';
 

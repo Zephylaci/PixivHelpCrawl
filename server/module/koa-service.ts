@@ -1,9 +1,9 @@
-import * as Koa from 'koa';
-import * as json from 'koa-json';
-import * as onerror from 'koa-onerror';
-import * as bodyparser from 'koa-bodyparser';
-import * as staticServer from 'koa-static-server';
-import * as gzip from 'koa-compress';
+import Koa from 'koa';
+import json from 'koa-json';
+import onerror from 'koa-onerror';
+import bodyparser from 'koa-bodyparser';
+import staticServer from 'koa-static-server';
+import gzip from 'koa-compress';
 import apiRouter from '../router/api-routers';
 
 const mainConfig = require('../../config/index');

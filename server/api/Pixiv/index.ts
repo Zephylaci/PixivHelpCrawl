@@ -1,5 +1,5 @@
 // 路由设置
-import * as Router from 'koa-router';
+import Router from 'koa-router';
 import ranking from './ranking';
 import search from './search';
 import proxy from './proxy';

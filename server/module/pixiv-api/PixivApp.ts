@@ -2,9 +2,9 @@ import { stringify } from 'querystring';
 import { createHash as cryptoCreateHash } from 'crypto';
 import { parse as urlParse } from 'url';
 import axios, { AxiosRequestConfig } from 'axios';
-import * as decamelizeKeys from 'decamelize-keys';
-import * as camelcaseKeys from 'camelcase-keys';
-import * as httpsProxyAgent from 'https-proxy-agent';
+import decamelizeKeys from 'decamelize-keys';
+import camelcaseKeys from 'camelcase-keys';
+import httpsProxyAgent from 'https-proxy-agent';
 /**
  * TODO: 拆分，以及各种异常处理
  */
