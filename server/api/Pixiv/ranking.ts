@@ -1,9 +1,8 @@
 // 路由设置
 import Router from 'koa-router';
-import dayjs from 'dayjs';
 import { resultBean } from '../../type/bean/resultBean';
-import pixivClient from '../../module/pixiv-api/index';
 import { pixivMode } from '../../type';
+import { getRankingIllusts } from '../../service/handlePixiv';
 
 type rankingParams = {
     date: string; //'2020-01-01',
@@ -12,16 +11,11 @@ type rankingParams = {
     limit: number;
 };
 
-type rankingRes = {
-    illusts: Array<any>;
-    nextUrl: string | null;
-};
-
 const main = new Router();
 main.post('/ranking', async function (ctx) {
     const res: resultBean = ctx.body;
     const params: rankingParams = ctx.request.body;
-    const { date, mode, offset = 0, limit = 100, ...other } = params;
+    const { date, mode, offset = 0, limit = 90 } = params;
 
     res.contents = {
         illusts: []
@@ -33,31 +27,11 @@ main.post('/ranking', async function (ctx) {
     }
 
     res.code = 200;
-
-    for (let i = offset; i < limit; ) {
-        const queryParams = {
-            date: dayjs(date).format('YYYY-MM-DD'),
-            mode,
-            offset: i,
-            ...other
-        };
-        const body: rankingRes = await pixivClient
-            .illustRanking(queryParams as any)
-            .catch(error => {
-                return {
-                    illusts: [],
-                    nextUrl: ''
-                };
-            });
-        res.contents.illusts.push(...body.illusts);
-        if (body.nextUrl) {
-            const url = new URL(body.nextUrl);
-            i = Number(url.searchParams.get('offset'));
-        } else {
-            break;
-        }
-        console.log(i);
-    }
+    const result = await getRankingIllusts({ date, mode, offset, limit });
+    res.contents = {
+        ...res.contents,
+        ...result
+    };
 });
 
 export default main.routes();

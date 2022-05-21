@@ -11,9 +11,15 @@ const Ranking = dbClient.define(
             primaryKey: true,
             autoIncrement: true
         },
-        date: DataTypes.STRING(50),
-        mode: DataTypes.STRING(50),
-        offset: DataTypes.SMALLINT
+        date: {
+            type: DataTypes.STRING(50),
+            unique: 'index'
+        },
+        mode: {
+            type: DataTypes.STRING(50),
+            unique: 'index'
+        },
+        startOffset: DataTypes.SMALLINT
     },
     {
         tableName: 'RankingRecord',
@@ -22,4 +28,20 @@ const Ranking = dbClient.define(
     }
 );
 
-Ranking.belongsToMany(Images, { through: 'RankingImages' });
+const RankingImages = dbClient.define(
+    'RankingImages',
+    {
+        id: {
+            type: DataTypes.INTEGER,
+            unique: true,
+            primaryKey: true,
+            autoIncrement: true
+        }
+    },
+    {
+        tableName: 'RankingImages',
+        timestamps: false
+    }
+);
+
+Ranking.belongsToMany(Images, { through: RankingImages });

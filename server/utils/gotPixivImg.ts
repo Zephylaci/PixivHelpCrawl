@@ -17,7 +17,10 @@ export const gotImgInstance = got.extend({
     agent
 });
 
-export function parseImgItem(item: PixivIllust) {
+interface illustsItem extends PixivIllust {
+    [x: string]: any;
+}
+export function parseImgItem(item: illustsItem) {
     const {
         id,
         title,

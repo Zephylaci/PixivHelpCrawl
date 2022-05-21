@@ -4,5 +4,6 @@ import { cashConfig } from '../../../config';
 
 export const dbClient = new Sequelize({
     dialect: 'sqlite',
-    storage: cashConfig.dbAddress
+    storage: cashConfig.dbAddress,
+    logging: false
 });
