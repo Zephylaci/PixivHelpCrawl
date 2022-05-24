@@ -20,6 +20,16 @@ export const gotImgInstance = got.extend({
 interface illustsItem extends PixivIllust {
     [x: string]: any;
 }
+
+export function transPreviewUrl(url: string, needCash = true) {
+    const target = needCash ? '/api/pixiv/proxy-save' : '/api/pixiv/proxy';
+    return url.replace('https://i.pximg.net', '/api/pixiv/proxy-save');
+}
+
+export function transDbResult<T>(res: T): T {
+    return JSON.parse(JSON.stringify(res));
+}
+
 export function parseImgItem(item: illustsItem) {
     const {
         id,
@@ -37,7 +47,7 @@ export function parseImgItem(item: illustsItem) {
     } = item;
 
     const originUrl: any = { imageUrls, pageCount };
-    const previewUrl = imageUrls.medium.replace('https://i.pximg.net', '/api/pixiv/proxy-save');
+    const previewUrl = transPreviewUrl(imageUrls.medium);
     let author = undefined;
 
     if (pageCount !== 1) {

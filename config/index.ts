@@ -2,7 +2,10 @@
 import * as Path from 'path';
 
 function resolvePath(path) {
-    return Path.resolve(__dirname, path);
+    if (process.env.NODE_ENV === 'development'){
+        return Path.resolve(__dirname, path);
+    }
+    return Path.resolve(__dirname, `../${path}`);
 }
 
 const defConfig = {

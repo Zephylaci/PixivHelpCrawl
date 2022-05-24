@@ -1,5 +1,5 @@
 export const BaseImages = {
-    attributes: ['id', 'title', 'previewUrl', 'totalBookmarks', 'totalView']
+    attributes: ['id', 'title', 'previewUrl', 'totalBookmarks', 'totalView', 'originUrlJson']
 };
 
 export const BaseTags = {

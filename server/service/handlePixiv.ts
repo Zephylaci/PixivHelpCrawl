@@ -2,11 +2,23 @@ import { getImageInfo, saveImageInfo } from '../module/dao/interface/Images';
 import { getRankingInfo, getRanking, saveRanking } from '../module/dao/interface/Ranking';
 import { BaseImages } from '../module/dao/define';
 import { PixivIllust } from '../module/pixiv-api/PixivTypes';
-import { parseImgItem } from '../utils/gotPixivImg';
+import { parseImgItem, transDbResult } from '../utils/gotPixivImg';
 import { loggerShow } from '../utils/logger';
 import { pixivMode } from '../type';
 import dayjs from 'dayjs';
 import pixivClient from '../module/pixiv-api/index';
+
+type dbIllustsItem = {
+    id: number;
+    title: string;
+    previewUrl: string;
+    totalBookmarks: number;
+    totalView: number;
+    tags: Array<any>;
+    author: any;
+    count: number;
+    originUrlJson: string;
+};
 
 type rankingRes = {
     illusts: Array<any>;
@@ -27,7 +39,12 @@ export async function saveIllust(item: PixivIllust) {
     return id;
 }
 
-async function getRankingIllustsFromPixiv({ date, mode, offset, limit }) {
+async function getRankingIllustsFromPixiv({
+    date,
+    mode,
+    offset,
+    limit
+}): Promise<Array<dbIllustsItem>> {
     let startOffset = offset;
     const illusts = [];
     for (let i = 0; i < limit; ) {
@@ -77,20 +94,25 @@ async function getRankingIllustsFromPixiv({ date, mode, offset, limit }) {
         .sort((a, b) => b.totalBookmarks - a.totalBookmarks);
 }
 
+type RankingIllustsRes = {
+    illusts: Array<dbIllustsItem>;
+    success: boolean;
+    text: string;
+};
 export async function getRankingIllusts({ date, mode, offset, limit }) {
     date = dayjs(date).format('YYYY-MM-DD');
     offset = Number(offset);
     limit = Number(limit);
 
-    const res = {
+    const res: RankingIllustsRes = {
         illusts: [],
         success: false,
-        msg: ''
+        text: ''
     };
 
     if (!pixivMode.includes(mode) || isNaN(offset) || isNaN(limit)) {
         res.success = false;
-        res.msg = '未知的mode';
+        res.text = '未知的mode';
         return res;
     }
     res.success = true;
@@ -107,5 +129,5 @@ export async function getRankingIllusts({ date, mode, offset, limit }) {
         res.illusts = await getRankingIllustsFromPixiv({ date, mode, offset, limit });
     }
 
-    return res;
+    return transDbResult(res);
 }

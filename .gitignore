@@ -18,6 +18,7 @@ config/filter
 *.sln
 *.db
 build
+client-back
 client
 study
 imgStorage

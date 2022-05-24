@@ -177,6 +177,7 @@ export default class PixivApp<CamelcaseKeys extends boolean = true> {
                 { headers }
             );
         } catch (error) {
+            console.log(error);
             throw new Error('refresh Error 1');
         }
         if (axiosResponse) {
