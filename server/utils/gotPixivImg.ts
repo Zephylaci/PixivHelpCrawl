@@ -1,7 +1,8 @@
 import got from 'got';
 import httpsProxyAgent from 'https-proxy-agent';
 import { pixivConfig, linkProxy } from '../../config';
-import { PixivIllust } from '../module/pixiv-api/PixivTypes';
+import { IllustsItem, DbIllustsItem, ResIllustsItem } from '../type/index';
+import { loggerErr } from './logger';
 
 const baseUrl = 'https://i.pximg.net/';
 let agent = null;
@@ -17,20 +18,65 @@ export const gotImgInstance = got.extend({
     agent
 });
 
-interface illustsItem extends PixivIllust {
-    [x: string]: any;
-}
-
-export function transPreviewUrl(url: string, needCash = true) {
+export function transPreviewUrl(url: string | undefined, needCash = true) {
     const target = needCash ? '/api/pixiv/proxy-save' : '/api/pixiv/proxy';
-    return url.replace('https://i.pximg.net', '/api/pixiv/proxy-save');
+    if (typeof url === 'string') {
+        return url.replace('https://i.pximg.net', target);
+    } else {
+        loggerErr.trace('transPreviewUrl warning url', url);
+    }
+    return url;
 }
 
 export function transDbResult<T>(res: T): T {
     return JSON.parse(JSON.stringify(res));
 }
 
-export function parseImgItem(item: illustsItem) {
+export function tansIllustsItem({
+    originUrlJson,
+    id,
+    title,
+    previewUrl,
+    totalBookmarks,
+    totalView,
+    tags,
+    author
+}: DbIllustsItem): ResIllustsItem {
+    const origin: any = JSON.parse(originUrlJson);
+    const item: ResIllustsItem = {
+        id,
+        title,
+        previewUrl,
+        totalBookmarks,
+        totalView,
+        tags,
+        author,
+        count: origin.pageCount
+    };
+    if (origin.pageCount > 1) {
+        item.detailUrls = [];
+        item.originUrls = [];
+
+        item.metaPages = origin.metaPages.map(({ imageUrls }) => {
+            const { squareMedium, medium, large, origin } = imageUrls;
+            const previewUel = medium || squareMedium || large;
+            const detailUrl = large || medium || squareMedium;
+
+            item.detailUrls = [transPreviewUrl(detailUrl)];
+            item.originUrls = [transPreviewUrl(origin, false)];
+            return transPreviewUrl(previewUel);
+        });
+    } else {
+        const { large, medium, squareMedium } = origin.imageUrls;
+        const detailUrl = large || medium || squareMedium;
+
+        item.detailUrls = [transPreviewUrl(detailUrl)];
+        item.originUrls = [transPreviewUrl(origin.originalImageUrl, false)];
+    }
+    return item;
+}
+
+export function parseImgItem(item: IllustsItem) {
     const {
         id,
         title,
@@ -47,7 +93,8 @@ export function parseImgItem(item: illustsItem) {
     } = item;
 
     const originUrl: any = { imageUrls, pageCount };
-    const previewUrl = transPreviewUrl(imageUrls.medium);
+    const { squareMedium, medium, large } = imageUrls;
+    const previewUrl = transPreviewUrl(medium || squareMedium || large);
     let author = undefined;
 
     if (pageCount !== 1) {
@@ -69,7 +116,7 @@ export function parseImgItem(item: illustsItem) {
             id,
             account,
             name,
-            profileImageUrl: profileImageUrls.medium
+            profileImageUrl: transPreviewUrl(profileImageUrls.medium, false)
         };
     }
 

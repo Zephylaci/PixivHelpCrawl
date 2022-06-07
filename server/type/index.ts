@@ -1,3 +1,33 @@
+import { PixivIllust } from '../module/pixiv-api/PixivTypes';
+
+export interface IllustsItem extends PixivIllust {
+    [x: string]: any;
+}
+export interface DbIllustsItem {
+    id: number;
+    title: string;
+    previewUrl: string;
+    totalBookmarks: number;
+    totalView: number;
+    tags: Array<any>;
+    author: any;
+    count: number;
+    originUrlJson: string;
+}
+export interface ResIllustsItem {
+    id: number;
+    title: string;
+    previewUrl: string;
+    totalBookmarks: number;
+    totalView: number;
+    tags: Array<any>;
+    author: any;
+    count: number;
+    metaPages?: Array<string>;
+    detailUrls?: Array<string>;
+    originUrls?: Array<string>;
+}
+
 export const pixivMode = [
     'day',
     'week',

@@ -46,4 +46,4 @@ const ImagesTags = dbClient.define(
 );
 
 Images.belongsToMany(Tags, { through: ImagesTags, as: 'tags' });
-Tags.belongsToMany(Images, { through: ImagesTags });
+Tags.belongsToMany(Images, { through: ImagesTags, as: 'images' });

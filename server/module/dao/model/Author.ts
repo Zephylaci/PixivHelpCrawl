@@ -17,6 +17,11 @@ const Author = dbClient.define(
         account: {
             type: DataTypes.STRING(50)
         },
+        // 偏好等级
+        likeLevel: {
+            type: DataTypes.TINYINT,
+            defaultValue: 0
+        },
         profileImageUrl: DataTypes.STRING
     },
     {

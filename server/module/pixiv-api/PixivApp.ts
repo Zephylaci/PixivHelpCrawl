@@ -47,7 +47,8 @@ const baseURL = 'https://app-api.pixiv.net/';
 const instance = axios.create({
     baseURL,
     headers: {
-        'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)'
+        'User-Agent': 'PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)',
+        'Accept-Language': 'zh-cn'
     },
     httpsAgent: httpsProxyAgent('http://192.168.10.106:8118')
 });

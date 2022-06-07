@@ -1,9 +1,10 @@
 // 路由设置
 import Router from 'koa-router';
 import { resultBean } from '../../type/bean/resultBean';
-import { pixivMode } from '../../type';
+import { pixivMode, ResIllustsItem } from '../../type';
+import { tansIllustsItem } from '../../utils/gotPixivImg';
 import { getRankingIllusts } from '../../service/handlePixiv';
-import { transPreviewUrl } from '../../utils/gotPixivImg';
+import { loggerErr } from '../../utils/logger';
 
 type rankingParams = {
     date: string; //'2020-01-01',
@@ -12,21 +13,9 @@ type rankingParams = {
     limit: number;
 };
 
-type illustsItem = {
-    id: number;
-    title: string;
-    previewUrl: string;
-    totalBookmarks: number;
-    totalView: number;
-    tags: Array<any>;
-    author: any;
-    count: number;
-    metaPages?: Array<string>;
-};
-
 type rankingContents = {
     success: boolean;
-    illusts: Array<illustsItem>;
+    illusts: Array<ResIllustsItem>;
 };
 
 const main = new Router();
@@ -46,33 +35,16 @@ main.post('/ranking', async function (ctx) {
     }
 
     res.code = 200;
-    const result = await getRankingIllusts({ date, mode, offset, limit });
-
-    res.text = result.text;
-    contents.success = result.success;
-    contents.illusts = result.illusts.map(
-        ({ originUrlJson, id, title, previewUrl, totalBookmarks, totalView, tags, author }) => {
-            const origin: any = JSON.parse(originUrlJson);
-            const item: illustsItem = {
-                id,
-                title,
-                previewUrl,
-                totalBookmarks,
-                totalView,
-                tags,
-                author,
-                count: origin.pageCount
-            };
-            if (origin.pageCount > 1) {
-                item.metaPages = origin.metaPages.map(({ imageUrls }) => {
-                    const { squareMedium, medium, large } = imageUrls;
-                    const previewUel = medium || squareMedium || large;
-                    return transPreviewUrl(previewUel);
-                });
-            }
-            return item;
-        }
-    );
+    try {
+        const result = await getRankingIllusts({ date, mode, offset, limit });
+        res.text = result.text;
+        contents.success = result.success;
+        contents.illusts = result.illusts.map(tansIllustsItem);
+    } catch (error) {
+        res.code = 500;
+        res.text = '服务繁忙';
+        loggerErr.error(error);
+    }
 
     res.contents = contents;
 });

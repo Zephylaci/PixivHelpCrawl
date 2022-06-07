@@ -8,9 +8,8 @@ import apiRouter from '../router/api-routers';
 
 const mainConfig = require('../../config/index');
 const pathConfig = mainConfig['pathConfig'];
-
-import { loggerShow, loggerErr, loggerRes } from '../utils/logger';
 import generalResult from '../middleware/generalResult';
+import { loggerErr, loggerRes } from '../utils/logger';
 
 const app = new Koa();
 

@@ -1,6 +1,7 @@
 import { getDbControl } from '../index';
-import { BaseImages, BaseTags, BaseAuthor } from '../define';
-import { FindOptions, IncludeOptions, Optional } from 'sequelize';
+import { DefaultImageRule, ImageRuleType } from '../define';
+import { FindOptions, Optional } from 'sequelize';
+import { makeImageParamsFromRule } from '../utils';
 interface ImageInter extends Optional<any, string> {
     id: number;
     title: string;
@@ -48,10 +49,15 @@ export async function saveImageInfo({ image, tags, author }: ImageParams) {
                     where: {
                         name: item.name
                     },
-                    attributes: ['id'],
+                    attributes: ['id', 'translatedName'],
                     defaults: item,
                     transaction
                 });
+
+                if (tag.translatedName !== item.translatedName) {
+                    tag.translatedName = item.translatedName;
+                    await tag.save({ transaction });
+                }
                 aboutTags.push(tag);
             }
 
@@ -74,52 +80,18 @@ export async function saveImageInfo({ image, tags, author }: ImageParams) {
     });
 }
 
-export async function getImageInfo(
-    id: number,
-    rule: {
-        imageAttr?: FindOptions;
-        tagAttr?: IncludeOptions;
-        authorAttr?: IncludeOptions;
-    } = {
-        imageAttr: BaseImages,
-        tagAttr: BaseTags,
-        authorAttr: BaseAuthor
-    }
-) {
+export async function getImageInfo(id: number | string, rule: ImageRuleType = DefaultImageRule) {
     const ctx = await getDbControl();
-    const Tags = ctx.model('Tags');
-    const Author = ctx.model('Author');
     const Images = ctx.model('Images');
 
-    let queryParams: FindOptions = {
-        where: {
-            id
-        }
-    };
+    const queryParams: FindOptions = await makeImageParamsFromRule({
+        queryParams: {
+            where: {
+                id
+            }
+        },
+        rule
+    });
 
-    if (rule.imageAttr) {
-        queryParams = {
-            ...queryParams,
-            ...rule.imageAttr
-        };
-    }
-    if (rule.tagAttr || rule.authorAttr) {
-        queryParams.include = [];
-        if (rule.tagAttr) {
-            queryParams.include.push({
-                model: Tags,
-                through: { attributes: [] },
-                as: 'tags',
-                ...rule.tagAttr
-            });
-        }
-        if (rule.authorAttr) {
-            queryParams.include.push({
-                model: Author,
-                as: 'author',
-                ...rule.authorAttr
-            });
-        }
-    }
     return await Images.findOne(queryParams);
 }

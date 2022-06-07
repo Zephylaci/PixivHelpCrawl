@@ -1,31 +1,18 @@
 import { getImageInfo, saveImageInfo } from '../module/dao/interface/Images';
 import { getRankingInfo, getRanking, saveRanking } from '../module/dao/interface/Ranking';
 import { BaseImages } from '../module/dao/define';
-import { PixivIllust } from '../module/pixiv-api/PixivTypes';
 import { parseImgItem, transDbResult } from '../utils/gotPixivImg';
-import { loggerShow } from '../utils/logger';
-import { pixivMode } from '../type';
+import { pixivMode, DbIllustsItem, IllustsItem } from '../type';
 import dayjs from 'dayjs';
+import { loggerShow } from '../utils/logger';
 import pixivClient from '../module/pixiv-api/index';
-
-type dbIllustsItem = {
-    id: number;
-    title: string;
-    previewUrl: string;
-    totalBookmarks: number;
-    totalView: number;
-    tags: Array<any>;
-    author: any;
-    count: number;
-    originUrlJson: string;
-};
 
 type rankingRes = {
     illusts: Array<any>;
     nextUrl: string | null;
 };
 
-export async function saveIllust(item: PixivIllust) {
+export async function saveIllust(item: IllustsItem) {
     const id = item.id;
     const images = await getImageInfo(id, { imageAttr: { attributes: ['id'] } });
     if (!images) {
@@ -44,7 +31,7 @@ async function getRankingIllustsFromPixiv({
     mode,
     offset,
     limit
-}): Promise<Array<dbIllustsItem>> {
+}): Promise<Array<DbIllustsItem>> {
     let startOffset = offset;
     const illusts = [];
     for (let i = 0; i < limit; ) {
@@ -81,7 +68,6 @@ async function getRankingIllustsFromPixiv({
     return illusts
         .map(item => {
             const { image, tags, author } = parseImgItem(item);
-
             let res: any = {
                 tags,
                 author
@@ -95,10 +81,11 @@ async function getRankingIllustsFromPixiv({
 }
 
 type RankingIllustsRes = {
-    illusts: Array<dbIllustsItem>;
+    illusts: Array<DbIllustsItem>;
     success: boolean;
     text: string;
 };
+
 export async function getRankingIllusts({ date, mode, offset, limit }) {
     date = dayjs(date).format('YYYY-MM-DD');
     offset = Number(offset);
@@ -117,7 +104,6 @@ export async function getRankingIllusts({ date, mode, offset, limit }) {
     }
     res.success = true;
     const info = await getRankingInfo({ date, mode });
-
     if (info) {
         const { count, startOffset } = info;
         if (startOffset > offset || count < limit + offset) {
@@ -127,6 +113,25 @@ export async function getRankingIllusts({ date, mode, offset, limit }) {
         }
     } else {
         res.illusts = await getRankingIllustsFromPixiv({ date, mode, offset, limit });
+    }
+
+    return transDbResult(res);
+}
+
+export async function getIllustInfo(id) {
+    let res = null;
+    res = await getImageInfo(id);
+
+    if (!res) {
+        try {
+            let queryRes = await pixivClient.illustDetail(id);
+            if (queryRes.illust) {
+                await saveIllust(queryRes.illust);
+                res = await getImageInfo(id);
+            }
+        } catch (error) {
+            console.log('error', error);
+        }
     }
 
     return transDbResult(res);
