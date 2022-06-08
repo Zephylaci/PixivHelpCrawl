@@ -9,7 +9,7 @@ export const BaseTags = {
 };
 
 export const BaseAuthor = {
-    attributes: ['name', 'profileImageUrl']
+    attributes: ['id', 'name', 'profileImageUrl']
 };
 
 export interface ImageRuleType {

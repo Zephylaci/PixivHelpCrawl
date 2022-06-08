@@ -3,26 +3,26 @@ import { DefaultImageRule, ImageRuleType } from '../define';
 import { makeImageParamsFromRule } from '../utils';
 import { Sequelize, FindAttributeOptions } from 'sequelize';
 
-const TagAttributes: FindAttributeOptions = [
+const AuthorsAttributes: FindAttributeOptions = [
     'id',
     'name',
-    'translatedName',
-    'customName',
+    'account',
+    'profileImageUrl',
     'likeLevel',
     [
         Sequelize.literal(`(
             SELECT COUNT(*)
-            FROM ImagesTags AS ImagesTags
+            FROM imgStorage as Images
             WHERE
-            ImagesTags.tagId = Tags.id
+            Images.authorId = Author.id
         )`),
         'imageCount'
     ]
 ];
 
-export async function getTags({ offset, limit, sorter }) {
+export async function getAuthors({ offset, limit, sorter }) {
     const ctx = await getDbControl();
-    const Tags = ctx.model('Tags');
+    const Authors = ctx.model('Author');
     let order = undefined;
     if (Array.isArray(sorter) && sorter.length > 0) {
         order = sorter.map(item => {
@@ -33,28 +33,27 @@ export async function getTags({ offset, limit, sorter }) {
         });
     }
 
-    return await Tags.findAndCountAll({
+    return await Authors.findAndCountAll({
         limit,
         offset,
-        attributes: TagAttributes,
+        attributes: AuthorsAttributes,
         order
     });
 }
-
-export async function getTagInfo(where, attributes: FindAttributeOptions = TagAttributes) {
+export async function getAuthorInfo(where, attributes: FindAttributeOptions = AuthorsAttributes) {
     const ctx = await getDbControl();
-    const Tags = ctx.model('Tags');
-    return await Tags.findOne({
+    const Author = ctx.model('Author');
+    return await Author.findOne({
         where,
         attributes
     });
 }
 
-export async function getTagImages(
+export async function getAuthorImages(
     { where, offset, limit },
     rule: ImageRuleType = DefaultImageRule
 ) {
-    const tagItem: any = await getTagInfo(where, ['id']);
+    const item: any = await getAuthorInfo(where, ['id']);
 
     const queryImage = await makeImageParamsFromRule({
         queryParams: {
@@ -65,21 +64,18 @@ export async function getTagImages(
         rule
     });
     if (queryImage) {
-        return await tagItem.getImages(queryImage);
+        return await item.getImages(queryImage);
     }
     return [];
 }
 
-export async function updateTag({ id, likeLevel, customName }) {
-    const tagItem: any = await getTagInfo(id, ['id']);
-    if (tagItem) {
+export async function updateAuthor({ id, likeLevel }) {
+    const item: any = await getAuthorInfo(id, ['id']);
+    if (item) {
         if (likeLevel !== null || likeLevel !== undefined) {
-            tagItem.likeLevel = likeLevel;
+            item.likeLevel = likeLevel;
         }
-        if (customName !== null || customName !== undefined) {
-            tagItem.customName = customName;
-        }
-        return await tagItem.save();
+        return await item.save();
     }
 
     return null;

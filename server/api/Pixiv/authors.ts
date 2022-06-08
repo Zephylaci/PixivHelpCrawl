@@ -1,9 +1,14 @@
 // 路由设置
 import Router from 'koa-router';
 import { resultBean } from '../../type/bean/resultBean';
-import { getTags, getTagImages, getTagInfo, updateTag } from '../../module/dao/interface/Tags';
 import { parseSorter } from '../../utils/tool';
 import { tansIllustsItem, transDbResult } from '../../utils/gotPixivImg';
+import {
+    getAuthorImages,
+    getAuthorInfo,
+    getAuthors,
+    updateAuthor
+} from '../../module/dao/interface/Author';
 import { loggerErr } from '../../utils/logger';
 
 type params = {
@@ -14,7 +19,7 @@ type params = {
 
 const main = new Router();
 
-main.get('/tags', async function (ctx) {
+main.get('/authors', async function (ctx) {
     const res: resultBean = ctx.body;
     const params: params = ctx.query as any;
     const { offset = 0, limit = 50 } = params;
@@ -28,21 +33,20 @@ main.get('/tags', async function (ctx) {
             sorter = parseSorter(sort);
         }
     } catch (error) {
-        loggerErr.error('tags sort error:', sort, typeof sort);
+        loggerErr.error('authors sort error:', sort, typeof sort);
     }
-
     res.code = 200;
-    res.contents = await getTags({ offset, limit, sorter });
+    res.contents = await getAuthors({ offset, limit, sorter });
 });
 
-main.get('/tagImages', async function (ctx) {
+main.get('/authorImages', async function (ctx) {
     const res: resultBean = ctx.body;
     const params = ctx.query;
     const { id, name, offset = 0, limit = 50 } = params;
 
     if (id || name) {
-        let where = id ? { id } : { name };
-        const list = await getTagImages({ where, offset, limit });
+        const where = id ? { id } : { name };
+        const list = await getAuthorImages({ where, offset, limit });
 
         res.code = 200;
         res.contents = {
@@ -54,33 +58,33 @@ main.get('/tagImages', async function (ctx) {
     }
 });
 
-main.get('/tagInfo', async function (ctx) {
+main.get('/authorInfo', async function (ctx) {
     const res: resultBean = ctx.body;
     const params = ctx.query;
     const { id, name } = params;
     res.code = 200;
     if (id || name) {
-        let where = id ? { id } : { name };
-        res.contents = await getTagInfo(where);
+        const where = id ? { id } : { name };
+        res.contents = await getAuthorInfo(where);
     } else {
         res.contents = null;
         res.text = '入参错误';
     }
 });
 
-main.post('/updateTag', async function (ctx) {
+main.post('/updateAuthor', async function (ctx) {
     const res: resultBean = ctx.body;
     const params: any = ctx.request.body;
-    const { id, likeLevel, customName } = params;
+    const { id, likeLevel } = params;
 
     res.code = 200;
-    let dbRes = await updateTag({ id, likeLevel, customName });
+    let dbRes = await updateAuthor({ id, likeLevel });
     res.contents = {
         success: dbRes ? true : false
     };
 });
 
-main.post('/updateTagLike', async function (ctx) {
+main.post('/updateAuthorLike', async function (ctx) {
     const res: resultBean = ctx.body;
     const params: any = ctx.request.body;
     const { id, name, like } = params;
@@ -92,7 +96,7 @@ main.post('/updateTagLike', async function (ctx) {
         };
         try {
             const where = id ? { id } : { name };
-            const item: any = await getTagInfo(where, ['id', 'likeLevel']);
+            const item: any = await getAuthorInfo(where, ['id', 'likeLevel']);
             if (item) {
                 item.likeLevel += like;
                 await item.save();
@@ -106,5 +110,4 @@ main.post('/updateTagLike', async function (ctx) {
         res.text = '入参错误';
     }
 });
-
 export default main.routes();
