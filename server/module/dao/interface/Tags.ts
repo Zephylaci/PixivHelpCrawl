@@ -41,19 +41,20 @@ export async function getTags({ offset, limit, sorter }) {
     });
 }
 
-export async function getTagInfo(id, attributes: FindAttributeOptions = TagAttributes) {
+export async function getTagInfo(where, attributes: FindAttributeOptions = TagAttributes) {
     const ctx = await getDbControl();
     const Tags = ctx.model('Tags');
     return await Tags.findOne({
-        where: {
-            id
-        },
+        where,
         attributes
     });
 }
 
-export async function getTagImages({ id, offset, limit }, rule: ImageRuleType = DefaultImageRule) {
-    const tagItem: any = await getTagInfo(id, ['id']);
+export async function getTagImages(
+    { where, offset, limit },
+    rule: ImageRuleType = DefaultImageRule
+) {
+    const tagItem: any = await getTagInfo(where, ['id']);
 
     const queryImage = await makeImageParamsFromRule({
         queryParams: {

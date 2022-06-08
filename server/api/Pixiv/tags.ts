@@ -12,6 +12,7 @@ type params = {
 };
 
 const main = new Router();
+
 main.post('/tags', async function (ctx) {
     const res: resultBean = ctx.body;
     const params: params = ctx.request.body;
@@ -25,25 +26,37 @@ main.post('/tags', async function (ctx) {
     res.contents = await getTags({ offset, limit, sorter });
 });
 
-main.get('/tagImages/:id', async function (ctx) {
+main.get('/tagImages', async function (ctx) {
     const res: resultBean = ctx.body;
     const params = ctx.query;
-    const { id } = ctx.params;
-    const { offset = 0, limit = 50 } = params;
-    const list = await getTagImages({ id, offset, limit });
+    const { id, name, offset = 0, limit = 50 } = params;
 
-    res.code = 200;
-    res.contents = {
-        illusts: transDbResult(list).map(tansIllustsItem)
-    };
+    if (id || name) {
+        let where = id ? { id } : { name };
+        const list = await getTagImages({ where, offset, limit });
+
+        res.code = 200;
+        res.contents = {
+            illusts: transDbResult(list).map(tansIllustsItem)
+        };
+    } else {
+        res.contents = null;
+        res.text = '入参错误';
+    }
 });
 
-main.get('/tagInfo/:id', async function (ctx) {
+main.get('/tagInfo', async function (ctx) {
     const res: resultBean = ctx.body;
-    const { id } = ctx.params;
-
+    const params = ctx.query;
+    const { id, name } = params;
     res.code = 200;
-    res.contents = await getTagInfo(id);
+    if (id || name) {
+        let where = id ? { id } : { name };
+        res.contents = await getTagInfo(where);
+    } else {
+        res.contents = null;
+        res.text = '入参错误';
+    }
 });
 
 main.post('/updateTag', async function (ctx) {

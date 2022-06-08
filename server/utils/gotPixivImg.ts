@@ -53,17 +53,18 @@ export function tansIllustsItem({
         author,
         count: origin.pageCount
     };
+
     if (origin.pageCount > 1) {
         item.detailUrls = [];
         item.originUrls = [];
 
         item.metaPages = origin.metaPages.map(({ imageUrls }) => {
-            const { squareMedium, medium, large, origin } = imageUrls;
+            const { squareMedium, medium, large, original } = imageUrls;
             const previewUel = medium || squareMedium || large;
             const detailUrl = large || medium || squareMedium;
 
-            item.detailUrls = [transPreviewUrl(detailUrl)];
-            item.originUrls = [transPreviewUrl(origin, false)];
+            item.detailUrls.push(transPreviewUrl(detailUrl));
+            item.originUrls.push(transPreviewUrl(original, false));
             return transPreviewUrl(previewUel);
         });
     } else {

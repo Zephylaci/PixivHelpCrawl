@@ -13,7 +13,7 @@ main.get('/image/:id', async function (ctx) {
     res.contents = tansIllustsItem(await getIllustInfo(id));
 });
 
-main.put('/image/update/:id', async function (ctx) {
+main.post('/updateImage', async function (ctx) {
     const res: resultBean = ctx.body;
     const params = ctx.query;
     const { id } = ctx.params;
