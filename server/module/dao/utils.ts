@@ -47,11 +47,11 @@ export async function makeImageParamsFromRule({ queryParams, rule }) {
 
 export const StackHandler = {
     Storage: {},
-    warpQuery: (fn, { key, makeCashKey = null }) => {
+    warpQuery: (fn, { key, name = undefined, limit = 1, makeCashKey = null }) => {
         if (!StackHandler[key]) {
             StackHandler[key] = {
                 stack: [],
-                running: null,
+                running: [],
                 id: 0
             };
         }
@@ -60,6 +60,7 @@ export const StackHandler = {
                 const item = {
                     params: args,
                     id: null,
+                    running: null,
                     resolves: [resolve]
                 };
                 if (typeof makeCashKey === 'function') {
@@ -67,38 +68,55 @@ export const StackHandler = {
                 } else {
                     item.id = ++StackHandler[key].id;
                 }
-                function callback(res) {
-                    if (StackHandler[key].stack.length === 0) {
-                        StackHandler[key].running = null;
-                    } else {
-                        const queryItem = StackHandler[key].stack.shift();
+                function callback() {
+                    const StackItem = StackHandler[key];
+                    StackItem.running = StackItem.running.filter(
+                        queryItem => queryItem.running != null
+                    );
+                    if (StackItem.stack.length !== 0 && StackItem.running.length < limit) {
+                        const queryItem = StackItem.stack.shift();
                         const { params } = queryItem;
-                        StackHandler[key].running = queryItem;
-                        fn(...params).then(_res => {
-                            queryItem.resolves.forEach(_resolve => {
-                                _resolve(_res);
+                        StackItem.running.push(queryItem);
+                        queryItem.running = fn(...params)
+                            .then(_res => {
+                                queryItem.running = null;
+                                queryItem.resolves.forEach(_resolve => {
+                                    _resolve(_res);
+                                });
+                                callback();
+                                return _res;
+                            })
+                            .catch(error => {
+                                // 避免卡死
+                                loggerErr.error('StackHandler Error', name || key, error);
+                                queryItem.resolves.forEach(_resolve => {
+                                    _resolve(null);
+                                });
+                            })
+                            .finally(() => {
+                                queryItem.running = null;
+                                callback();
                             });
-                            callback(res);
-                            return res;
-                        });
                     }
-                    return res;
-                }
-                const cashItem = StackHandler[key].stack.find(({ id }) => id === item.id);
-                if (!cashItem) {
-                    if (StackHandler[key].running && StackHandler[key].running.id === item.id) {
-                        StackHandler[key].resolves.push(...item.resolves);
-                        loggerErr.warn('StackHandler filter:', key, item);
-                    } else {
-                        StackHandler[key].stack.push(item);
-                    }
-                } else {
-                    cashItem.resolves.push(...item.resolves);
-                    loggerErr.warn('StackHandler filter:', key, item);
                 }
 
-                if (StackHandler[key].running === null) {
-                    callback({ id: 0 });
+                let cashItem = StackHandler[key].stack.find(({ id }) => id === item.id);
+                if (!cashItem) {
+                    cashItem = StackHandler[key].running.find(({ id }) => id === item.id);
+                    if (cashItem && cashItem.running === null) {
+                        cashItem = null;
+                    }
+                }
+
+                if (!cashItem) {
+                    StackHandler[key].stack.push(item);
+                } else {
+                    cashItem.resolves.push(...item.resolves);
+                    loggerErr.warn('StackHandler filter:', name || key, item);
+                }
+
+                if (StackHandler[key].running.length === 0) {
+                    callback();
                 }
             });
         };
@@ -180,10 +198,14 @@ export function retryWarp(fn, { retryLimit = 3 } = {}) {
 //     });
 //     return i;
 // }
-// const queryTest2 = StackHandler.warpQuery(queryTest, { key: 'queryTest', makeCashKey: i => i });
+// const queryTest2 = StackHandler.warpQuery(queryTest, {
+//     key: 'queryTest',
+//     limit: 3,
+//     makeCashKey: i => i
+// });
 // const queryTest2 = LockHandler.warpQuery(queryTest, { key: 'queryTest', makeCashKey: i => i });
 // let promise = [];
-// for (let i = 0; i < 5; i++) {
+// for (let i = 0; i < 10; i++) {
 //     promise.push(
 //         queryTest2(i).then(res => {
 //             console.log('check:', i, res);
