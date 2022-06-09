@@ -37,7 +37,7 @@ const baseConfig = {
         default: { appenders: ['console', 'logger'], level: 'debug' },
         http: { appenders: ['console', 'http'], level: 'debug' },
         stdout: { appenders: ['stdout'], level: 'debug' },
-        error: { appenders: ['console', 'error'], level: 'error' }
+        error: { appenders: ['console', 'error'], level: 'debug' }
     }
 }
 /**
@@ -54,7 +54,7 @@ const levelState = {
             default: { appenders: ['logger'], level: 'debug' },
             http: { appenders: ['http'], level: 'debug' },
             stdout: { appenders: ['stdout'], level: 'debug' },
-            error: { appenders: ['error'], level: 'error' }
+            error: { appenders: ['error'], level: 'debug' }
         }
         return outConfig
     },

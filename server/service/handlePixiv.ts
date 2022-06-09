@@ -63,7 +63,10 @@ async function getRankingIllustsFromPixiv({
     }
 
     // 缓存
-    saveRanking({ ranking: { date, mode }, illusts, startOffset });
+    console.time(`${date}-${mode}-${startOffset}`);
+    saveRanking({ ranking: { date, mode }, illusts, startOffset }).then(() => {
+        console.timeEnd(`${date}-${mode}-${startOffset}`);
+    });
 
     return illusts
         .map(item => {

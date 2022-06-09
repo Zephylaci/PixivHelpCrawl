@@ -1,7 +1,7 @@
 import { getDbControl } from '../index';
 import { DefaultImageRule, ImageRuleType } from '../define';
 import { FindOptions, Optional } from 'sequelize';
-import { makeImageParamsFromRule } from '../utils';
+import { LockHandler, makeImageParamsFromRule, retryWarp } from '../utils';
 interface ImageInter extends Optional<any, string> {
     id: number;
     title: string;
@@ -34,7 +34,7 @@ interface ImageParams extends Optional<any, string> {
     author: AuthorInter;
 }
 
-export async function saveImageInfo({ image, tags, author }: ImageParams) {
+async function _saveImageInfo({ image, tags, author }: ImageParams) {
     const ctx = await getDbControl();
     const Tags = ctx.model('Tags');
     const Author = ctx.model('Author');
@@ -79,6 +79,11 @@ export async function saveImageInfo({ image, tags, author }: ImageParams) {
         return imageItem;
     });
 }
+
+export const saveImageInfo = LockHandler.warpQuery(retryWarp(_saveImageInfo), {
+    key: 'saveImageInfo',
+    makeCashKey: ({ image }) => image.id
+});
 
 export async function getImageInfo(id: number | string, rule: ImageRuleType = DefaultImageRule) {
     const ctx = await getDbControl();

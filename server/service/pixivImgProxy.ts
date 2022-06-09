@@ -4,7 +4,7 @@ import * as stream from 'stream';
 import { promisify } from 'util';
 import { pathConfig } from '../../config';
 import { fromFile } from 'file-type';
-import { loggerShow } from '../utils/logger';
+import { loggerErr, loggerShow } from '../utils/logger';
 
 const BasePath = pathConfig.cashPath;
 fs.ensureDirSync(BasePath);
@@ -22,6 +22,18 @@ export function parseTarget(target) {
 }
 export function getTargetCash({ targetName, targetPath }) {
     if (fs.existsSync(targetPath)) {
+        fs.stat(targetPath, (statErr, stat) => {
+            if (statErr) {
+                loggerErr.error('getTargetCash statErr:', targetPath, statErr);
+                return;
+            }
+            fs.utimes(targetPath, new Date(), stat.mtime, function (timeErr) {
+                if (timeErr) {
+                    loggerErr.error('getTargetCash timeErr:', targetPath, timeErr);
+                    return;
+                }
+            });
+        });
         return fs.createReadStream(targetPath);
     }
     return null;
