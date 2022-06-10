@@ -11,6 +11,7 @@
         "clear": "rm ./built/dist/* -rf",
         "dev": "cross-env NODE_ENV=development nodemon",
         "start": "node built/dist/app.js",
+        "public": "yarn build&&cd /home/zephyru/workspace/Pixiv/build && rm ./dist.tar  -rf&&tar -cvf ./dist.tar ./dist/* && scp ./dist.tar pi@192.168.10.103:/home/pi/NodeProject/pixivDisk/dist.tar",
         "getDb": "rm ./db/development.db&&scp pi@192.168.10.103:/home/pi/NodeProject/pixivDisk/db/production.db ./db/development.db",
         "test": "cross-env NODE_ENV=development ts-node"
     },

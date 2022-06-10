@@ -22,4 +22,7 @@ value
 
 scp pi@192.168.10.103:/home/pi/NodeProject/pixivDisk/db/production.db ./db/development.db
 
+rm dist rm dist.tar -rf
+tar -xvf dist.tar && pm2 restart 1 && pm2 log 1
+
 yarn build && rm ./dist.tar -rf &&tar -cvf ./dist.tar ./dist/ && scp ./dist.tar pi@192.168.10.103:/home/pi/NodeProject/pixivDisk/dist.tar

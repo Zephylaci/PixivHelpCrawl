@@ -48,8 +48,8 @@ export async function makeImageParamsFromRule({ queryParams, rule }) {
 export const StackHandler = {
     Storage: {},
     warpQuery: (fn, { key, name = undefined, limit = 1, makeCashKey = null }) => {
-        if (!StackHandler[key]) {
-            StackHandler[key] = {
+        if (!StackHandler.Storage[key]) {
+            StackHandler.Storage[key] = {
                 stack: [],
                 running: [],
                 id: 0
@@ -57,6 +57,7 @@ export const StackHandler = {
         }
         return (...args) => {
             return new Promise(resolve => {
+                const StorageItem = StackHandler.Storage[key];
                 const item = {
                     params: args,
                     id: null,
@@ -66,17 +67,17 @@ export const StackHandler = {
                 if (typeof makeCashKey === 'function') {
                     item.id = makeCashKey(...args);
                 } else {
-                    item.id = ++StackHandler[key].id;
+                    item.id = ++StorageItem.id;
                 }
                 function callback() {
-                    const StackItem = StackHandler[key];
-                    StackItem.running = StackItem.running.filter(
+                    const StorageItem = StackHandler.Storage[key];
+                    StorageItem.running = StorageItem.running.filter(
                         queryItem => queryItem.running != null
                     );
-                    if (StackItem.stack.length !== 0 && StackItem.running.length < limit) {
-                        const queryItem = StackItem.stack.shift();
+                    if (StorageItem.stack.length !== 0 && StorageItem.running.length < limit) {
+                        const queryItem = StorageItem.stack.shift();
                         const { params } = queryItem;
-                        StackItem.running.push(queryItem);
+                        StorageItem.running.push(queryItem);
                         queryItem.running = fn(...params)
                             .then(_res => {
                                 queryItem.running = null;
@@ -100,22 +101,22 @@ export const StackHandler = {
                     }
                 }
 
-                let cashItem = StackHandler[key].stack.find(({ id }) => id === item.id);
+                let cashItem = StorageItem.stack.find(({ id }) => id === item.id);
                 if (!cashItem) {
-                    cashItem = StackHandler[key].running.find(({ id }) => id === item.id);
+                    cashItem = StorageItem.running.find(({ id }) => id === item.id);
                     if (cashItem && cashItem.running === null) {
                         cashItem = null;
                     }
                 }
 
                 if (!cashItem) {
-                    StackHandler[key].stack.push(item);
+                    StorageItem.stack.push(item);
                 } else {
                     cashItem.resolves.push(...item.resolves);
                     loggerErr.warn('StackHandler filter:', name || key, item);
                 }
 
-                if (StackHandler[key].running.length === 0) {
+                if (StorageItem.running.length === 0) {
                     callback();
                 }
             });
@@ -126,14 +127,15 @@ export const StackHandler = {
 export const LockHandler = {
     Storage: {},
     warpQuery: (fn, { key, makeCashKey = null }) => {
-        if (!StackHandler[key]) {
-            StackHandler[key] = {
+        if (!StackHandler.Storage[key]) {
+            StackHandler.Storage[key] = {
                 stack: new Map(),
                 id: 0
             };
         }
         return (...args) => {
             return new Promise(resolve => {
+                const StorageItem = StackHandler.Storage[key];
                 const item = {
                     params: args,
                     running: null,
@@ -143,19 +145,19 @@ export const LockHandler = {
                 if (typeof makeCashKey === 'function') {
                     item.id = makeCashKey(...args);
                 } else {
-                    item.id = ++StackHandler[key].id;
+                    item.id = ++StorageItem.id;
                 }
 
-                const cashItem = StackHandler[key].stack.get(item.id);
+                const cashItem = StorageItem.stack.get(item.id);
                 if (!cashItem) {
                     item.running = fn(...args).then(res => {
-                        StackHandler[key].stack.delete(item.id);
+                        StorageItem.stack.delete(item.id);
                         item.resolves.forEach(resolveItem => {
                             resolveItem(res);
                         });
                         return res;
                     });
-                    StackHandler[key].stack.set(item.id, item);
+                    StorageItem.stack.set(item.id, item);
                 } else {
                     cashItem.resolves.push(...item.resolves);
                     loggerErr.warn('StackHandler filter:', key, item.id || item);
