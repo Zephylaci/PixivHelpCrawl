@@ -9,15 +9,7 @@ const AuthorsAttributes: FindAttributeOptions = [
     'account',
     'profileImageUrl',
     'likeLevel',
-    [
-        Sequelize.literal(`(
-            SELECT COUNT(*)
-            FROM imgStorage as Images
-            WHERE
-            Images.authorId = Author.id
-        )`),
-        'imageCount'
-    ]
+    'imageCount'
 ];
 
 export async function getAuthors({ offset, limit, sorter }) {

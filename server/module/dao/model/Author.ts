@@ -22,6 +22,12 @@ const Author = dbClient.define(
             type: DataTypes.TINYINT,
             defaultValue: 0
         },
+        // 关联的图片数量
+        // 每次子查询查的太慢了，缓存一下
+        imageCount: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        },
         profileImageUrl: DataTypes.STRING
     },
     {

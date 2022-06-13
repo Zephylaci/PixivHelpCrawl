@@ -19,21 +19,14 @@ type params = {
 
 const main = new Router();
 
-main.get('/authors', async function (ctx) {
+main.post('/authorPages', async function (ctx) {
     const res: resultBean = ctx.body;
-    const params: params = ctx.query as any;
-    const { offset = 0, limit = 50 } = params;
-    let { sort } = params;
+    const params: params = ctx.request.body;
+    const { offset = 0, limit = 20, sort } = params;
+
     let sorter = undefined;
-    try {
-        if (typeof sort === 'string') {
-            sort = JSON.parse(sort);
-        }
-        if (Array.isArray(sort)) {
-            sorter = parseSorter(sort);
-        }
-    } catch (error) {
-        loggerErr.error('authors sort error:', sort, typeof sort);
+    if (sort) {
+        sorter = parseSorter(sort);
     }
     res.code = 200;
     res.contents = await getAuthors({ offset, limit, sorter });

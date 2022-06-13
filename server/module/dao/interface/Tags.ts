@@ -1,26 +1,20 @@
 import { getDbControl } from '../index';
 import { DefaultImageRule, ImageRuleType } from '../define';
 import { makeImageParamsFromRule } from '../utils';
-import { Sequelize, FindAttributeOptions } from 'sequelize';
+import { Sequelize, FindAttributeOptions, Op } from 'sequelize';
 
-const TagAttributes: FindAttributeOptions = [
-    'id',
-    'name',
-    'translatedName',
-    'customName',
-    'likeLevel',
-    [
-        Sequelize.literal(`(
-            SELECT COUNT(*)
-            FROM ImagesTags AS ImagesTags
-            WHERE
-            ImagesTags.tagId = Tags.id
-        )`),
-        'imageCount'
-    ]
+const TagAttributes = ['id', 'name', 'translatedName', 'customName', 'likeLevel'];
+const ImageCount = [
+    Sequelize.literal(`(
+        SELECT COUNT(*)
+        FROM ImagesTags AS ImagesTags
+        WHERE
+        ImagesTags.tagId = Tags.id
+    )`),
+    'imageCount'
 ];
 
-export async function getTags({ offset, limit, sorter }) {
+export async function getTagPages({ offset, limit, sorter }) {
     const ctx = await getDbControl();
     const Tags = ctx.model('Tags');
     let order = undefined;
@@ -41,9 +35,37 @@ export async function getTags({ offset, limit, sorter }) {
     });
 }
 
-export async function getTagInfo(where, attributes: FindAttributeOptions = TagAttributes) {
+export async function getTagList({ offset, limit, sorter, search }) {
     const ctx = await getDbControl();
     const Tags = ctx.model('Tags');
+
+    const where = {};
+
+    if (search) {
+        const keyWord = search;
+        const attributes = ['name', 'customName', 'translatedName'];
+        const type = 'substring';
+        where[Op.or] = [];
+        attributes.forEach(key => {
+            where[Op.or].push({
+                [key]: { [Op[type]]: keyWord }
+            });
+        });
+    }
+    return await Tags.findAll({
+        limit,
+        offset,
+        where,
+        attributes: TagAttributes,
+        order: sorter
+    });
+}
+
+export async function getTagInfo(where, attr = TagAttributes) {
+    const ctx = await getDbControl();
+    const Tags = ctx.model('Tags');
+
+    const attributes = [...attr, ImageCount] as FindAttributeOptions;
     return await Tags.findOne({
         where,
         attributes

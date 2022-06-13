@@ -71,7 +71,16 @@ async function _saveImageInfo({ image, tags, author }: ImageParams) {
                 }
             });
             if (!authorItem) {
-                authorItem = await Author.create(author, { transaction });
+                authorItem = await Author.create(
+                    {
+                        ...author,
+                        imageCount: 1
+                    },
+                    { transaction }
+                );
+            } else {
+                authorItem.imageCount++;
+                await authorItem.save({ transaction });
             }
             await imageItem.setAuthor(authorItem, { transaction });
         }
@@ -99,4 +108,19 @@ export async function getImageInfo(id: number | string, rule: ImageRuleType = De
     });
 
     return await Images.findOne(queryParams);
+}
+
+export async function getImages({ offset, limit }, rule: ImageRuleType = DefaultImageRule) {
+    const ctx = await getDbControl();
+    const Images = ctx.model('Images');
+
+    const queryParams: FindOptions = await makeImageParamsFromRule({
+        queryParams: {
+            offset,
+            limit
+        },
+        rule
+    });
+
+    return await Images.findAll(queryParams);
 }

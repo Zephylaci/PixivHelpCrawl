@@ -1,7 +1,13 @@
 // 路由设置
 import Router from 'koa-router';
 import { resultBean } from '../../type/bean/resultBean';
-import { getTags, getTagImages, getTagInfo, updateTag } from '../../module/dao/interface/Tags';
+import {
+    getTagPages,
+    getTagList,
+    getTagImages,
+    getTagInfo,
+    updateTag
+} from '../../module/dao/interface/Tags';
 import { parseSorter } from '../../utils/tool';
 import { tansIllustsItem, transDbResult } from '../../utils/gotPixivImg';
 import { loggerErr } from '../../utils/logger';
@@ -14,25 +20,41 @@ type params = {
 
 const main = new Router();
 
-main.get('/tags', async function (ctx) {
+/*
+  表格用带页码分页
+**/
+main.post('/tagPages', async function (ctx) {
     const res: resultBean = ctx.body;
-    const params: params = ctx.query as any;
-    const { offset = 0, limit = 50 } = params;
-    let { sort } = params;
-    let sorter = undefined;
-    try {
-        if (typeof sort === 'string') {
-            sort = JSON.parse(sort);
-        }
-        if (Array.isArray(sort)) {
-            sorter = parseSorter(sort);
-        }
-    } catch (error) {
-        loggerErr.error('tags sort error:', sort, typeof sort);
-    }
+    const params: params = ctx.request.body;
+    const { offset = 0, limit = 20, sort } = params;
 
+    let sorter = undefined;
+    if (sort) {
+        sorter = parseSorter(sort);
+    }
     res.code = 200;
-    res.contents = await getTags({ offset, limit, sorter });
+    res.contents = await getTagPages({ offset, limit, sorter });
+});
+
+/*
+  其它场合使用
+**/
+main.post('/tagList', async function (ctx) {
+    const res: resultBean = ctx.body;
+    const params: any = ctx.request.body;
+    const { offset = 0, limit = 20, sort, search } = params;
+
+    let sorter = undefined;
+    if (sort) {
+        sorter = parseSorter(sort);
+    }
+    res.code = 200;
+    res.contents = await getTagList({
+        offset,
+        limit,
+        sorter,
+        search
+    });
 });
 
 main.get('/tagImages', async function (ctx) {

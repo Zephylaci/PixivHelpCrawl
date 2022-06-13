@@ -19,6 +19,12 @@ const Ranking = dbClient.define(
             type: DataTypes.STRING(50),
             unique: 'index'
         },
+        // 关联的图片数量
+        // 列表中每次子查询查的太慢了，缓存一下
+        imageCount: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        },
         startOffset: DataTypes.SMALLINT
     },
     {

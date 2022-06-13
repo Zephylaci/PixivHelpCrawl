@@ -56,6 +56,9 @@ async function _saveRanking({ ranking: { date, mode }, illusts, startOffset }: R
             }
         }
         await ranking.addImages(images);
+        const count = await ranking.countImages();
+        ranking.imageCount = count;
+        await ranking.save();
     }
     return ranking;
 }
