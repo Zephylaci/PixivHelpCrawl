@@ -4,8 +4,10 @@ import { saveImageInfo } from './Images';
 import { parseImgItem } from '../../../utils/gotPixivImg';
 import { loggerShow } from '../../../utils/logger';
 import { DefaultImageRule, ImageRuleType } from '../define';
-import { makeImageParamsFromRule, retryWarp, StackHandler } from '../utils';
+import { makeImageParamsFromRule } from '../utils';
 import { IllustsItem } from '../../../type/';
+import { retryWarp, StackHandler } from '../../../utils/tool';
+import { Sequelize, Op } from 'sequelize';
 
 interface rankingInter extends Optional<any, string> {
     date: string;
@@ -71,17 +73,14 @@ export const saveRanking = StackHandler.warpQuery(retryWarp(_saveRanking), {
 });
 
 export async function getRanking(
-    { date, mode, offset = 0, limit = 30 },
+    { where, offset = 0, limit = 30 },
     rule: ImageRuleType = DefaultImageRule
 ) {
     const ctx = await getDbControl();
     const Ranking = ctx.model('Ranking');
 
     const ranking: any = await Ranking.findOne({
-        where: {
-            date,
-            mode
-        },
+        where,
         attributes: ['id']
     });
     if (!ranking) {
@@ -101,6 +100,40 @@ export async function getRanking(
     return await ranking.getImages(queryParams);
 }
 
+export async function getRankingFromArrId(
+    { ids, offset = 0, limit = 30 },
+    rule: ImageRuleType = DefaultImageRule
+) {
+    const ctx = await getDbControl();
+    const RankingImages = ctx.model('RankingImages');
+    const Images = ctx.model('Images');
+    const queryParams: any = await makeImageParamsFromRule({
+        rule
+    });
+    try {
+        return await RankingImages.findAll({
+            where: {
+                [Op.or]: ids.map(id => {
+                    return {
+                        RankingId: id
+                    };
+                })
+            },
+            group: 'ImageId',
+            include: {
+                model: Images,
+                ...queryParams
+            },
+            attributes: ['ImageId'],
+            offset,
+            limit
+        });
+    } catch (error) {
+        console.log('check:', error);
+    }
+    return [];
+}
+
 export async function getRankingInfo({ date, mode }) {
     const ctx = await getDbControl();
     const Ranking = ctx.model('Ranking');
@@ -110,15 +143,47 @@ export async function getRankingInfo({ date, mode }) {
             date,
             mode
         },
-        attributes: ['id', 'startOffset']
+        attributes: ['id', 'startOffset', 'imageCount']
     });
     if (!ranking) {
         return ranking;
     }
-    const count = await ranking.countImages();
-
     return {
-        count,
+        count: ranking.imageCount,
         startOffset: ranking.startOffset
     };
+}
+
+export async function getRankingPages({ mode, dateRange, sorter, offset, limit }) {
+    const ctx = await getDbControl();
+    const Ranking = ctx.model('Ranking');
+    let order = undefined;
+    if (Array.isArray(sorter) && sorter.length > 0) {
+        order = sorter.map(item => {
+            return item;
+        });
+    }
+
+    const where: any = {};
+    if (Array.isArray(mode) && mode.length > 0) {
+        where[Op.or] = mode.map(key => {
+            return {
+                mode: key
+            };
+        });
+    }
+    if (Array.isArray(dateRange) && dateRange.length == 2) {
+        const [start, end] = dateRange;
+        where.date = {
+            [Op.lte]: end,
+            [Op.gte]: start
+        };
+    }
+    return await Ranking.findAndCountAll({
+        where,
+        limit,
+        offset,
+        attributes: ['id', 'date', 'mode', 'imageCount', 'startOffset'],
+        order
+    });
 }

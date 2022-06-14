@@ -2,9 +2,16 @@
 import Router from 'koa-router';
 import { resultBean } from '../../type/bean/resultBean';
 import { pixivMode, ResIllustsItem } from '../../type';
-import { tansIllustsItem } from '../../utils/gotPixivImg';
+import { tansIllustsItem, transDbResult } from '../../utils/gotPixivImg';
 import { getRankingIllusts } from '../../service/handlePixiv';
 import { loggerErr } from '../../utils/logger';
+import { parseSorter } from '../../utils/tool';
+import {
+    getRanking,
+    getRankingFromArrId,
+    getRankingPages
+} from '../../module/dao/interface/Ranking';
+import dayjs from 'dayjs';
 
 type rankingParams = {
     date: string; //'2020-01-01',
@@ -19,7 +26,7 @@ type rankingContents = {
 };
 
 const main = new Router();
-main.post('/ranking', async function (ctx) {
+main.post('/queryRanking', async function (ctx) {
     const res: resultBean = ctx.body;
     const params: rankingParams = ctx.request.body;
     const { date, mode, offset = 0, limit = 90 } = params;
@@ -47,6 +54,49 @@ main.post('/ranking', async function (ctx) {
     }
 
     res.contents = contents;
+});
+
+main.post('/rankingPages', async function (ctx) {
+    const res: resultBean = ctx.body;
+    const params: any = ctx.request.body;
+    const { offset = 0, limit = 20, sort, mode, queryDate } = params;
+
+    let sorter = undefined;
+    if (sort) {
+        sorter = parseSorter(sort);
+    }
+    let dateRange = [];
+    if (Array.isArray(queryDate)) {
+        dateRange = queryDate.map(date => dayjs(date).format('YYYY-MM-DD'));
+    }
+    res.code = 200;
+    res.contents = await getRankingPages({ mode, dateRange, offset, limit, sorter });
+});
+
+main.post('/rankingImages', async function (ctx) {
+    const res: resultBean = ctx.body;
+    const params: any = ctx.request.body;
+    const { id, offset, limit = 20 } = params;
+    res.code = 200;
+    if (id) {
+        let list = [];
+        if (Array.isArray(id)) {
+            list = transDbResult(await getRankingFromArrId({ ids: id, offset, limit }));
+            if (Array.isArray(list)) {
+                list = list.map(({ Image }) => {
+                    return Image;
+                });
+            }
+        } else {
+            list = transDbResult(await getRanking({ where: { id }, offset, limit }));
+        }
+        res.contents = {
+            illusts: list.map(tansIllustsItem)
+        };
+    } else {
+        res.contents = null;
+        res.text = '入参错误';
+    }
 });
 
 export default main.routes();

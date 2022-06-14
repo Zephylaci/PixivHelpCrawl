@@ -6,6 +6,7 @@ import { pixivMode, DbIllustsItem, IllustsItem } from '../type';
 import dayjs from 'dayjs';
 import { loggerShow } from '../utils/logger';
 import pixivClient from '../module/pixiv-api/index';
+import { StackHandler } from '../utils/tool';
 
 type rankingRes = {
     illusts: Array<any>;
@@ -26,7 +27,7 @@ export async function saveIllust(item: IllustsItem) {
     return id;
 }
 
-async function getRankingIllustsFromPixiv({
+async function _getRankingIllustsFromPixiv({
     date,
     mode,
     offset,
@@ -83,6 +84,14 @@ async function getRankingIllustsFromPixiv({
         .sort((a, b) => b.totalBookmarks - a.totalBookmarks);
 }
 
+const getRankingIllustsFromPixiv = StackHandler.warpQuery(_getRankingIllustsFromPixiv, {
+    key: 'getRankingIllustsFromPixiv',
+    limit: 5,
+    makeCashKey: ({ date, mode, offset, limit }) => {
+        return `${date}-${mode}-${offset}-${limit}`;
+    }
+});
+
 type RankingIllustsRes = {
     illusts: Array<DbIllustsItem>;
     success: boolean;
@@ -112,7 +121,7 @@ export async function getRankingIllusts({ date, mode, offset, limit }) {
         if (startOffset > offset || count < limit + offset) {
             res.illusts = await getRankingIllustsFromPixiv({ date, mode, offset, limit });
         } else {
-            res.illusts = await getRanking({ date, mode, offset, limit });
+            res.illusts = await getRanking({ where: { date, mode }, offset, limit });
         }
     } else {
         res.illusts = await getRankingIllustsFromPixiv({ date, mode, offset, limit });

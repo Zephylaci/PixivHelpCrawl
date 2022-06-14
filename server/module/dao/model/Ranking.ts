@@ -51,3 +51,5 @@ const RankingImages = dbClient.define(
 );
 
 Ranking.belongsToMany(Images, { through: RankingImages });
+
+RankingImages.belongsTo(Images, { foreignKey: 'ImageId', targetKey: 'id' });

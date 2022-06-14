@@ -1,7 +1,9 @@
 import { getDbControl } from '../index';
 import { DefaultImageRule, ImageRuleType } from '../define';
 import { FindOptions, Optional } from 'sequelize';
-import { LockHandler, makeImageParamsFromRule, retryWarp } from '../utils';
+import { makeImageParamsFromRule } from '../utils';
+import { LockHandler, retryWarp } from '../../../utils/tool';
+
 interface ImageInter extends Optional<any, string> {
     id: number;
     title: string;
