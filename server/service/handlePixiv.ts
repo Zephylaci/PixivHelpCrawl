@@ -84,7 +84,7 @@ async function _getRankingIllustsFromPixiv({
         .sort((a, b) => b.totalBookmarks - a.totalBookmarks);
 }
 
-const getRankingIllustsFromPixiv = StackHandler.warpQuery(_getRankingIllustsFromPixiv, {
+export const getRankingIllustsFromPixiv = StackHandler.warpQuery(_getRankingIllustsFromPixiv, {
     key: 'getRankingIllustsFromPixiv',
     limit: 5,
     makeCashKey: ({ date, mode, offset, limit }) => {

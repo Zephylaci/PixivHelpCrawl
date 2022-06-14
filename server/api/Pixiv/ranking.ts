@@ -3,12 +3,13 @@ import Router from 'koa-router';
 import { resultBean } from '../../type/bean/resultBean';
 import { pixivMode, ResIllustsItem } from '../../type';
 import { tansIllustsItem, transDbResult } from '../../utils/gotPixivImg';
-import { getRankingIllusts } from '../../service/handlePixiv';
+import { getRankingIllusts, getRankingIllustsFromPixiv } from '../../service/handlePixiv';
 import { loggerErr } from '../../utils/logger';
 import { parseSorter } from '../../utils/tool';
 import {
     getRanking,
     getRankingFromArrId,
+    getRankingInfo,
     getRankingPages
 } from '../../module/dao/interface/Ranking';
 import dayjs from 'dayjs';
@@ -93,6 +94,30 @@ main.post('/rankingImages', async function (ctx) {
         res.contents = {
             illusts: list.map(tansIllustsItem)
         };
+    } else {
+        res.contents = null;
+        res.text = '入参错误';
+    }
+});
+
+main.post('/addRanking', async function (ctx) {
+    const res: resultBean = ctx.body;
+    const params: any = ctx.request.body;
+    const { limit = 90, mode, dateRange } = params;
+    res.code = 200;
+    if (Array.isArray(dateRange) && dateRange.length === 2 && mode) {
+        const [start, end] = dateRange.map(date => dayjs(date));
+        let now = start;
+        while (now.valueOf() <= end.valueOf()) {
+            const date = now.format('YYYY-MM-DD');
+            mode.forEach(async key => {
+                const info = await getRankingInfo({ date, mode });
+                if ((info || { count: 0 }).count < limit) {
+                    getRankingIllustsFromPixiv({ date, mode: key, offset: 0, limit });
+                }
+            });
+            now = now.add(1, 'day');
+        }
     } else {
         res.contents = null;
         res.text = '入参错误';
