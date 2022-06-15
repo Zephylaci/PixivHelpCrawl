@@ -1,5 +1,4 @@
-import { resolve } from 'path';
-import { logger, loggerErr, loggerRes } from '../../utils/logger';
+import { loggerErr, loggerRes } from '../../utils/logger';
 import { retryWarp, StackHandler } from '../../utils/tool';
 import PixivApp from './PixivApp';
 const pixivClient = new PixivApp({
@@ -18,8 +17,8 @@ const LimitStorage = {
 const cycle = 60 * 1000;
 pixivClient.fetch = StackHandler.warpQuery(
     retryWarp(originFetch, {
-        retryLimit: 4,
-        baseWait: 5000,
+        retryLimit: 6,
+        baseWait: 10000,
         retryLog: function (fn, error) {
             //  接口提示速率限制就等一个周期
             if (error.response.status === 403) {
@@ -41,13 +40,8 @@ pixivClient.fetch = StackHandler.warpQuery(
                     error.response.statusText
                 } \n - response data: ${JSON.stringify(error.response.data)}`
             );
-            // ${error.response.status} - ${error.response.statusText} \n ${JSON.stringify(
-            //     error.response.headers,
-            //     null,
-            //     4
-            // )} \n
         },
-        before: async function () {
+        before: async function (url, params) {
             if (LimitStorage.timer === null) {
                 LimitStorage.timer = setTimeout(() => {
                     LimitStorage.num = 0;
@@ -64,19 +58,25 @@ pixivClient.fetch = StackHandler.warpQuery(
                 await LimitStorage.wait;
                 const wait = ((Math.random() * 10000) | 0) + 5000;
                 await new Promise(resolve => setTimeout(resolve, wait));
-                return;
-            }
-
-            // 根据单位时间请求次数限制
-            const nowTime = new Date().getTime();
-            LimitStorage.num++;
-            const diffTime = nowTime - LimitStorage.first;
-            if (diffTime > 5000 && diffTime / cycle < LimitStorage.num / 140) {
-                const wait = ((Math.random() * 10000) | 0) + 20000;
-                loggerRes.info('limitFn: Rate Limit', diffTime, LimitStorage.num, 'wait:', wait);
-                LimitStorage.wait = new Promise(resolve => setTimeout(resolve, wait));
-                await LimitStorage.wait;
-                LimitStorage.wait = null;
+            } else {
+                // 根据单位时间请求次数限制
+                const nowTime = new Date().getTime();
+                LimitStorage.num++;
+                const diffTime = nowTime - LimitStorage.first;
+                if (diffTime > 5000 && diffTime / cycle < LimitStorage.num / 140) {
+                    const wait = ((Math.random() * 10000) | 0) + 20000;
+                    loggerRes.info(
+                        'limitFn: Rate Limit create',
+                        diffTime,
+                        LimitStorage.num,
+                        'wait:',
+                        wait
+                    );
+                    LimitStorage.wait = new Promise(resolve => setTimeout(resolve, wait));
+                    await LimitStorage.wait;
+                    LimitStorage.wait = null;
+                    loggerRes.info('limitFn: Rate Limit clear');
+                }
             }
         }
     }),

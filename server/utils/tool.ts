@@ -210,20 +210,23 @@ export function retryWarp<T>(
                     retryLog(fn, error);
                 }
                 if (retryNum < retryLimit) {
-                    setTimeout(() => {
+                    let realWait = baseWait * retryNum;
+                    setTimeout(async () => {
+                        if (typeof before === 'function') {
+                            await before(...args);
+                        }
                         fn(...args)
                             .then(resolve)
                             .catch(catchCallback);
-                    }, ((Math.random() * baseWait) | 0) + baseWait);
+                    }, ((Math.random() * baseWait) | 0) + realWait);
                     retryNum++;
-                    baseWait += baseWait;
                 } else {
                     loggerErr.error('retryWarp :', fn, error);
                     reject();
                 }
             }
             if (typeof before === 'function') {
-                await before();
+                await before(...args);
             }
             fn(...args)
                 .then(resolve)

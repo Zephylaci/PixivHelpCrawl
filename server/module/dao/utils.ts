@@ -1,3 +1,4 @@
+import { Op } from 'sequelize/types';
 import { getDbControl } from './index';
 
 export async function makeImageParamsFromRule({ queryParams = {}, rule }: any) {

@@ -87,6 +87,12 @@ export async function getRanking(
         return ranking;
     }
 
+    rule.tagAttr.where = {
+        likeLevel: {
+            [Op.gte]: 0
+        }
+    };
+
     const queryParams: FindOptions = await makeImageParamsFromRule({
         queryParams: {
             offset,
@@ -107,6 +113,12 @@ export async function getRankingFromArrId(
     const ctx = await getDbControl();
     const RankingImages = ctx.model('RankingImages');
     const Images = ctx.model('Images');
+
+    rule.tagAttr.where = {
+        likeLevel: {
+            [Op.gte]: 0
+        }
+    };
     const queryParams: any = await makeImageParamsFromRule({
         rule
     });
