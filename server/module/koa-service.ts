@@ -34,6 +34,7 @@ app.use(json());
 // logger
 app.use(async (ctx, next) => {
     const start = new Date().getTime();
+    loggerRes.info(`${ctx.method} ${ctx.url} - in`);
     generalResult(ctx);
     await next();
     const ms = new Date().getTime() - start;

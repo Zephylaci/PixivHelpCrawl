@@ -66,6 +66,7 @@ export function parseSorter(sort: Array<{ field; order }>) {
  * 函数包装即用
  */
 
+/** 可以限制并发和重复的 */
 export const StackHandler = {
     Storage: {},
     warpQuery: <T>(fn: Function & T, { key, name = undefined, limit = 1, makeCashKey = null }) => {
@@ -95,7 +96,7 @@ export const StackHandler = {
                     StorageItem.running = StorageItem.running.filter(
                         queryItem => queryItem.running != null
                     );
-                    if (StorageItem.stack.length !== 0 && StorageItem.running.length < limit) {
+                    while (StorageItem.stack.length !== 0 && StorageItem.running.length < limit) {
                         const queryItem = StorageItem.stack.shift();
                         const { params } = queryItem;
                         StorageItem.running.push(queryItem);
@@ -137,7 +138,7 @@ export const StackHandler = {
                     loggerErr.warn('StackHandler filter:', name || key, item);
                 }
 
-                if (StorageItem.running.length === 0) {
+                if (StorageItem.stack.length !== 0 && StorageItem.running.length < limit) {
                     callback();
                 }
             });
@@ -146,6 +147,7 @@ export const StackHandler = {
     }
 };
 
+/** 只限制重复的 */
 export const LockHandler = {
     Storage: {},
     warpQuery: (fn, { key, makeCashKey = null }) => {
@@ -189,28 +191,45 @@ export const LockHandler = {
     }
 };
 
-export function retryWarp(fn, { retryLimit = 3 } = {}) {
-    return (...args) => {
+export function retryWarp<T>(
+    fn: T & Function,
+    {
+        retryLimit = 3,
+        retryLog = (fn, error) => {
+            loggerErr.warn('retryWarp :', fn, error);
+        },
+        baseWait = 3000,
+        before = null
+    } = {}
+) {
+    return (((...args) => {
         let retryNum = 0;
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             function catchCallback(error) {
-                loggerErr.warn('retryWarp :', fn, error);
+                if (typeof retryLog === 'function') {
+                    retryLog(fn, error);
+                }
                 if (retryNum < retryLimit) {
                     setTimeout(() => {
                         fn(...args)
                             .then(resolve)
                             .catch(catchCallback);
-                    }, Math.random() * 5000 + 3000);
+                    }, ((Math.random() * baseWait) | 0) + baseWait);
+                    retryNum++;
+                    baseWait += baseWait;
                 } else {
                     loggerErr.error('retryWarp :', fn, error);
                     reject();
                 }
             }
+            if (typeof before === 'function') {
+                await before();
+            }
             fn(...args)
                 .then(resolve)
                 .catch(catchCallback);
         });
-    };
+    }) as unknown) as T;
 }
 
 /**

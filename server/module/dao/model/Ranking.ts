@@ -50,6 +50,12 @@ const RankingImages = dbClient.define(
     }
 );
 
-Ranking.belongsToMany(Images, { through: RankingImages });
-
-RankingImages.belongsTo(Images, { foreignKey: 'ImageId', targetKey: 'id' });
+Ranking.belongsToMany(Images, {
+    through: RankingImages,
+    sourceKey: 'id',
+    targetKey: 'id',
+    foreignKey: 'RankingId',
+    otherKey: 'ImageId',
+    uniqueKey: 'id'
+});
+RankingImages.hasOne(Images, { sourceKey: 'ImageId', foreignKey: 'id' });

@@ -4,9 +4,9 @@ import { BaseImages } from '../module/dao/define';
 import { parseImgItem, transDbResult } from '../utils/gotPixivImg';
 import { pixivMode, DbIllustsItem, IllustsItem } from '../type';
 import dayjs from 'dayjs';
-import { loggerShow } from '../utils/logger';
+import { loggerErr, loggerRes, loggerShow } from '../utils/logger';
 import pixivClient from '../module/pixiv-api/index';
-import { StackHandler } from '../utils/tool';
+import { retryWarp, StackHandler } from '../utils/tool';
 
 type rankingRes = {
     illusts: Array<any>;
@@ -26,7 +26,7 @@ export async function saveIllust(item: IllustsItem) {
     }
     return id;
 }
-
+// const queryIllustRanking = retryWarp(pixivClient.illustRanking.bind(pixivClient));
 async function _getRankingIllustsFromPixiv({
     date,
     mode,
@@ -35,6 +35,7 @@ async function _getRankingIllustsFromPixiv({
 }): Promise<Array<DbIllustsItem>> {
     let startOffset = offset;
     const illusts = [];
+    const queryStart = new Date().getTime();
     for (let i = 0; i < limit; ) {
         const queryParams = {
             date,
@@ -44,6 +45,7 @@ async function _getRankingIllustsFromPixiv({
         const body: rankingRes = await pixivClient
             .illustRanking(queryParams as any)
             .catch(error => {
+                loggerErr.error('getRankingIllustsFromPixiv:', error);
                 return {
                     illusts: [],
                     nextUrl: ''
@@ -62,13 +64,20 @@ async function _getRankingIllustsFromPixiv({
             break;
         }
     }
-
+    const queryOver = new Date().getTime();
     // 缓存
-    console.time(`${date}-${mode}-${startOffset}`);
-    saveRanking({ ranking: { date, mode }, illusts, startOffset }).then(() => {
-        console.timeEnd(`${date}-${mode}-${startOffset}`);
-    });
-
+    if (illusts.length > 0) {
+        const saveStart = new Date().getTime();
+        saveRanking({ ranking: { date, mode }, illusts, startOffset }).then(() => {
+            const saveOver = new Date().getTime();
+            loggerRes.info(
+                `getRankingIllustsFromPixiv: ${date}-${mode}-${limit} over - query:${
+                    queryOver - queryStart
+                }ms - save:${saveOver - saveStart}ms `
+            );
+        });
+    }
+    loggerRes.info(`getRankingIllustsFromPixiv: ${date}-${mode}-${limit} return`);
     return illusts
         .map(item => {
             const { image, tags, author } = parseImgItem(item);
