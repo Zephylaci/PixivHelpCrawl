@@ -21,25 +21,32 @@ pixivClient.fetch = StackHandler.warpQuery(
         baseWait: 10000,
         retryLog: function (fn, error) {
             //  接口提示速率限制就等一个周期
-            if (error.response.status === 403) {
-                if (LimitStorage.wait === null) {
-                    loggerRes.info('limitFn: Rate Limit retry create');
-                    LimitStorage.wait = new Promise(resolve => {
-                        setTimeout(() => {
-                            resolve(null);
-                            LimitStorage.wait = null;
-                            loggerRes.info('limitFn: Rate Limit retry clear');
-                        }, cycle);
-                    });
+            if (error && error.response) {
+                if (error.response.status === 403) {
+                    if (LimitStorage.wait === null) {
+                        loggerRes.info('limitFn: Rate Limit retry create');
+                        LimitStorage.wait = new Promise(resolve => {
+                            setTimeout(() => {
+                                resolve(null);
+                                LimitStorage.wait = null;
+                                loggerRes.info('limitFn: Rate Limit retry clear');
+                            }, cycle);
+                        });
+                    }
                 }
+                loggerErr.warn(
+                    `fetch Error: ${error.config.url} - ${error.config.method} - ${JSON.stringify(
+                        error.config.params
+                    )} ${error.response.status} - ${
+                        error.response.statusText
+                    } \n - response data: ${JSON.stringify(error.response.data)}`
+                );
+                if (error.response.status === 404) {
+                    throw error;
+                }
+            } else {
+                loggerErr.warn(`fetch Error:`, error);
             }
-            loggerErr.warn(
-                `fetch Error: ${error.config.url} - ${error.config.method} - ${JSON.stringify(
-                    error.config.params
-                )} ${error.response.status} - ${
-                    error.response.statusText
-                } \n - response data: ${JSON.stringify(error.response.data)}`
-            );
         },
         before: async function (url, params) {
             if (LimitStorage.timer === null) {
@@ -54,7 +61,6 @@ pixivClient.fetch = StackHandler.warpQuery(
             }
             // 存在其它的limit
             if (LimitStorage.wait) {
-                loggerRes.info('limitFn: Rate Limit wait');
                 await LimitStorage.wait;
                 const wait = ((Math.random() * 10000) | 0) + 5000;
                 await new Promise(resolve => setTimeout(resolve, wait));

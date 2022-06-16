@@ -1,13 +1,13 @@
 import { getDbControl } from '../index';
 import { FindOptions, Optional } from 'sequelize';
 import { saveImageInfo } from './Images';
-import { parseImgItem } from '../../../utils/gotPixivImg';
-import { loggerShow } from '../../../utils/logger';
-import { DefaultImageRule, ImageRuleType } from '../define';
+import { parseImgItem, transDbResult } from '../../../utils/gotPixivImg';
+import { loggerErr, loggerShow } from '../../../utils/logger';
+import { DefaultImageRule, BaseTags, ImageRuleType } from '../define';
 import { makeImageParamsFromRule } from '../utils';
 import { IllustsItem } from '../../../type/';
 import { retryWarp, StackHandler } from '../../../utils/tool';
-import { Sequelize, Op } from 'sequelize';
+import { Op } from 'sequelize';
 
 interface rankingInter extends Optional<any, string> {
     date: string;
@@ -74,56 +74,79 @@ export const saveRanking = StackHandler.warpQuery(retryWarp(_saveRanking), {
 
 export async function getRanking(
     { where, offset = 0, limit = 30 },
-    rule: ImageRuleType = DefaultImageRule
+    rule: ImageRuleType = { ...DefaultImageRule }
 ) {
-    const ctx = await getDbControl();
-    const Ranking = ctx.model('Ranking');
+    let res: any = null;
 
-    const ranking: any = await Ranking.findOne({
-        where,
-        attributes: ['id']
-    });
-    if (!ranking) {
-        return ranking;
+    try {
+        const ctx = await getDbControl();
+        const Ranking = ctx.model('Ranking');
+        const ranking: any = await Ranking.findOne({
+            where,
+            attributes: ['id']
+        });
+        if (!ranking) {
+            return ranking;
+        }
+
+        rule.tagAttr = {
+            attributes: [...BaseTags.attributes, 'likeLevel']
+        };
+        const baseTagAttr = rule.tagAttr;
+        rule.tagAttr = null;
+
+        const queryParams: FindOptions = await makeImageParamsFromRule({
+            queryParams: {
+                offset,
+                limit,
+                through: { attributes: [] },
+                order: [['totalBookmarks', 'DESC']]
+            },
+            rule
+        });
+        const list = await ranking.getImages(queryParams);
+        res = list;
+        if (list && baseTagAttr) {
+            res = transDbResult(res);
+            const promise = [];
+            for (let i = 0; i < list.length; i++) {
+                const item = list[i];
+                const target = res[i];
+                const query = item.getTags().then(res => {
+                    target.tags = res;
+                });
+                promise.push(query);
+            }
+            await Promise.all(promise);
+        }
+    } catch (error) {
+        loggerErr.error('getRanking:', error);
     }
 
-    rule.tagAttr.where = {
-        likeLevel: {
-            [Op.gte]: 0
-        }
-    };
-
-    const queryParams: FindOptions = await makeImageParamsFromRule({
-        queryParams: {
-            offset,
-            limit,
-            through: { attributes: [] },
-            order: [['totalBookmarks', 'DESC']]
-        },
-        rule
-    });
-
-    return await ranking.getImages(queryParams);
+    return res;
 }
 
 export async function getRankingFromArrId(
     { ids, offset = 0, limit = 30 },
-    rule: ImageRuleType = DefaultImageRule
+    rule: ImageRuleType = { ...DefaultImageRule }
 ) {
-    const ctx = await getDbControl();
-    const RankingImages = ctx.model('RankingImages');
-    const Images = ctx.model('Images');
-
-    rule.tagAttr.where = {
-        likeLevel: {
-            [Op.gte]: 0
-        }
-    };
-    const queryParams: any = await makeImageParamsFromRule({
-        rule
-    });
+    let res = [];
     try {
-        return await RankingImages.findAll({
+        const ctx = await getDbControl();
+        const RankingImages = ctx.model('RankingImages');
+        const Images = ctx.model('Images');
+
+        rule.tagAttr = {
+            attributes: [...BaseTags.attributes, 'likeLevel']
+        };
+        const baseTagAttr = rule.tagAttr;
+        rule.tagAttr = null;
+
+        const queryParams: any = await makeImageParamsFromRule({
+            rule
+        });
+
+        const list: any = await RankingImages.findAll({
             where: {
                 [Op.or]: ids.map(id => {
                     return {
@@ -136,14 +159,30 @@ export async function getRankingFromArrId(
                 model: Images,
                 ...queryParams
             },
+            order: [[Images, 'totalBookmarks', 'DESC']],
             attributes: ['ImageId'],
             offset,
             limit
         });
+
+        res = list;
+        if (list && baseTagAttr) {
+            res = transDbResult(res);
+            const promise = [];
+            for (let i = 0; i < list.length; i++) {
+                const item = list[i];
+                const target = res[i];
+                const query = item.getTags().then(res => {
+                    target.tags = res;
+                });
+                promise.push(query);
+            }
+            await Promise.all(promise);
+        }
     } catch (error) {
-        console.log('check:', error);
+        loggerErr.error('getRankingFromArrId:', error);
     }
-    return [];
+    return res;
 }
 
 export async function getRankingInfo({ date, mode }) {

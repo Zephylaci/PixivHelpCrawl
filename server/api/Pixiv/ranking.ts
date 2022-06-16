@@ -2,7 +2,7 @@
 import Router from 'koa-router';
 import { resultBean } from '../../type/bean/resultBean';
 import { pixivMode, ResIllustsItem } from '../../type';
-import { tansIllustsItem, transDbResult } from '../../utils/gotPixivImg';
+import { tansIllustsItem, filterIllustsList, transDbResult } from '../../utils/gotPixivImg';
 import { getRankingIllusts, getRankingIllustsFromPixiv } from '../../service/handlePixiv';
 import { loggerErr } from '../../utils/logger';
 import { parseSorter } from '../../utils/tool';
@@ -47,7 +47,7 @@ main.post('/queryRanking', async function (ctx) {
         const result = await getRankingIllusts({ date, mode, offset, limit });
         res.text = result.text;
         contents.success = result.success;
-        contents.illusts = result.illusts.map(tansIllustsItem);
+        contents.illusts = filterIllustsList(result.illusts.map(tansIllustsItem));
     } catch (error) {
         res.code = 500;
         res.text = '服务繁忙';
@@ -82,17 +82,17 @@ main.post('/rankingImages', async function (ctx) {
     if (id) {
         let list = [];
         if (Array.isArray(id)) {
-            list = transDbResult(await getRankingFromArrId({ ids: id, offset, limit }));
+            list = transDbResult(await getRankingFromArrId({ ids: id, offset }));
             if (Array.isArray(list)) {
                 list = list.map(({ Image }) => {
                     return Image;
                 });
             }
         } else {
-            list = transDbResult(await getRanking({ where: { id }, offset, limit }));
+            list = transDbResult(await getRanking({ where: { id }, offset }));
         }
         res.contents = {
-            illusts: list.map(tansIllustsItem)
+            illusts: filterIllustsList(list.map(tansIllustsItem))
         };
     } else {
         res.contents = null;

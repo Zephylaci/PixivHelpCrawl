@@ -58,4 +58,4 @@ Ranking.belongsToMany(Images, {
     otherKey: 'ImageId',
     uniqueKey: 'id'
 });
-RankingImages.hasOne(Images, { sourceKey: 'ImageId', foreignKey: 'id' });
+RankingImages.belongsTo(Images, { foreignKey: 'ImageId' });

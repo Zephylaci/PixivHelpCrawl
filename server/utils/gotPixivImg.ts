@@ -32,6 +32,14 @@ export function transDbResult<T>(res: T): T {
     return JSON.parse(JSON.stringify(res));
 }
 
+export function filterIllustsList(list: Array<ResIllustsItem>) {
+    return list.filter(item => {
+        if (Array.isArray(item.tags)) {
+            return !item.tags.find(item => item.likeLevel < 0);
+        }
+        return true;
+    });
+}
 export function tansIllustsItem({
     originUrlJson,
     id,

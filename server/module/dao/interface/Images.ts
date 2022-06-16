@@ -3,6 +3,7 @@ import { DefaultImageRule, ImageRuleType } from '../define';
 import { FindOptions, Optional } from 'sequelize';
 import { makeImageParamsFromRule } from '../utils';
 import { LockHandler, retryWarp } from '../../../utils/tool';
+import { transDbResult } from '../../../utils/gotPixivImg';
 
 interface ImageInter extends Optional<any, string> {
     id: number;
@@ -100,16 +101,26 @@ export async function getImageInfo(id: number | string, rule: ImageRuleType = De
     const ctx = await getDbControl();
     const Images = ctx.model('Images');
 
-    const queryParams: FindOptions = await makeImageParamsFromRule({
-        queryParams: {
-            where: {
-                id
-            }
-        },
-        rule
+    const image: any = await Images.findOne({
+        where: {
+            id
+        }
     });
 
-    return await Images.findOne(queryParams);
+    const res = transDbResult(image);
+    if (image && rule.tagAttr) {
+        res.tags = await image.getTags({
+            ...rule.tagAttr
+        });
+    }
+
+    if (image && rule.authorAttr) {
+        res.author = await image.getAuthor({
+            ...rule.authorAttr
+        });
+    }
+
+    return res;
 }
 
 export async function getImages({ offset, limit }, rule: ImageRuleType = DefaultImageRule) {
