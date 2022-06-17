@@ -97,7 +97,7 @@ export const saveImageInfo = LockHandler.warpQuery(retryWarp(_saveImageInfo), {
     makeCashKey: ({ image }) => image.id
 });
 
-export async function getImageInfo(id: number | string, rule: ImageRuleType = DefaultImageRule) {
+export async function getImageInfo(id: number | string, rule: ImageRuleType = {...DefaultImageRule}) {
     const ctx = await getDbControl();
     const Images = ctx.model('Images');
 
@@ -123,7 +123,7 @@ export async function getImageInfo(id: number | string, rule: ImageRuleType = De
     return res;
 }
 
-export async function getImages({ offset, limit }, rule: ImageRuleType = DefaultImageRule) {
+export async function getImages({ offset, limit }, rule: ImageRuleType = {...DefaultImageRule}) {
     const ctx = await getDbControl();
     const Images = ctx.model('Images');
 

@@ -208,7 +208,7 @@ export async function getRankingInfo({ date, mode }) {
 export async function getRankingPages({ mode, dateRange, sorter, offset, limit }) {
     const ctx = await getDbControl();
     const Ranking = ctx.model('Ranking');
-    let order = undefined;
+    let order: any = [['createTime', 'DESC']];
     if (Array.isArray(sorter) && sorter.length > 0) {
         order = sorter.map(item => {
             return item;

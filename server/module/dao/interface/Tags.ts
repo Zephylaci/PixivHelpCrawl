@@ -19,7 +19,7 @@ const ImageCount = [
 export async function getTagPages({ offset, limit, sorter }) {
     const ctx = await getDbControl();
     const Tags = ctx.model('Tags');
-    let order = undefined;
+    let order: any = [['id', 'DESC']];
     if (Array.isArray(sorter) && sorter.length > 0) {
         order = sorter.map(item => {
             if (item[0] === 'imageCount') {
@@ -42,6 +42,12 @@ export async function getTagList({ offset, limit, sorter, search }) {
     const Tags = ctx.model('Tags');
 
     const where = {};
+    let order: any = [['likeLevel', 'DESC']];
+    if (Array.isArray(sorter) && sorter.length > 0) {
+        order = sorter.map(item => {
+            return item;
+        });
+    }
 
     if (search) {
         const keyWord = search;
@@ -54,12 +60,13 @@ export async function getTagList({ offset, limit, sorter, search }) {
             });
         });
     }
+
     return await Tags.findAll({
         limit,
         offset,
         where,
         attributes: TagAttributes,
-        order: sorter
+        order
     });
 }
 
@@ -76,7 +83,7 @@ export async function getTagInfo(where, attr = TagAttributes) {
 
 export async function getTagImages(
     { where, offset, limit },
-    rule: ImageRuleType = DefaultImageRule
+    rule: ImageRuleType = { ...DefaultImageRule }
 ) {
     let res = [];
     try {
@@ -89,7 +96,7 @@ export async function getTagImages(
             queryParams: {
                 offset,
                 limit,
-                order: [['totalBookmarks', 'DESC']]
+                order: [['createTime', 'DESC']]
             },
             rule
         });

@@ -1,4 +1,5 @@
 import Koa from 'koa';
+import fs from 'fs';
 import json from 'koa-json';
 import onerror from 'koa-onerror';
 import bodyparser from 'koa-bodyparser';
@@ -38,7 +39,11 @@ app.use(async (ctx, next) => {
     generalResult(ctx);
     await next();
     const ms = new Date().getTime() - start;
-
+    // if (ctx.status === 404) {
+    //     ctx.status = 200;
+    //     ctx.set('content-type', 'text/html; charset=utf-8');
+    //     ctx.body = fs.createReadStream(`${pathConfig.webPath}/index.html`);
+    // }
     loggerRes.info(`${ctx.method} ${ctx.url} - ${ms}ms - ${ctx.status}`);
 });
 
@@ -48,7 +53,8 @@ app.use(apiRouter);
 app.use(
     staticServer({
         rootDir: pathConfig.webPath,
-        rootPath: '/'
+        rootPath: '/',
+        notFoundFile: `index.html`
     })
 );
 

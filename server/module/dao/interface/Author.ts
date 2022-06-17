@@ -17,7 +17,7 @@ const AuthorsAttributes: FindAttributeOptions = [
 export async function getAuthors({ offset, limit, sorter }) {
     const ctx = await getDbControl();
     const Authors = ctx.model('Author');
-    let order = undefined;
+    let order: any = [['createTime', 'DESC']];
     if (Array.isArray(sorter) && sorter.length > 0) {
         order = sorter.map(item => {
             if (item[0] === 'imageCount') {
@@ -45,7 +45,7 @@ export async function getAuthorInfo(where, attributes: FindAttributeOptions = Au
 
 export async function getAuthorImages(
     { where, offset, limit },
-    rule: ImageRuleType = DefaultImageRule
+    rule: ImageRuleType = { ...DefaultImageRule }
 ) {
     let res = [];
     try {
