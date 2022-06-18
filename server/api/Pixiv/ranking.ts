@@ -24,6 +24,7 @@ type rankingParams = {
 type rankingContents = {
     success: boolean;
     illusts: Array<ResIllustsItem>;
+    num: null | number;
 };
 
 const main = new Router();
@@ -33,6 +34,7 @@ main.post('/queryRanking', async function (ctx) {
     const { date, mode, offset = 0, limit = 90 } = params;
     const contents: rankingContents = {
         illusts: [],
+        num: null,
         success: false
     };
 
@@ -48,6 +50,7 @@ main.post('/queryRanking', async function (ctx) {
         res.text = result.text;
         contents.success = result.success;
         contents.illusts = filterIllustsList(result.illusts.map(tansIllustsItem));
+        contents.num = result.illusts.length;
     } catch (error) {
         res.code = 500;
         res.text = '服务繁忙';
@@ -92,7 +95,8 @@ main.post('/rankingImages', async function (ctx) {
             list = transDbResult(await getRanking({ where: { id }, offset }));
         }
         res.contents = {
-            illusts: filterIllustsList(list.map(tansIllustsItem))
+            illusts: filterIllustsList(list.map(tansIllustsItem)),
+            num: list.length
         };
     } else {
         res.contents = null;

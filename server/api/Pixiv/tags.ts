@@ -9,7 +9,7 @@ import {
     updateTag
 } from '../../module/dao/interface/Tags';
 import { parseSorter } from '../../utils/tool';
-import { tansIllustsItem, transDbResult } from '../../utils/gotPixivImg';
+import { filterIllustsList, tansIllustsItem, transDbResult } from '../../utils/gotPixivImg';
 import { loggerErr } from '../../utils/logger';
 
 type params = {
@@ -64,11 +64,13 @@ main.get('/tagImages', async function (ctx) {
 
     if (id || name) {
         let where = id ? { id } : { name };
-        const list = await getTagImages({ where, offset, limit });
+        const { item, list } = await getTagImages({ where, offset, limit });
 
         res.code = 200;
+        let illusts = transDbResult(list).map(tansIllustsItem);
         res.contents = {
-            illusts: transDbResult(list).map(tansIllustsItem)
+            illusts: item.likeLevel >= 0 ? filterIllustsList(illusts) : illusts,
+            num: list.length
         };
     } else {
         res.contents = null;

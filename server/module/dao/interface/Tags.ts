@@ -85,9 +85,9 @@ export async function getTagImages(
     { where, offset, limit },
     rule: ImageRuleType = { ...DefaultImageRule }
 ) {
-    let res = [];
+    let res: any = { item: {}, list: [] };
     try {
-        const item: any = await getTagInfo(where, ['id']);
+        const item: any = await getTagInfo(where, ['id', 'likeLevel']);
 
         const baseTagAttr = rule.tagAttr;
         rule.tagAttr = null;
@@ -100,15 +100,16 @@ export async function getTagImages(
             },
             rule
         });
-        if (queryImage) {
+        if (item) {
             const list = await item.getImages(queryImage);
-            res = list;
+            res.item = item;
+            res.list = list;
             if (list && baseTagAttr) {
                 res = transDbResult(res);
                 const promise = [];
                 for (let i = 0; i < list.length; i++) {
                     const item = list[i];
-                    const target = res[i];
+                    const target = res.list[i];
                     const query = item.getTags().then(res => {
                         target.tags = res;
                     });
