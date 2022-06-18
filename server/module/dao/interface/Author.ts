@@ -50,10 +50,6 @@ export async function getAuthorImages(
     let res = [];
     try {
         const item: any = await getAuthorInfo(where, ['id']);
-
-        const baseTagAttr = rule.tagAttr;
-        rule.tagAttr = null;
-
         const queryImage = await makeImageParamsFromRule({
             queryParams: {
                 offset,
@@ -62,22 +58,9 @@ export async function getAuthorImages(
             },
             rule
         });
-        if (queryImage) {
+        if (item) {
             const list = await item.getImages(queryImage);
             res = list;
-            if (list && baseTagAttr) {
-                res = transDbResult(res);
-                const promise = [];
-                for (let i = 0; i < list.length; i++) {
-                    const item = list[i];
-                    const target = res[i];
-                    const query = item.getTags().then(res => {
-                        target.tags = res;
-                    });
-                    promise.push(query);
-                }
-                await Promise.all(promise);
-            }
         }
     } catch (error) {
         loggerErr.error('getTagImages:', error);

@@ -32,6 +32,11 @@ export const Images = dbClient.define(
     {
         tableName: 'imgStorage',
         createdAt: 'createTime',
-        updatedAt: 'updateTime'
+        updatedAt: 'updateTime',
+        indexes: [
+            {
+                fields: ['authorId', 'id']
+            }
+        ]
     }
 );

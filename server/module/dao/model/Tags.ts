@@ -41,7 +41,12 @@ const ImagesTags = dbClient.define(
     },
     {
         tableName: 'ImagesTags',
-        timestamps: false
+        timestamps: false,
+        indexes: [
+            {
+                fields: ['TagId', 'ImageId']
+            }
+        ]
     }
 );
 
