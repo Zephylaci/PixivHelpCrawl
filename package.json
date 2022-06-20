@@ -44,7 +44,7 @@
         "log4js": "^6.4.4",
         "node-schedule": "^2.1.0",
         "sequelize": "^6.19.0",
-        "sqlite3": "^5.0.2",
+        "sqlite3": "^5.0.8",
         "zlib": "^1.0.5"
     },
     "devDependencies": {

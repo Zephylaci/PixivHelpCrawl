@@ -19,6 +19,7 @@ export async function makeImageParamsFromRule({ queryParams = {}, rule }: any) {
             result.include.push({
                 model: Tags,
                 through: { attributes: [] },
+                required: true,
                 as: 'tags',
                 ...rule.tagAttr
             });

@@ -1,7 +1,15 @@
 import { FindOptions, IncludeOptions, Optional } from 'sequelize';
 
 export const BaseImages = {
-    attributes: ['id', 'title', 'previewUrl', 'totalBookmarks', 'totalView', 'originUrlJson']
+    attributes: [
+        'id',
+        'title',
+        'previewUrl',
+        'totalBookmarks',
+        'totalView',
+        'originUrlJson',
+        'createTime'
+    ]
 };
 
 export const BaseTags = {
