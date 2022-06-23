@@ -199,7 +199,8 @@ export function retryWarp<T>(
             loggerErr.warn('retryWarp :', fn, error);
         },
         baseWait = 3000,
-        before = null
+        before = null,
+        onlyBeforeInRetry = false
     } = {}
 ) {
     return (((...args) => {
@@ -225,7 +226,7 @@ export function retryWarp<T>(
                     reject();
                 }
             }
-            if (typeof before === 'function') {
+            if (onlyBeforeInRetry === false && typeof before === 'function') {
                 await before(...args);
             }
             fn(...args)

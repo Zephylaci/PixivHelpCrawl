@@ -10,6 +10,8 @@ import {
     updateAuthor
 } from '../../module/dao/interface/Author';
 import { loggerErr } from '../../utils/logger';
+import pixivClient from '../../module/pixiv-api/index';
+import { getAuthorIllustsFromPixiv, saveIllust } from '../../service/handlePixiv';
 
 type params = {
     offset: number;
@@ -51,10 +53,25 @@ main.get('/authorImages', async function (ctx) {
     }
 });
 
+main.post('/addAuthorImages', async function (ctx) {
+    const res: resultBean = ctx.body;
+    const params = ctx.request.body;
+    const { id, offset = 0, limit = 90 } = params;
+    console.log('check:', id, offset, limit);
+    if (id) {
+        res.code = 200;
+        await getAuthorIllustsFromPixiv({ id, offset, limit });
+    } else {
+        res.contents = null;
+        res.text = '入参错误';
+    }
+});
+
 main.get('/authorInfo', async function (ctx) {
     const res: resultBean = ctx.body;
     const params = ctx.query;
     const { id, name } = params;
+
     res.code = 200;
     if (id || name) {
         const where = id ? { id } : { name };

@@ -26,7 +26,41 @@ export async function saveIllust(item: IllustsItem) {
     }
     return id;
 }
-// const queryIllustRanking = retryWarp(pixivClient.illustRanking.bind(pixivClient));
+
+export async function getAuthorIllustsFromPixiv({ id, offset, limit }) {
+    const illusts = [];
+    let startOffset = offset;
+    loggerRes.info('getAuthorIllustsFromPixiv start:', id, offset, limit);
+    for (let i = 0; i < limit; ) {
+        const body: rankingRes = await pixivClient
+            .userIllusts(Number(id), { offset: Number(startOffset), type: '' })
+            .catch(error => {
+                loggerErr.error('getAuthorIllustsFromPixiv:', error);
+                return {
+                    illusts: [],
+                    nextUrl: ''
+                };
+            });
+        illusts.push(...body.illusts);
+        i = illusts.length;
+        if (body.nextUrl) {
+            const url = new URL(body.nextUrl);
+            offset = Number(url.searchParams.get('offset'));
+        } else {
+            break;
+        }
+
+        if (!Array.isArray(body.illusts) || body.illusts.length === 0) {
+            break;
+        }
+    }
+
+    for (let illust of illusts) {
+        await saveIllust(illust);
+    }
+    loggerRes.info('getAuthorIllustsFromPixiv end:', id, illusts.length);
+}
+
 async function _getRankingIllustsFromPixiv({
     date,
     mode,

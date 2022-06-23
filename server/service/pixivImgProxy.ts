@@ -4,7 +4,9 @@ import * as stream from 'stream';
 import { promisify } from 'util';
 import { pathConfig } from '../../config';
 import { fromFile } from 'file-type';
-import { loggerErr, loggerShow } from '../utils/logger';
+import { loggerErr, loggerRes, loggerShow } from '../utils/logger';
+import { gotImgInstance } from '../utils/gotPixivImg';
+import { StackHandler, retryWarp } from '../utils/tool';
 
 const BasePath = pathConfig.cashPath;
 fs.ensureDirSync(BasePath);
@@ -20,6 +22,7 @@ export function parseTarget(target) {
         targetPath
     };
 }
+
 export function getTargetCash({ targetName, targetPath }) {
     if (fs.existsSync(targetPath)) {
         fs.stat(targetPath, (statErr, stat) => {
@@ -38,6 +41,7 @@ export function getTargetCash({ targetName, targetPath }) {
     }
     return null;
 }
+
 export function saveGotImgStream({ readStream, path }) {
     return new Promise(resolve => {
         readStream.on('response', async res => {
@@ -86,3 +90,45 @@ export function saveGotImgStream({ readStream, path }) {
         });
     });
 }
+
+async function _gotImgAndSave({
+    readStream,
+    target,
+    targetPath
+}: {
+    readStream?: any;
+    target;
+    targetPath;
+}) {
+    let stream = null;
+    if (readStream) {
+        stream = readStream;
+    } else {
+        loggerRes.info('gotImgAndSave make stream:', target);
+        stream = gotImgInstance.stream(target, { throwHttpErrors: false });
+    }
+    let res = await saveGotImgStream({
+        readStream: stream,
+        path: targetPath
+    });
+    if (res === false) {
+        throw new Error('gotImgAndSave Failed');
+    }
+}
+
+export const gotImgAndSave = StackHandler.warpQuery(
+    retryWarp(_gotImgAndSave, {
+        onlyBeforeInRetry: true,
+        before: async params => {
+            params.readStream = null;
+            return params;
+        }
+    }),
+    {
+        key: 'gotImgAndSave',
+        limit: 20,
+        makeCashKey: ({ target }) => {
+            return target;
+        }
+    }
+);

@@ -1,6 +1,11 @@
-import  Router from 'koa-router';
+import Router from 'koa-router';
 import { gotImgInstance } from '../../utils/gotPixivImg';
-import { parseTarget, getTargetCash, saveGotImgStream } from '../../service/pixivImgProxy';
+import {
+    parseTarget,
+    getTargetCash,
+    saveGotImgStream,
+    gotImgAndSave
+} from '../../service/pixivImgProxy';
 
 const main = new Router();
 main.get('/proxy/:target*', async function (ctx) {
@@ -27,10 +32,7 @@ main.get('/proxy-save/:target*', async function (ctx) {
         ctx.body = cash;
     } else {
         const readStream = gotImgInstance.stream(target, { throwHttpErrors: false });
-        saveGotImgStream({
-            readStream,
-            path: info.targetPath
-        });
+        gotImgAndSave({ readStream, target, targetPath: info.targetPath });
 
         ctx.body = readStream;
     }
