@@ -63,8 +63,16 @@ async function _saveImageInfo({ image, tags, author }: ImageParams) {
                 }
                 aboutTags.push(tag);
             }
+            const tagSet = new Set();
 
-            await imageItem.setTags(aboutTags, { transaction });
+            await imageItem.setTags(
+                aboutTags.filter(item => {
+                    const have = tagSet.has(item.id);
+                    tagSet.add(item.id);
+                    return !have;
+                }),
+                { transaction }
+            );
         }
 
         if (author && author.id) {
@@ -97,7 +105,10 @@ export const saveImageInfo = LockHandler.warpQuery(retryWarp(_saveImageInfo), {
     makeCashKey: ({ image }) => image.id
 });
 
-export async function getImageInfo(id: number | string, rule: ImageRuleType = {...DefaultImageRule}) {
+export async function getImageInfo(
+    id: number | string,
+    rule: ImageRuleType = { ...DefaultImageRule }
+) {
     const ctx = await getDbControl();
     const Images = ctx.model('Images');
 
@@ -123,7 +134,7 @@ export async function getImageInfo(id: number | string, rule: ImageRuleType = {.
     return res;
 }
 
-export async function getImages({ offset, limit }, rule: ImageRuleType = {...DefaultImageRule}) {
+export async function getImages({ offset, limit }, rule: ImageRuleType = { ...DefaultImageRule }) {
     const ctx = await getDbControl();
     const Images = ctx.model('Images');
 

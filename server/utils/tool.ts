@@ -148,6 +148,7 @@ export const StackHandler = {
 };
 
 /** 只限制重复的 */
+// TODO: catch 参照上面的
 export const LockHandler = {
     Storage: {},
     warpQuery: (fn, { key, makeCashKey = null }) => {

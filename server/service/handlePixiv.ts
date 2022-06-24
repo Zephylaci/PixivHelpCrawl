@@ -29,11 +29,10 @@ export async function saveIllust(item: IllustsItem) {
 
 export async function getAuthorIllustsFromPixiv({ id, offset, limit }) {
     const illusts = [];
-    let startOffset = offset;
     loggerRes.info('getAuthorIllustsFromPixiv start:', id, offset, limit);
     for (let i = 0; i < limit; ) {
         const body: rankingRes = await pixivClient
-            .userIllusts(Number(id), { offset: Number(startOffset), type: '' })
+            .userIllusts(Number(id), { offset: Number(offset), type: '' })
             .catch(error => {
                 loggerErr.error('getAuthorIllustsFromPixiv:', error);
                 return {
@@ -45,7 +44,7 @@ export async function getAuthorIllustsFromPixiv({ id, offset, limit }) {
         i = illusts.length;
         if (body.nextUrl) {
             const url = new URL(body.nextUrl);
-            offset = Number(url.searchParams.get('offset'));
+            offset = Number(url.searchParams.get('offset')) || body.illusts.length;
         } else {
             break;
         }
@@ -67,7 +66,7 @@ async function _getRankingIllustsFromPixiv({
     offset,
     limit
 }): Promise<Array<DbIllustsItem>> {
-    let startOffset = offset;
+    const startOffset = offset;
     const illusts = [];
     const queryStart = new Date().getTime();
     for (let i = 0; i < limit; ) {

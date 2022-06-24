@@ -8,12 +8,13 @@ export const BaseImages = {
         'totalBookmarks',
         'totalView',
         'originUrlJson',
+        'sanityLevel',
         'createTime'
     ]
 };
 
 export const BaseTags = {
-    attributes: ['name', 'translatedName', 'customName']
+    attributes: ['name', 'translatedName', 'customName', 'likeLevel']
 };
 
 export const BaseAuthor = {
