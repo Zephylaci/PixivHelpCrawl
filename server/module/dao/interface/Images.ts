@@ -1,6 +1,6 @@
 import { getDbControl } from '../index';
 import { DefaultImageRule, ImageRuleType } from '../define';
-import { FindOptions, Optional } from 'sequelize';
+import { FindOptions, Op, Optional, Sequelize } from 'sequelize';
 import { makeImageParamsFromRule } from '../utils';
 import { LockHandler, retryWarp } from '../../../utils/tool';
 import { transDbResult } from '../../../utils/gotPixivImg';
@@ -134,17 +134,59 @@ export async function getImageInfo(
     return res;
 }
 
-export async function getImages({ offset, limit }, rule: ImageRuleType = { ...DefaultImageRule }) {
+export async function getImages(
+    { offset, limit, sorter, where = undefined, tagConfig = {} }: any,
+    rule: ImageRuleType = { ...DefaultImageRule }
+) {
     const ctx = await getDbControl();
     const Images = ctx.model('Images');
+
+    let order: any = [];
+    if (Array.isArray(sorter) && sorter.length > 0) {
+        order = sorter.map(item => {
+            return item;
+        });
+    }
+
+    let tagMode = null;
+    let tagParams: any = {};
+    if (Array.isArray(tagConfig.tags)) {
+        tagMode = tagConfig.mode || 'and';
+        rule.tagAttr.through = {
+            attributes: [],
+            where: {
+                TagId: {
+                    [Op.in]: tagConfig.tags
+                }
+            }
+        };
+        if (tagMode === 'and') {
+            tagParams = {
+                group: ['Images.id'],
+                having: Sequelize.literal(`COUNT( DISTINCT tags.id ) = ${tagConfig.tags.length}`),
+                subQuery: false
+            };
+        }
+    }
 
     const queryParams: FindOptions = await makeImageParamsFromRule({
         queryParams: {
             offset,
-            limit
+            limit,
+            order,
+            where,
+            ...tagParams
         },
         rule
     });
 
-    return await Images.findAll(queryParams);
+    const list: any = await Images.findAll(queryParams);
+    const result = transDbResult(list);
+    if (tagMode) {
+        for (let i = 0; i < result.length; i++) {
+            result[i].tags = await list[i].getTags();
+        }
+    }
+
+    return result;
 }

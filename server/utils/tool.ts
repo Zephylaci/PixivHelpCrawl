@@ -41,7 +41,9 @@ export const formatDate = function (time, format = 'YYYY-MM-DD') {
 };
 
 const sortKey = {
+    // 升序 (从低到高)
     ascend: 'ASC',
+    // 降序（从高到低）
     descend: 'DESC'
 };
 

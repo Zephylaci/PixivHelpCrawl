@@ -37,7 +37,7 @@ export async function getTagPages({ offset, limit, sorter }) {
     });
 }
 
-export async function getTagList({ offset, limit, sorter, search }) {
+export async function getTagList({ offset, limit, sorter = [], search = null }) {
     const ctx = await getDbControl();
     const Tags = ctx.model('Tags');
 

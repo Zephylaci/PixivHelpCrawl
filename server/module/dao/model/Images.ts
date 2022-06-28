@@ -21,8 +21,12 @@ export const Images = dbClient.define(
             originalImageUrl:string  // metaSinglePage: {originalImageUrl: ""}    
         */
         originUrlJson: DataTypes.TEXT,
-        // 健全等级
+        // 健全等级 0 2 4 6 越高似乎越不健康
         sanityLevel: DataTypes.TINYINT,
+        likeLevel: {
+            type: DataTypes.TINYINT,
+            defaultValue: 0
+        },
         totalBookmarks: DataTypes.INTEGER,
         totalView: DataTypes.INTEGER,
         type: DataTypes.STRING(50),
@@ -36,6 +40,21 @@ export const Images = dbClient.define(
         indexes: [
             {
                 fields: ['authorId', 'id']
+            },
+            {
+                fields: ['createTime']
+            },
+            {
+                fields: ['sanityLevel']
+            },
+            {
+                fields: ['totalBookmarks']
+            },
+            {
+                fields: ['totalView']
+            },
+            {
+                fields: ['likeLevel']
             }
         ]
     }

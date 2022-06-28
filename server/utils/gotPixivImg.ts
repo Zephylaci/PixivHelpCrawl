@@ -48,7 +48,8 @@ export function tansIllustsItem({
     totalBookmarks,
     totalView,
     tags,
-    author
+    author,
+    ...other
 }: DbIllustsItem): ResIllustsItem {
     const origin: any = JSON.parse(originUrlJson);
     const item: ResIllustsItem = {
@@ -59,7 +60,8 @@ export function tansIllustsItem({
         totalView,
         tags,
         author,
-        count: origin.pageCount
+        count: origin.pageCount,
+        ...other
     };
 
     if (origin.pageCount > 1) {
