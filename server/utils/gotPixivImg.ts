@@ -37,6 +37,11 @@ export function filterIllustsList(list: Array<ResIllustsItem>) {
         if (item.likeLevel < 0) {
             return false;
         }
+
+        if (item.likeLevel > 0) {
+            return true;
+        }
+
         if (Array.isArray(item.tags)) {
             return !item.tags.find(item => item.likeLevel < 0);
         }
