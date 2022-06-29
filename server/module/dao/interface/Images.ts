@@ -107,36 +107,26 @@ export const saveImageInfo = LockHandler.warpQuery(retryWarp(_saveImageInfo), {
 
 export async function getImageInfo(
     id: number | string,
-    rule: ImageRuleType = { ...DefaultImageRule }
+    rule: ImageRuleType = transDbResult(DefaultImageRule)
 ) {
     const ctx = await getDbControl();
     const Images = ctx.model('Images');
 
-    const image: any = await Images.findOne({
-        where: {
-            id
-        }
+    const queryParams: FindOptions = await makeImageParamsFromRule({
+        queryParams: {
+            where: {
+                id
+            }
+        },
+        rule
     });
 
-    const res = transDbResult(image);
-    if (image && rule.tagAttr) {
-        res.tags = await image.getTags({
-            ...rule.tagAttr
-        });
-    }
-
-    if (image && rule.authorAttr) {
-        res.author = await image.getAuthor({
-            ...rule.authorAttr
-        });
-    }
-
-    return res;
+    return await Images.findOne(queryParams);
 }
 
 export async function getImages(
     { offset, limit, sorter, where = undefined, tagConfig = {} }: any,
-    rule: ImageRuleType = { ...DefaultImageRule }
+    rule: ImageRuleType = transDbResult(DefaultImageRule)
 ) {
     const ctx = await getDbControl();
     const Images = ctx.model('Images');
@@ -150,16 +140,28 @@ export async function getImages(
 
     let tagMode = null;
     let tagParams: any = {};
+
     if (Array.isArray(tagConfig.tags)) {
         tagMode = tagConfig.mode || 'and';
+        const Handler = {
+            and: 'in',
+            or: 'in'
+        };
+
         rule.tagAttr.through = {
             attributes: [],
             where: {
                 TagId: {
-                    [Op.in]: tagConfig.tags
+                    [Op[Handler[tagMode]]]: tagConfig.tags
                 }
             }
         };
+
+        // where['$tags.id$'] = {
+        //     [Op.ne]: tagConfig.tags
+        // };
+        // tagParams = { subQuery: false };
+
         if (tagMode === 'and') {
             tagParams = {
                 group: ['Images.id'],

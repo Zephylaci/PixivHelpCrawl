@@ -83,7 +83,7 @@ export async function getTagInfo(where, attr = TagAttributes) {
 
 export async function getTagImages(
     { where, offset, limit },
-    rule: ImageRuleType = { ...DefaultImageRule }
+    rule: ImageRuleType = transDbResult(DefaultImageRule)
 ) {
     let res: any = { item: {}, list: [] };
     try {

@@ -1,10 +1,11 @@
 // 路由设置
 import Router from 'koa-router';
 import { Op } from 'sequelize';
-import { getImages } from '../../module/dao/interface/Images';
+import { getImageInfo, getImages } from '../../module/dao/interface/Images';
 import { getIllustInfo } from '../../service/handlePixiv';
 import { resultBean } from '../../type/bean/resultBean';
 import { tansIllustsItem, filterIllustsList, transDbResult } from '../../utils/gotPixivImg';
+import { loggerErr } from '../../utils/logger';
 import { parseSorter } from '../../utils/tool';
 
 const main = new Router();
@@ -33,6 +34,7 @@ main.post('/imageList', async function (ctx) {
         needFilter = true,
         sortKey,
         sortMode,
+        sanityMode,
         tags,
         tagMode
     } = params;
@@ -46,12 +48,15 @@ main.post('/imageList', async function (ctx) {
             }
         ]);
     }
-
-    let where = {
-        sanityLevel: {
-            [Op.lt]: sanityLevel
-        }
-    };
+    let where = undefined;
+    if (sanityLevel) {
+        const Key = sanityMode === 'lt' ? 'lt' : 'gt';
+        where = {
+            sanityLevel: {
+                [Op[Key]]: sanityLevel
+            }
+        };
+    }
 
     let tagConfig = undefined;
     if (Array.isArray(tags) && tags.length > 0) {
@@ -59,6 +64,11 @@ main.post('/imageList', async function (ctx) {
             tags,
             mode: tagMode || 'and'
         };
+    }
+
+    // 暂时不知道怎么样写能从数据查询里排除tags
+    if (tagMode === 'not') {
+        tagConfig = undefined;
     }
 
     res.code = 200;
@@ -69,11 +79,42 @@ main.post('/imageList', async function (ctx) {
         where,
         tagConfig
     });
+
     const resList = transDbResult(list).map(tansIllustsItem);
     res.contents = {
         illusts: needFilter ? filterIllustsList(resList) : resList,
         num: list.length
     };
+});
+
+main.post('/updateImageLike', async function (ctx) {
+    const res: resultBean = ctx.body;
+    const params: any = ctx.request.body;
+    const { id, name, like } = params;
+
+    res.code = 200;
+    if (id && typeof like === 'number') {
+        res.contents = {
+            success: false
+        };
+        try {
+            const item: any = await getImageInfo(id, {
+                imageAttr: {
+                    attributes: ['id', 'likeLevel']
+                }
+            });
+            if (item) {
+                item.likeLevel += like;
+                await item.save();
+                res.contents.success = true;
+            }
+        } catch (error) {
+            loggerErr.error('updateImageLike error', error);
+        }
+    } else {
+        res.contents = null;
+        res.text = '入参错误';
+    }
 });
 
 main.post('/updateImage', async function (ctx) {

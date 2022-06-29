@@ -34,6 +34,9 @@ export function transDbResult<T>(res: T): T {
 
 export function filterIllustsList(list: Array<ResIllustsItem>) {
     return list.filter(item => {
+        if (item.likeLevel < 0) {
+            return false;
+        }
         if (Array.isArray(item.tags)) {
             return !item.tags.find(item => item.likeLevel < 0);
         }
@@ -49,6 +52,7 @@ export function tansIllustsItem({
     totalView,
     tags,
     author,
+    likeLevel,
     ...other
 }: DbIllustsItem): ResIllustsItem {
     const origin: any = JSON.parse(originUrlJson);
@@ -61,6 +65,7 @@ export function tansIllustsItem({
         tags,
         author,
         count: origin.pageCount,
+        likeLevel,
         ...other
     };
 

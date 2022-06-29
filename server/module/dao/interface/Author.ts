@@ -3,6 +3,7 @@ import { DefaultImageRule, ImageRuleType } from '../define';
 import { makeImageParamsFromRule } from '../utils';
 import { FindAttributeOptions } from 'sequelize';
 import { loggerErr } from '../../../utils/logger';
+import { transDbResult } from '../../../utils/gotPixivImg';
 
 const AuthorsAttributes: FindAttributeOptions = [
     'id',
@@ -44,7 +45,7 @@ export async function getAuthorInfo(where, attributes: FindAttributeOptions = Au
 
 export async function getAuthorImages(
     { where, offset, limit },
-    rule: ImageRuleType = { ...DefaultImageRule }
+    rule: ImageRuleType = transDbResult(DefaultImageRule)
 ) {
     let res = [];
     try {

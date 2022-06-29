@@ -13,6 +13,7 @@ export interface DbIllustsItem {
     author: any;
     count: number;
     originUrlJson: string;
+    likeLevel: number;
 }
 export interface ResIllustsItem {
     id: number;
@@ -26,6 +27,7 @@ export interface ResIllustsItem {
     metaPages?: Array<string>;
     detailUrls?: Array<string>;
     originUrls?: Array<string>;
+    likeLevel: number;
 }
 
 export const pixivMode = [

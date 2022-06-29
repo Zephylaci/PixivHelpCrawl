@@ -110,7 +110,7 @@ main.post('/updateTagLike', async function (ctx) {
     const { id, name, like } = params;
 
     res.code = 200;
-    if (id || (name && typeof like === 'number')) {
+    if ((id || name) && typeof like === 'number') {
         res.contents = {
             success: false
         };

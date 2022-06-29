@@ -74,7 +74,7 @@ export const saveRanking = StackHandler.warpQuery(retryWarp(_saveRanking), {
 
 export async function getRanking(
     { where, offset = 0, limit = 30 },
-    rule: ImageRuleType = { ...DefaultImageRule }
+    rule: ImageRuleType = transDbResult(DefaultImageRule)
 ) {
     let res: any = null;
 
@@ -128,7 +128,7 @@ export async function getRanking(
 
 export async function getRankingFromArrId(
     { ids, offset = 0, limit = 30 },
-    rule: ImageRuleType = { ...DefaultImageRule }
+    rule: ImageRuleType = transDbResult(DefaultImageRule)
 ) {
     let res = [];
     try {

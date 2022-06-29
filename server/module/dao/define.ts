@@ -9,6 +9,7 @@ export const BaseImages = {
         'totalView',
         'originUrlJson',
         'sanityLevel',
+        'likeLevel',
         'createTime'
     ]
 };
