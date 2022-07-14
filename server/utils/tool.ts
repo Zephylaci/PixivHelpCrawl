@@ -154,15 +154,15 @@ export const StackHandler = {
 export const LockHandler = {
     Storage: {},
     warpQuery: (fn, { key, makeCashKey = null }) => {
-        if (!StackHandler.Storage[key]) {
-            StackHandler.Storage[key] = {
+        if (!LockHandler.Storage[key]) {
+            LockHandler.Storage[key] = {
                 stack: new Map(),
                 id: 0
             };
         }
         return (...args) => {
             return new Promise(resolve => {
-                const StorageItem = StackHandler.Storage[key];
+                const StorageItem = LockHandler.Storage[key];
                 const item = {
                     params: args,
                     running: null,
@@ -187,7 +187,7 @@ export const LockHandler = {
                     StorageItem.stack.set(item.id, item);
                 } else {
                     cashItem.resolves.push(...item.resolves);
-                    loggerErr.warn('StackHandler filter:', key, item.id || item);
+                    loggerErr.warn('LockHandler filter:', key, item.id || item);
                 }
             });
         };

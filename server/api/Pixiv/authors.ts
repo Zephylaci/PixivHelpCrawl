@@ -6,6 +6,7 @@ import { tansIllustsItem, transDbResult } from '../../utils/gotPixivImg';
 import {
     getAuthorImages,
     getAuthorInfo,
+    getAuthorList,
     getAuthors,
     updateAuthor
 } from '../../module/dao/interface/Author';
@@ -32,6 +33,24 @@ main.post('/authorPages', async function (ctx) {
     }
     res.code = 200;
     res.contents = await getAuthors({ offset, limit, sorter });
+});
+
+main.post('/authorList', async function (ctx) {
+    const res: resultBean = ctx.body;
+    const params: any = ctx.request.body;
+    const { offset = 0, limit = 20, sort, search } = params;
+
+    let sorter = undefined;
+    if (sort) {
+        sorter = parseSorter(sort);
+    }
+    res.code = 200;
+    res.contents = await getAuthorList({
+        offset,
+        limit,
+        sorter,
+        search
+    });
 });
 
 main.get('/authorImages', async function (ctx) {

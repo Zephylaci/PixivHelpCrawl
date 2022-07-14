@@ -142,31 +142,35 @@ export async function getImages(
     let tagParams: any = {};
 
     if (Array.isArray(tagConfig.tags)) {
-        tagMode = tagConfig.mode || 'and';
-        const Handler = {
-            and: 'in',
-            or: 'in'
-        };
+        const { tagMode, tagType } = tagConfig;
+        if (tagType === 'tag') {
+            const Handler = {
+                and: 'in',
+                or: 'or'
+            };
 
-        rule.tagAttr.through = {
-            attributes: [],
-            where: {
-                TagId: {
-                    [Op[Handler[tagMode]]]: tagConfig.tags
+            rule.tagAttr.through = {
+                attributes: [],
+                where: {
+                    TagId: {
+                        [Op[Handler[tagMode]]]: tagConfig.tags
+                    }
                 }
+            };
+
+            if (tagMode === 'and') {
+                tagParams = {
+                    group: ['Images.id'],
+                    having: Sequelize.literal(
+                        `COUNT( DISTINCT tags.id ) = ${tagConfig.tags.length}`
+                    ),
+                    subQuery: false
+                };
             }
-        };
-
-        // where['$tags.id$'] = {
-        //     [Op.ne]: tagConfig.tags
-        // };
-        // tagParams = { subQuery: false };
-
-        if (tagMode === 'and') {
-            tagParams = {
-                group: ['Images.id'],
-                having: Sequelize.literal(`COUNT( DISTINCT tags.id ) = ${tagConfig.tags.length}`),
-                subQuery: false
+        } else if (tagType === 'author') {
+            where = where || {};
+            where['authorId'] = {
+                [Op.or]: tagConfig.tags
             };
         }
     }

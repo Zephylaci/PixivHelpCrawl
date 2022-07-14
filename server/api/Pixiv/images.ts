@@ -36,7 +36,8 @@ main.post('/imageList', async function (ctx) {
         sortMode,
         sanityMode,
         tags,
-        tagMode
+        tagMode,
+        tagType
     } = params;
 
     let sorter = undefined;
@@ -62,14 +63,11 @@ main.post('/imageList', async function (ctx) {
     if (Array.isArray(tags) && tags.length > 0) {
         tagConfig = {
             tags,
-            mode: tagMode || 'and'
+            tagMode: tagMode || 'and',
+            tagType: tagType || 'tag'
         };
     }
-
     // 暂时不知道怎么样写能从数据查询里排除tags
-    if (tagMode === 'not') {
-        tagConfig = undefined;
-    }
 
     res.code = 200;
     const list: any = await getImages({

@@ -1,7 +1,7 @@
 import { getDbControl } from '../index';
 import { DefaultImageRule, ImageRuleType } from '../define';
 import { makeImageParamsFromRule } from '../utils';
-import { FindAttributeOptions } from 'sequelize';
+import { FindAttributeOptions, Op } from 'sequelize';
 import { loggerErr } from '../../../utils/logger';
 import { transDbResult } from '../../../utils/gotPixivImg';
 
@@ -30,6 +30,39 @@ export async function getAuthors({ offset, limit, sorter }) {
     return await Authors.findAndCountAll({
         limit,
         offset,
+        attributes: AuthorsAttributes,
+        order
+    });
+}
+
+export async function getAuthorList({ offset, limit, sorter = [], search = null }) {
+    const ctx = await getDbControl();
+    const Authors = ctx.model('Author');
+
+    const where = {};
+    let order: any = [['likeLevel', 'DESC']];
+    if (Array.isArray(sorter) && sorter.length > 0) {
+        order = sorter.map(item => {
+            return item;
+        });
+    }
+
+    if (search) {
+        const keyWord = search;
+        const attributes = ['name', 'customName', 'translatedName'];
+        const type = 'substring';
+        where[Op.or] = [];
+        attributes.forEach(key => {
+            where[Op.or].push({
+                [key]: { [Op[type]]: keyWord }
+            });
+        });
+    }
+
+    return await Authors.findAll({
+        limit,
+        offset,
+        where,
         attributes: AuthorsAttributes,
         order
     });

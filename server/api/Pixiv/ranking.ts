@@ -80,19 +80,19 @@ main.post('/rankingPages', async function (ctx) {
 main.post('/rankingImages', async function (ctx) {
     const res: resultBean = ctx.body;
     const params: any = ctx.request.body;
-    const { id, offset, limit = 20 } = params;
+    const { id, offset, limit = 30 } = params;
     res.code = 200;
     if (id) {
         let list = [];
         if (Array.isArray(id)) {
-            list = transDbResult(await getRankingFromArrId({ ids: id, offset }));
+            list = transDbResult(await getRankingFromArrId({ ids: id, offset, limit }));
             if (Array.isArray(list)) {
                 list = list.map(({ Image }) => {
                     return Image;
                 });
             }
         } else {
-            list = transDbResult(await getRanking({ where: { id }, offset }));
+            list = transDbResult(await getRanking({ where: { id }, offset, limit }));
         }
         res.contents = {
             illusts: filterIllustsList(list.map(tansIllustsItem)),
