@@ -157,20 +157,24 @@ export async function getImages(
                     }
                 }
             };
-
+            tagParams = { subQuery: false };
             if (tagMode === 'and') {
                 tagParams = {
+                    ...tagParams,
                     group: ['Images.id'],
                     having: Sequelize.literal(
                         `COUNT( DISTINCT tags.id ) = ${tagConfig.tags.length}`
-                    ),
-                    subQuery: false
+                    )
                 };
             }
         } else if (tagType === 'author') {
             where = where || {};
+            let operate = Op.eq;
+            if (tagConfig.tags.length > 1) {
+                operate = Op.or;
+            }
             where['authorId'] = {
-                [Op.or]: tagConfig.tags
+                [operate]: tagConfig.tags
             };
         }
     }
