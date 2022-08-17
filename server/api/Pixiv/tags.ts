@@ -61,7 +61,6 @@ main.get('/tagImages', async function (ctx) {
     const res: resultBean = ctx.body;
     const params = ctx.query;
     const { id, name, offset = 0, limit = 50 } = params;
-
     if (id || name) {
         let where = id ? { id } : { name };
         const { item, list } = await getTagImages({ where, offset, limit });

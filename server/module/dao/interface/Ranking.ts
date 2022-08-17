@@ -81,6 +81,8 @@ export async function getRanking(
     try {
         const ctx = await getDbControl();
         const Ranking = ctx.model('Ranking');
+        const RankingImages = ctx.model('RankingImages');
+        const Images = ctx.model('Images');
         const ranking: any = await Ranking.findOne({
             where,
             attributes: ['id']
@@ -89,28 +91,35 @@ export async function getRanking(
             return ranking;
         }
 
-        rule.tagAttr = {
-            attributes: [...BaseTags.attributes, 'likeLevel']
-        };
         const baseTagAttr = rule.tagAttr;
         rule.tagAttr = null;
 
+        const ids: any = await RankingImages.findAll({
+            where: {
+                RankingId: ranking.id
+            },
+            attributes: ['ImageId'],
+            offset,
+            limit
+        });
+
         const queryParams: FindOptions = await makeImageParamsFromRule({
             queryParams: {
-                offset,
-                limit,
+                where: {
+                    id: ids.map(({ ImageId }) => ImageId)
+                },
                 through: { attributes: [] },
                 order: [['totalBookmarks', 'DESC']]
             },
             rule
         });
-        const list = await ranking.getImages(queryParams);
+        const list = await Images.findAll(queryParams);
         res = list;
         if (list && baseTagAttr) {
             res = transDbResult(res);
             const promise = [];
             for (let i = 0; i < list.length; i++) {
-                const item = list[i];
+                const item: any = list[i];
                 const target = res[i];
                 const query = item.getTags().then(res => {
                     target.tags = res;

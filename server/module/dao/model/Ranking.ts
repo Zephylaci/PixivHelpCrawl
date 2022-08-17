@@ -46,7 +46,12 @@ const RankingImages = dbClient.define(
     },
     {
         tableName: 'RankingImages',
-        timestamps: false
+        timestamps: false,
+        indexes: [
+            {
+                fields: ['RankingId', 'ImageId']
+            }
+        ]
     }
 );
 

@@ -146,7 +146,7 @@ export async function getImages(
         if (tagType === 'tag') {
             const Handler = {
                 and: 'in',
-                or: 'or'
+                or: 'in'
             };
 
             rule.tagAttr.through = {
@@ -157,15 +157,17 @@ export async function getImages(
                     }
                 }
             };
-            tagParams = { subQuery: false };
+
             if (tagMode === 'and') {
                 tagParams = {
-                    ...tagParams,
+                    subQuery: false,
                     group: ['Images.id'],
                     having: Sequelize.literal(
                         `COUNT( DISTINCT tags.id ) = ${tagConfig.tags.length}`
                     )
                 };
+            } else {
+                tagParams = { subQuery: false };
             }
         } else if (tagType === 'author') {
             where = where || {};
