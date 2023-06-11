@@ -19,7 +19,9 @@ config/filter
 *.db
 build
 client-back
-client
+
 study
 imgStorage
+update.sh
+.env
 

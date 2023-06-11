@@ -25,7 +25,7 @@ const main = new Router();
 **/
 main.post('/tagPages', async function (ctx) {
     const res: resultBean = ctx.body;
-    const params: params = ctx.request.body;
+    const params: params = ctx.request.body as params;
     const { offset = 0, limit = 20, sort } = params;
 
     let sorter = undefined;

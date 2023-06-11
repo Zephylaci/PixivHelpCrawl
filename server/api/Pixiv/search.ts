@@ -20,7 +20,7 @@ const main = new Router();
 
 main.post('/search', async function (ctx) {
     const res: resultBean = ctx.body;
-    const params: searchParams = ctx.request.body;
+    const params: searchParams = ctx.request.body as searchParams;
     const { word, ...other } = params;
     res.code = 200;
     const body = await pixivClient.searchIllust(word, other);

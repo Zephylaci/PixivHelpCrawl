@@ -30,7 +30,7 @@ type rankingContents = {
 const main = new Router();
 main.post('/queryRanking', async function (ctx) {
     const res: resultBean = ctx.body;
-    const params: rankingParams = ctx.request.body;
+    const params: rankingParams = ctx.request.body as rankingParams;
     const { date, mode, offset = 0, limit = 90 } = params;
     const contents: rankingContents = {
         illusts: [],

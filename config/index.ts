@@ -1,8 +1,9 @@
 //bashDir:__dirname.match(/.*Help.*\\/)[0],
 import * as Path from 'path';
 
+
 function resolvePath(path) {
-    if (process.env.NODE_ENV === 'development'){
+    if (process.env.NODE_ENV === 'development') {
         return Path.resolve(__dirname, path);
     }
     return Path.resolve(__dirname, `../${path}`);
@@ -45,23 +46,11 @@ const defConfig = {
      *  这个配置用于模拟登录
      */
     pixivConfig: {
-        form: {
-            pixiv_id: '',
-            password: '',
-            captcha: '',
-            g_recaptcha_response: '',
-            post_key: '',
-            source: 'pc'
-        },
+        refreshToken: process.env.refreshToken,
         headers: {
             Referer: 'http://www.pixiv.net',
             'User-Agent':
                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36'
-        },
-        //cokie文件的位置
-        cookieAbout: {
-            path: '.cookie',
-            cookies: null
         }
     },
     //代理配置 使用代理访问

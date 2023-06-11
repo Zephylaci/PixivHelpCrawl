@@ -21,7 +21,7 @@ main.get('/hello', async function (ctx) {
         date: '2022-07-12',
         mode: 'week_r18g'
     } as any);
-    
+
     // 大多数筛选条件都无效
     // const res = await pixivClient.userIllusts(4035090, {
     //     sort: 'date_asc',
@@ -33,6 +33,12 @@ main.get('/hello', async function (ctx) {
         contents: res,
         text: ''
     });
+});
+
+main.post('/log', async function (ctx) {
+    const params: any = ctx.request.body;
+    ctx.body = null;
+    console.log('check log:', params);
 });
 
 class SSEStream extends Transform {

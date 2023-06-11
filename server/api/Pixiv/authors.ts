@@ -24,7 +24,7 @@ const main = new Router();
 
 main.post('/authorPages', async function (ctx) {
     const res: resultBean = ctx.body;
-    const params: params = ctx.request.body;
+    const params: params = ctx.request.body as params;
     const { offset = 0, limit = 20, sort } = params;
 
     let sorter = undefined;
@@ -74,7 +74,7 @@ main.get('/authorImages', async function (ctx) {
 
 main.post('/addAuthorImages', async function (ctx) {
     const res: resultBean = ctx.body;
-    const params = ctx.request.body;
+    const params = ctx.request.body as any;
     const { id, offset = 0, limit = 90 } = params;
     console.log('check:', id, offset, limit);
     if (id) {

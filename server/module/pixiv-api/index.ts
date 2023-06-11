@@ -1,8 +1,9 @@
+import { pixivConfig } from '../../../config';
 import { loggerErr, loggerRes } from '../../utils/logger';
 import { retryWarp, StackHandler } from '../../utils/tool';
 import PixivApp from './PixivApp';
 const pixivClient = new PixivApp({
-    refreshToken: 'CDgynshlniOTugd3ZkNHCBd9mEeUuO4gvewNIX7eroc'
+    refreshToken: pixivConfig.refreshToken
 });
 
 const originFetch = pixivClient.fetch.bind(pixivClient);
