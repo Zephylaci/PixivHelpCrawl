@@ -6,6 +6,8 @@ import decamelizeKeys from 'decamelize-keys';
 import camelcaseKeys from 'camelcase-keys';
 import httpsProxyAgent from 'https-proxy-agent';
 /**
+ * 来源 https://github.com/akameco/pixiv-app-api
+ * 
  * TODO: 拆分，以及各种异常处理
  */
 
