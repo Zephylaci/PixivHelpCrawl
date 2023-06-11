@@ -34,7 +34,7 @@
         "dayjs": "^1.11.1",
         "decamelize-keys": "^1.1.0",
         "dotenv": "^16.1.4",
-        "file-type": "16.5.3",
+        "file-type": "16.5.4",
         "fs-extra": "^10.0.1",
         "got": "11.8.3",
         "https-proxy-agent": "^5.0.0",
